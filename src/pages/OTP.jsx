@@ -84,8 +84,8 @@ export default function OTP() {
             <AlertBottom
                 visibleAlert={visibleAlert}
                 handleVisibleAlert={handleVisibleAlert}
-                className='bg-alert-3 justify-center'
-                text={'Maaf, Kode OTP Salah!'}
+                className='bg-alert-1 justify-center'
+                text={'Registrasi berhasil'}
             />
 
         </section>
