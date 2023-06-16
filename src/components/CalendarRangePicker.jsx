@@ -14,9 +14,7 @@ export default function CalendarRangePicker({ open, handleOpen, initialRangeDate
                     onClick={(event) => {
                         event.persist();
 
-                        let prevDate = Array.isArray(initialRangeDate)
-                            ? new Date(initialRangeDate[0])
-                            : new Date(initialRangeDate);
+                        let prevDate = Array.isArray(initialRangeDate) ? new Date(initialRangeDate[0]) : new Date(initialRangeDate);
                         let rangeClickDate = new Date(event.target.ariaLabel);
 
                         if (rangeClickDate.getDate() === prevDate.getDate()) {

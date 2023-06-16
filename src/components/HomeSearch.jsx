@@ -210,20 +210,20 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                     {buttonAction || null}
                     <div className='mx-8 my-6'>
                         {/* home search title start */}
-                        <h1 className='font-poppins text-head-1 font-bold'>
+                        <h1 className='font-bold font-poppins text-head-1'>
                             Pilih Jadwal Penerbangan spesial di <span className='text-pur-5'>Tiketku!</span>
                         </h1>
                         {/* home search title end */}
 
                         {/* home search menu start */}
-                        <div className='mt-5 grid grid-cols-12'>
+                        <div className='grid grid-cols-12 mt-5'>
                             {/* menu left start */}
-                            <div className='col-span-5 flex flex-col gap-7'>
+                            <div className='flex flex-col col-span-5 gap-7'>
                                 <div className='flex gap-8'>
                                     {/* from start */}
                                     <div className='flex items-center gap-2'>
                                         <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>From</p>
+                                        <p className='font-normal font-poppins text-body-6 text-net-3'>From</p>
                                     </div>
                                     <div className='relative'>
                                         <Input
@@ -246,12 +246,12 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                                 );
                                                             }}
                                                             key={index}
-                                                            className='cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
+                                                            className='p-3 text-white cursor-pointer bg-pur-3 font-poppins'>
                                                             {data.airport_location} ({data.airport_code})
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className='text-head-1-5 pt-2 font-poppins font-semibold'>
+                                                    <div className='pt-2 font-semibold text-head-1-5 font-poppins'>
                                                         <h1>Inputkan Lokasi...</h1>
                                                     </div>
                                                 )}
@@ -264,12 +264,12 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                 <div className='flex gap-8'>
                                     <div className='flex items-center gap-2'>
                                         <MdDateRange className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>Date</p>
+                                        <p className='font-normal font-poppins text-body-6 text-net-3'>Date</p>
                                     </div>
                                     <div className='flex gap-5'>
                                         <div className=''>
                                             <Label
-                                                className='font-poppins text-title-2 font-medium text-net-3'
+                                                className='font-medium font-poppins text-title-2 text-net-3'
                                                 htmlFor={'departure'}>
                                                 Departure
                                             </Label>
@@ -285,7 +285,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                         <div>
                                             <div className='relative flex items-center justify-between'>
                                                 <Label
-                                                    className='font-poppins text-title-2 font-medium text-net-3'
+                                                    className='font-medium font-poppins text-title-2 text-net-3'
                                                     htmlFor={'return'}>
                                                     Return
                                                 </Label>
@@ -314,18 +314,18 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                             {/* menu left end */}
 
                             {/* toggleRotate start */}
-                            <div className='col-span-2 flex items-start justify-center pt-5 '>
+                            <div className='flex items-start justify-center col-span-2 pt-5 '>
                                 <ToggleRotate isToggle={isToggle} handleToggleAction={handleToggleAction} />
                             </div>
                             {/* toggleRotate start */}
 
                             {/* menu right start */}
-                            <div className='col-span-5 flex flex-col gap-7'>
+                            <div className='flex flex-col col-span-5 gap-7'>
                                 <div className='flex gap-8'>
                                     {/* to start */}
                                     <div className='flex items-center gap-3'>
                                         <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>To</p>
+                                        <p className='font-normal font-poppins text-body-6 text-net-3'>To</p>
                                     </div>
 
                                     <div className='relative'>
@@ -349,12 +349,12 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                                 );
                                                             }}
                                                             key={index}
-                                                            className='cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
+                                                            className='p-3 text-white cursor-pointer bg-pur-3 font-poppins'>
                                                             {data.airport_location} ({data.airport_code})
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className='text-head-1-5 pt-2 font-poppins font-semibold'>
+                                                    <div className='pt-2 font-semibold text-head-1-5 font-poppins'>
                                                         <h1>Inputkan Lokasi...</h1>
                                                     </div>
                                                 )}
@@ -367,11 +367,11 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                 <div className='flex gap-8'>
                                     <div className='flex items-center gap-3'>
                                         <MdAirlineSeatReclineNormal className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>To</p>
+                                        <p className='font-normal font-poppins text-body-6 text-net-3'>To</p>
                                     </div>
 
                                     <div className=''>
-                                        <Label className='font-poppins text-title-2 font-medium text-net-3' htmlFor={'passenger'}>
+                                        <Label className='font-medium font-poppins text-title-2 text-net-3' htmlFor={'passenger'}>
                                             Passengers
                                         </Label>
                                         <Input
@@ -383,7 +383,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                         />
                                     </div>
                                     <div className=''>
-                                        <Label className='font-poppins text-title-2 font-medium text-net-3' htmlFor={'seat'}>
+                                        <Label className='font-medium font-poppins text-title-2 text-net-3' htmlFor={'seat'}>
                                             Seat Class
                                         </Label>
                                         <Input
@@ -402,7 +402,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                         {/* home search menu end */}
                     </div>
                     <Button
-                        className='absolute bottom-0 w-full bg-pur-4 py-3 text-title-2 font-bold text-white hover:bg-pur-3'
+                        className='absolute bottom-0 w-full py-3 font-bold text-white bg-pur-4 text-title-2 hover:bg-pur-3'
                         onClick={handleActionHomeSearch}>
                         Cari Penerbangan
                     </Button>
@@ -448,7 +448,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
             <div>
                 {openCalendarRange && (
                     <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
-                        <div className='relative h-screen w-screen'>
+                        <div className='relative w-screen h-screen'>
                             <CalendarRangePicker
                                 initialRangeDate={pickedRangeDate}
                                 handlePickedRangeDate={handlePickedRangeDate}
