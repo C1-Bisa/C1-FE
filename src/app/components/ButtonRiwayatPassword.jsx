@@ -1,7 +1,7 @@
 'use client';
 
 export default function Button({
-    className = 'rounded-rad-4 bg-pur-5 px-6 py-[14px] text-body-6 font-medium text-white hover:bg-pur-2',
+    className = 'text-neu-4 h-[40px] w-[650px] rounded-rad-4 border-net-6 bg-pur-3 py-[7px] font-poppins text-body-6 font-normal',
     text,
     children,
     ...rest

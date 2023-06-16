@@ -47,7 +47,7 @@ export default function Login() {
                                     <span className='cursor-pointer text-body-3 font-medium text-pur-4'>Lupa Kata Sandi</span>
                                 </label>
                                 <PasswordInput id='password' placeholder='Masukkan password' />
-                            </div>    
+                            </div>
                             <Button onClick={() => handleVisibleAlert()}>Masuk</Button>
                             <AskAccountButton
                                 prefix={'Belum punya akun?'}
