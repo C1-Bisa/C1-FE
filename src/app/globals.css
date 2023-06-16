@@ -17,30 +17,6 @@ input[type='password']::-ms-clear {
     display: none;
 }
 
-/*Scroll bar nav*/
-::-webkit-scrollbar {
-    width: auto;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: auto;
-    -webkit-border-radius: auto;
-    border-radius: auto;
-    background: auto;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    -webkit-border-radius: auto;
-    border-radius: auto;
-    background: auto;
-    -webkit-box-shadow: auto;
-}
-::-webkit-scrollbar-thumb:window-inactive {
-    background: auto;
-}
-
 /* Date Range Picker start */
 .react-daterange-picker__calendar,
 .react-calendar {
@@ -95,18 +71,9 @@ input[type='password']::-ms-clear {
     margin-bottom: 8px;
 }
 
-/* .calendar,
+.calendar,
 .calendar__range {
     margin-top: 40px;
-} */
-
-.react-daterange-picker.react-daterange-picker--open.react-daterange-picker--enabled.calendar__range {
-    top: 74%;
-    transform: translateY(-74%);
-
-    right: 74%;
-    transform: translateX(-74%);
-    position: absolute;
 }
 
 .react-calendar {
@@ -203,3 +170,5 @@ abbr[title] {
 .react-daterange-picker__wrapper {
     display: none;
 }
+
+/* Date Range Picker end*/
