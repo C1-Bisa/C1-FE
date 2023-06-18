@@ -5,7 +5,6 @@ import { convertToDate, convertToTime } from '@/utils/converDateTime';
 import axios from 'axios';
 
 const URL = 'https://airplaneapikel1-production.up.railway.app/api/v1/airport';
-const FLIGHT_URL = 'https://airplaneapikel1-production.up.railway.app/api/v1/flight/searchflight';
 
 export const fetchAirport = createAsyncThunk('flight/fetchAirport', async () => {
     try {
@@ -16,46 +15,15 @@ export const fetchAirport = createAsyncThunk('flight/fetchAirport', async () => 
     }
 });
 
-export const fetchFlight = createAsyncThunk(
-    'flight/fetchFligth',
-    async ({ from, to, departure_date, departure_time, returnDate }) => {
-        try {
-            const objectTemplate = {
-                from,
-                to,
-                departure_date,
-                departure_time,
-                returnDate,
-            };
-            const response = await axios.post(FLIGHT_URL, objectTemplate);
-            return response.data.data.flight;
-        } catch (error) {
-            return error.message;
-        }
-    }
-);
-
 const initialState = {
     // airport start
-    airports: [],
-    filteredFromAirport: [],
-    filteredToAirport: [],
-    displayFromAirport: '',
-    displayToAirport: '',
+    airports: [], // initial airport
+    filteredFromAirport: [], // list of filtered from  airport
+    filteredToAirport: [], // list of filtered to airport
+    displayFromAirport: '', // display from airport in homesearch comp
+    displayToAirport: '', // display to airport in homesearch comp
     fetchAirportStatus: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
     fetchAirportError: null,
-    fromAirport: '', //for search from flight ticket
-    toAirport: '', //for search to flight ticket
-    // airport end
-
-    // fligth start
-    flights: {
-        berangkat: [],
-        pulang: [],
-    },
-    fetchFlightStatus: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
-    fetchFligthError: null,
-    // fligth end
 
     // passenger start
     passengerType: {
@@ -71,7 +39,7 @@ const initialState = {
     // flight class end
 
     //one way/two way mode start
-    isTwoWay: false,
+    isTwoWay: false, // one way two way swithhed
     one_way: {
         from: '',
         to: '',
@@ -88,7 +56,6 @@ const initialState = {
         departure_date: '',
         departure_time: '',
         departureDateTime: '',
-        // arrivalDateTime: '',
     },
     //one way/two way mode end
 
@@ -171,7 +138,8 @@ export const flightSlice = createSlice({
             state.two_way.departureDateTime = state.one_way.arrivalDateTime;
             state.isTwoWay = action.payload;
         },
-        //define datePickerCalenda
+
+        //define datePickerCalenda || used in search page
         setDerpatureDateTime: (state, action) => {
             state.one_way.departure_date = convertToDate(action.payload);
             state.one_way.departure_time = convertToTime(action.payload);
@@ -225,9 +193,11 @@ export const flightSlice = createSlice({
                 state.totalPassenger -= 1;
             }
         },
-        setFetchFlightStatus: (state) => {
-            state.fetchFlightStatus = 'idle';
-        },
+
+        // commented
+        // setFetchFlightStatus: (state) => {
+        //     state.fetchFlightStatus = 'idle';
+        // },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchAirport.pending, (state) => {
@@ -241,45 +211,30 @@ export const flightSlice = createSlice({
             state.fetchAirportStatus = 'failed';
             state.fetchAirportError = action.error.message;
         });
-
-        builder.addCase(fetchFlight.pending, (state, action) => {
-            state.fetchAirportStatus = 'loading';
-        });
-        builder.addCase(fetchFlight.fulfilled, (state, action) => {
-            state.fetchAirportStatus = 'succeeded';
-            // console.log(action.payload);
-            state.flights.berangkat = action.payload.berangkat;
-            state.flights.pulang = action.payload.pulang;
-            // state.airports = [...state.airports, ...action.payload];
-        });
-        builder.addCase(fetchFlight.rejected, (state, action) => {
-            state.fetchAirportStatus = 'failed';
-            state.fetchAirportError = action.error.message;
-        });
     },
 });
 
-export const getAllAirport = (state) => state.flight.airports;
-export const getAirportFetchError = (state) => state.flight.fetchAirportError;
-export const getAirportFetchStatus = (state) => state.flight.fetchAirportStatus;
-export const getFilteredFromAirport = (state) => state.flight.filteredFromAirport;
-export const getFilteredToAirport = (state) => state.flight.filteredToAirport;
-export const getDisplayFromAirport = (state) => state.flight.displayFromAirport;
-export const getDisplayToAirport = (state) => state.flight.displayToAirport;
-export const getLocationFromAirport = (state) => state.flight.fromAirport;
-export const getLocationToAirport = (state) => state.flight.toAirport;
-export const getOneWay = (state) => state.flight.one_way;
-export const getTwoWay = (state) => state.flight.two_way;
-export const getIsTwoWay = (state) => state.flight.isTwoWay;
-export const getDerpatureDateTime = (state) => state.flight.one_way.departureDateTime;
-export const getArrivalDateTime = (state) => state.flight.one_way.arrivalDateTime;
-export const getFlightClass = (state) => state.flight.flightClass;
-export const getTotalPassenger = (state) => state.flight.totalPassenger;
-export const getDewasaPassenger = (state) => state.flight.passengerType.dewasa;
-export const getAnakPassenger = (state) => state.flight.passengerType.anak;
-export const getBayiPassenger = (state) => state.flight.passengerType.bayi;
-export const getDisplayDerpatureDatetime = (state) => state.flight.displayDepartureDateTime;
-export const getFlights = (state) => state.flight.flights;
-export const getFlightFetchStatus = (state) => state.flight.fetchFlightStatus;
+//export const getAllAirport = (state) => state.flight.airports;
+//export const getAirportFetchError = (state) => state.flight.fetchAirportError;
+export const getAirportFetchStatus = (state) => state.flight.fetchAirportStatus; // used loading homesearch
+export const getFilteredFromAirport = (state) => state.flight.filteredFromAirport; //used list filtered from homesearch
+export const getFilteredToAirport = (state) => state.flight.filteredToAirport; //used list filtered to homesearch
+export const getDisplayFromAirport = (state) => state.flight.displayFromAirport; // used from homesearch
+export const getDisplayToAirport = (state) => state.flight.displayToAirport; // used to homesearch
+//export const getLocationFromAirport = (state) => state.flight.fromAirport; //not used
+//export const getLocationToAirport = (state) => state.flight.toAirport; //not used
+export const getOneWay = (state) => state.flight.one_way; // used in fetch search-page
+export const getTwoWay = (state) => state.flight.two_way; // used in fetch search-page
+export const getIsTwoWay = (state) => state.flight.isTwoWay; // used switched two way homesearch
+export const getDerpatureDateTime = (state) => state.flight.one_way.departureDateTime; // used departure date homesearch
+export const getArrivalDateTime = (state) => state.flight.one_way.arrivalDateTime; // used arrivdal date homesearch
+export const getFlightClass = (state) => state.flight.flightClass; // used flight class homesearch
+export const getTotalPassenger = (state) => state.flight.totalPassenger; // used total passenger homesearch
+export const getDewasaPassenger = (state) => state.flight.passengerType.dewasa; // used in choosepassengermodal
+export const getAnakPassenger = (state) => state.flight.passengerType.anak; // used in choosepassengermodal
+export const getBayiPassenger = (state) => state.flight.passengerType.bayi; // used in choosepassengermodal
+export const getDisplayDerpatureDatetime = (state) => state.flight.displayDepartureDateTime; // used searchpage
+//export const getFlights = (state) => state.flight.flights; //commented
+//export const getFlightFetchStatus = (state) => state.flight.fetchFlightStatus; //commented
 
 export default flightSlice.reducer;

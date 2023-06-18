@@ -51,18 +51,30 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     // redux setup
     const dispatch = useDispatch();
 
-    // redux setup
+    // airport actions
+    const fromAirports = useSelector(getFilteredFromAirport); // list of filtered airport
+    const toAirports = useSelector(getFilteredToAirport); // list of filtered airport
+    const fromAirportDisplay = useSelector(getDisplayFromAirport); // selected airport
+    const toAirportDisplay = useSelector(getDisplayToAirport); // selected airport
+    // airport actions
 
-    // redux flight setup
-    const flightClass = useSelector(getFlightClass);
+    // for total passenger actions
     const totalPassenger = useSelector(getTotalPassenger);
+    // for total  passenger actions
+
+    // for flight class action
+    const flightClass = useSelector(getFlightClass);
+    // for flight class action
+
+    // for derpature & arrival date
     const derpatureDateTime = useSelector(getDerpatureDateTime);
     const arrivalDateTime = useSelector(getArrivalDateTime);
-    const fromAirports = useSelector(getFilteredFromAirport);
-    const toAirports = useSelector(getFilteredToAirport);
-    const fromAirportDisplay = useSelector(getDisplayFromAirport);
-    const toAirportDisplay = useSelector(getDisplayToAirport);
+    // for derpature & arrival date
+
+    // for loading status fetch flight
     const loading = useSelector(getAirportFetchStatus);
+    // for loading status fetch flight
+
     const {
         filteredFromAirport,
         filteredToAirport,
@@ -194,19 +206,11 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     };
     // handling choosing one of from/to airport end
 
-    // const example = () => (
-    //     <FiX
-    //         className='absolute right-0 mr-3 mt-2 hidden h-[28px] w-[28px]'
-    //         onClick={() => console.log('This is from example homepage button Action')}
-    //     />
-    // );
-
     return (
         <>
             {/* home search desktop start */}
             <div className='container  mx-auto mt-[-50px] hidden  h-[292px]  max-w-screen-lg lg:block'>
                 <div className={` relative h-full w-full overflow-hidden rounded-rad-3 bg-white shadow-high`}>
-                    {/* <FiX className='absolute right-0 mr-3 mt-2 h-[28px] w-[28px]' onClick={() => handleOpenHomeSearch()} /> */}
                     {buttonAction || null}
                     <div className='mx-8 my-6'>
                         {/* home search title start */}
@@ -228,7 +232,6 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                     <div className='relative'>
                                         <Input
                                             className='border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins text-title-3 font-medium'
-                                            // value={'Jakarta (JKTA)'}
                                             placeholder={'Silahkan pilih lokasi...'}
                                             value={chosenFromAirport}
                                             onFocus={() => setFocusFromInput(true)}
