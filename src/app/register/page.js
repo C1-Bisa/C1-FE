@@ -79,67 +79,149 @@ export default function Register() {
     };
 
     return (
-        <section className='h-screen bg-white'>
-            <div className='grid h-full w-full grid-cols-12'>
-                <div className='relative hidden lg:col-span-6 lg:block'>
-                    <div className='relative h-full'>
-                        <Image src={`/images/Ulang_Sandi.jpg`} alt='' fill={true} style={{ objectFit: 'cover' }} quality={100} />
+        <>
+            {/* DEKSTOP MODE */}
+            <section className='hidden h-screen bg-white lg:block'>
+                <div className='grid h-full w-full grid-cols-12'>
+                    <div className='relative  col-span-6 '>
+                        <div className='relative h-full'>
+                            <Image
+                                src={`/images/Ulang_Sandi.jpg`}
+                                alt=''
+                                fill={true}
+                                style={{ objectFit: 'cover' }}
+                                quality={100}
+                            />
+                        </div>
+                    </div>
+                    <div className='relative col-span-6 flex   flex-col items-center justify-center px-0 '>
+                        <form className='flex  w-[452px] flex-col  gap-5' onSubmit={handleRegis}>
+                            <h1 className='text-heading-2 mb-2 font-poppins text-2xl font-bold '>Daftar</h1>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='name'>Nama </Label>
+                                <Input
+                                    id='name'
+                                    placeholder='Nama Lengkap'
+                                    name='name'
+                                    value={regisData.name}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='email'>Email</Label>
+                                <Input
+                                    id='email'
+                                    name='email'
+                                    placeholder='Contoh: Johndee@gmail.com'
+                                    value={regisData.email}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='phone'>No Telepon</Label>
+                                <Input
+                                    id='phone'
+                                    placeholder='+62'
+                                    name='phone'
+                                    value={regisData.phone}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='password' className='mb-1 flex justify-between text-body-4'>
+                                    Passwords
+                                </Label>
+                                <PasswordInput
+                                    id='password'
+                                    name='password'
+                                    placeholder='Buat Password'
+                                    value={regisData.password}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <Button type='submit'>Daftar</Button>
+                            <AskAccountButton
+                                prefix={'Sudah Punya Akun?'}
+                                suffix={'Masuk Disini'}
+                                onClick={() => router.push('/login')}
+                            />
+                        </form>
+                        <AlertBottom
+                            visibleAlert={visibleAlert}
+                            handleVisibleAlert={handleVisibleAlert}
+                            text={alertText}
+                            type={alertType}
+                        />
                     </div>
                 </div>
-                <div className='col-span-12 flex flex-col justify-around  px-[26px] lg:col-span-6 lg:items-center lg:justify-center lg:px-0 '>
-                    <form className='flex w-full flex-col gap-5  lg:w-[452px]' onSubmit={handleRegis}>
-                        <h1 className='text-heading-2 mb-2 font-poppins text-2xl font-bold '>Daftar</h1>
-                        <div className='flex flex-col'>
-                            <Label htmlFor='name'>Nama </Label>
-                            <Input
-                                id='name'
-                                placeholder='Nama Lengkap'
-                                name='name'
-                                value={regisData.name}
-                                onChange={handleRegisData}
+            </section>
+            {/* DEKSTOP MODE */}
+
+            {/* MOBILE MODE */}
+            <section className='h-screen bg-white lg:hidden'>
+                <div className='grid h-full w-full grid-cols-12'>
+                    <div className='col-span-12 flex flex-col justify-center  px-[26px] '>
+                        <form className='flex w-full flex-col gap-5 ' onSubmit={handleRegis}>
+                            <h1 className='text-heading-2 mb-2 font-poppins text-2xl font-bold '>Daftar</h1>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='name'>Nama </Label>
+                                <Input
+                                    id='name'
+                                    placeholder='Nama Lengkap'
+                                    name='name'
+                                    value={regisData.name}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='email'>Email</Label>
+                                <Input
+                                    id='email'
+                                    name='email'
+                                    placeholder='Contoh: Johndee@gmail.com'
+                                    value={regisData.email}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='phone'>No Telepon</Label>
+                                <Input
+                                    id='phone'
+                                    placeholder='+62'
+                                    name='phone'
+                                    value={regisData.phone}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <div className='flex flex-col'>
+                                <Label htmlFor='password' className='mb-1 flex justify-between text-body-4'>
+                                    Passwords
+                                </Label>
+                                <PasswordInput
+                                    id='password'
+                                    name='password'
+                                    placeholder='Buat Password'
+                                    value={regisData.password}
+                                    onChange={handleRegisData}
+                                />
+                            </div>
+                            <Button type='submit'>Daftar</Button>
+                            <AskAccountButton
+                                prefix={'Sudah Punya Akun?'}
+                                suffix={'Masuk Disini'}
+                                onClick={() => router.push('/login')}
                             />
-                        </div>
-                        <div className='flex flex-col'>
-                            <Label htmlFor='email'>Email</Label>
-                            <Input
-                                id='email'
-                                name='email'
-                                placeholder='Contoh: Johndee@gmail.com'
-                                value={regisData.email}
-                                onChange={handleRegisData}
-                            />
-                        </div>
-                        <div className='flex flex-col'>
-                            <Label htmlFor='phone'>No Telepon</Label>
-                            <Input id='phone' placeholder='+62' name='phone' value={regisData.phone} onChange={handleRegisData} />
-                        </div>
-                        <div className='flex flex-col'>
-                            <Label htmlFor='password' className='mb-1 flex justify-between text-body-4'>
-                                Passwords
-                            </Label>
-                            <PasswordInput
-                                id='password'
-                                name='password'
-                                placeholder='Buat Password'
-                                value={regisData.password}
-                                onChange={handleRegisData}
-                            />
-                        </div>
-                        <Button type='submit'>Daftar</Button>
-                        <AskAccountButton
-                            prefix={'Sudah Punya Akun?'}
-                            suffix={'Masuk Disini'}
-                            onClick={() => router.push('/login')}
-                        />
-                    </form>
+                        </form>
+                    </div>
+                    <AlertBottom
+                        visibleAlert={visibleAlert}
+                        handleVisibleAlert={handleVisibleAlert}
+                        text={alertText}
+                        type={alertType}
+                    />
                 </div>
-                <AlertBottom
-                    visibleAlert={visibleAlert}
-                    handleVisibleAlert={handleVisibleAlert}
-                    text={alertText}
-                    type={alertType}
-                />
-            </div>
-        </section>
+            </section>
+            {/* MOBILE MODE */}
+        </>
     );
 }

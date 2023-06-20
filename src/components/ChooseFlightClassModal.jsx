@@ -9,13 +9,13 @@ import { getFlightClass, flightSlice } from '@/store/flight';
 export default function ChooseFlightClassModal({ handleOpenFlightClassModal }) {
     const dispatch = useDispatch();
     const flightClassRedux = useSelector(getFlightClass);
-    const { setFlightClass } = flightSlice.actions;
+    const { setHomePageFlightClass } = flightSlice.actions;
 
     const [chooseFlightClass, setChooseFlightClass] = useState(flightClassRedux);
 
     const handleChosenFlightClass = (flightClass) => {
         setChooseFlightClass(flightClass);
-        dispatch(setFlightClass(flightClass));
+        dispatch(setHomePageFlightClass(flightClass));
     };
 
     const flightClass = [

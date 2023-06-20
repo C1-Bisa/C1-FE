@@ -9,14 +9,14 @@ import { FiArrowLeft, FiChevronRight, FiBox, FiHeart, FiDollarSign } from 'react
 import { FiX } from 'react-icons/fi';
 import { RiArrowUpDownLine } from 'react-icons/ri';
 import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
-// import { FiArrowLeft, FiChevronRight, FiBox, FiHeart, FiDollarSign } from 'react-icons/fi';
 import { TbCircleNumber1, TbCircleNumber2, TbPlaneInflight } from 'react-icons/tb';
 import { BsArrowRight } from 'react-icons/bs';
-// import { FiX } from 'react-icons/fi';
 import { MdFlight } from 'react-icons/md';
+import Image from 'next/image';
+// import { FiArrowLeft, FiChevronRight, FiBox, FiHeart, FiDollarSign } from 'react-icons/fi';
+// import { FiX } from 'react-icons/fi';
 // import { RiArrowUpDownLine } from 'react-icons/ri';
 // import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
-import Image from 'next/image';
 
 // dayjs
 import dayjs from 'dayjs';
@@ -36,15 +36,33 @@ import Navbar from '@/components/Navbar';
 import HomeSearch from '@/components/HomeSearch';
 import ChooseFilterTicketModal from '@/components/ChooseFilterTicketModal';
 import {
-    getOneWay,
-    getTwoWay,
-    getFlightClass,
-    getTotalPassenger,
-    getDisplayDerpatureDatetime,
+    // getOneWay,
+    // getTwoWay,
+    // getDisplayDerpatureDatetime,
+    // getFlights,
+    // fetchFlight,
+    // getFlightFetchStatus,
+    // getTest,
+    // getFirstSearch,
+    // getSecondSearch,
+    // getDisplayArrivalDatetime,
+    // getDisplayFlightType,
+    // getChoosedFligth1,
+    // getChoosedFligth2,
+    // getDisplayFligth1,
+    // getDisplayFligth,
     flightSlice,
-    getFlights,
+    getTotalPassenger,
+    getFlightClass,
+    getChoosedFlight1,
+    getChoosedFlight2,
+    getFetchFlightStatus,
+    getHomeSearch,
+    getSearchPage,
+    getSearchPageIsSearchAgain,
     fetchFlight,
-    getFlightFetchStatus,
+    getFlightDatasStatus,
+    getFlightDatas,
 } from '@/store/flight';
 // import { MdFlight } from 'react-icons/md';
 
@@ -67,9 +85,22 @@ export default function SearchFlight() {
     const router = useRouter();
     const dispatch = useDispatch();
 
+    const statusFetch = useSelector(getFlightDatasStatus);
+
+    const homeSearch = useSelector(getHomeSearch);
+    const searchPage = useSelector(getSearchPage);
+    const searchAgain = useSelector(getSearchPageIsSearchAgain);
+
+    console.log('SERR', searchPage);
+
+    const fetchFlightStatus = useSelector(getFetchFlightStatus);
+
+    console.log('fetchFlightStatus', fetchFlightStatus);
+    const choosedFlight1 = useSelector(getChoosedFlight1);
+    const choosedFlight2 = useSelector(getChoosedFlight2);
+
     // list of flight data
-    const [fetchDataStatus, setFetchDataStatus] = useState(true);
-    const [flightData, setFlightData] = useState([]);
+    const flightData = useSelector(getFlightDatas);
     // list of flight data
 
     // detail of list data
@@ -86,22 +117,28 @@ export default function SearchFlight() {
     const handleOpenChooseFilterFlight = () => setOpenChooseFilterFlight(!openChooseFilterFlight);
     // modal filter ticket end
 
-    // redux setup
-
-    // used for fetch data in search
-    const { from, to, departure_date, departure_time } = useSelector(getOneWay);
-    const twoWay = useSelector(getTwoWay);
-    // used for fetch data in search
-
     const totalPassenger = useSelector(getTotalPassenger); // used in total pass purple
     const flighClass = useSelector(getFlightClass); // used in flight pass purple
 
     // handling derpature date
-    const { setDerpatureDateTime } = flightSlice.actions;
-    const displayDerpatureDateTime = useSelector(getDisplayDerpatureDatetime);
+    const {
+        // setDerpatureDateTime,
+        setChoosedFlight,
+        setFetchFlightStatus,
+        setResetChoosedFlight,
+        setSearchPageDate,
+        setSearchPageIsSearchAgain,
+        setFetchTerbaru,
+    } = flightSlice.actions;
+
     // dateInAWeek
     const [values, setValues] = useState([]);
-    const [selectDate, setSelectDate] = useState(new Date(displayDerpatureDateTime) || '');
+
+    console.log('dayofWeek', values);
+    const [selectDate, setSelectDate] = useState(new Date(searchPage.search_date) || '');
+    const [selectOffsetDate, setSelectOffsetDate] = useState(
+        new Date(searchPage.search_date_return || homeSearch.return_dateTime) || ''
+    );
     // dateInAWeek
     // handling derpature date
 
@@ -112,78 +149,115 @@ export default function SearchFlight() {
     // open homesearch
 
     useEffect(() => {
-        const date = getDateInRange(displayDerpatureDateTime || new Date());
-        setValues(date);
+        if (searchAgain === false) {
+            dispatch(setSearchPageIsSearchAgain(true));
+        }
+
+        // const date = getDateInRange(new Date(searchPage.search_date || homeSearch.departure_dateTime), selectOffsetDate);
+        // // console.log('generated date: ', date);
+        // setValues(date);
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [searchAgain]);
 
     useEffect(() => {
         const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
-        // const URL = 'https://airplaneapikel1-production.up.railway.app/api/v1/flight/searchflight';
-        if (fetchDataStatus) {
-            const fetchFlight = async ({ from, to, departure_date, departure_time, returnDate, flight_class }) => {
-                try {
-                    const objectTemplate = {
-                        from,
-                        to,
-                        departure_date,
-                        departure_time,
-                        returnDate,
-                        flight_class,
-                    };
-                    const response = await axios.post(SEARCH_URL, objectTemplate);
-                    console.log('HEHEHE', flighClass);
-                    console.log(response.data.data.flight);
-                    setFlightData(response.data.data.flight);
-                } catch (error) {
-                    console.log('hehee', error);
-                    return error.message;
-                }
-            };
-            fetchFlight({
-                from,
-                to,
-                departure_date,
-                departure_time,
-                returnDate: twoWay.departure_date,
-                flight_class: flighClass,
-            });
+
+        if (statusFetch === 'idle') {
+            dispatch(
+                fetchFlight({
+                    from: searchPage.from || homeSearch.from,
+                    to: searchPage.to || homeSearch.to,
+                    departure_date: convertToDate(searchPage.search_date) || convertToDate(homeSearch.departure_dateTime),
+                    departure_time: convertToTime(searchPage.search_date) || convertToTime(homeSearch.departure_dateTime),
+                    returnDate: '',
+                    flight_class: homeSearch.flight_class,
+                })
+            );
         }
-        setFetchDataStatus(false);
+
+        // if (fetchFlightStatus) {
+        //     const fetchFlight = async ({ from, to, departure_date, departure_time, returnDate, flight_class }) => {
+        //         try {
+        //             const objectTemplate = {
+        //                 from,
+        //                 to,
+        //                 departure_date,
+        //                 departure_time,
+        //                 returnDate,
+        //                 flight_class,
+        //             };
+        //             const response = await axios.post(SEARCH_URL, objectTemplate);
+        //             setFlightData(response.data.data.flight);
+        //         } catch (error) {
+        //             console.log('hehee', error);
+        //             return error.message;
+        //         }
+        //     };
+        //     fetchFlight({
+        //         from: searchPage.from || homeSearch.from,
+        //         to: searchPage.to || homeSearch.to,
+        //         departure_date: convertToDate(selectDate) || convertToDate(homeSearch.departure_dateTime),
+        //         departure_time: convertToTime(selectDate) || convertToTime(homeSearch.departure_dateTime),
+        //         returnDate: '',
+        //         flight_class: homeSearch.flight_class,
+        //     });
+        //     // fetchFlight({
+        //     //     from: searchPage.from,
+        //     //     to: searchPage.to,
+        //     //     departure_date: convertToDate(selectDate),
+        //     //     departure_time: convertToTime(selectDate),
+        //     //     returnDate: '',
+        //     //     flight_class: homeSearch.flight_class,
+        //     // });
+        // }
+        // dispatch(setFetchFlightStatus(false));
+        // setFetchDataStatus(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchDataStatus]);
+    }, [statusFetch, dispatch]);
     // flight end
 
     useEffect(() => {
-        if (isSearchAgain) {
-            const date = getDateInRange(displayDerpatureDateTime);
+        if (searchAgain) {
+            const date = getDateInRange(
+                searchPage.search_date || homeSearch.departure_dateTime,
+                searchPage.search_date_return || homeSearch.return_dateTime
+            );
             setValues(date);
-            setSelectDate(new Date(displayDerpatureDateTime));
-            setIsSearchAgain(false);
+            setSelectDate(new Date(searchPage.search_date || homeSearch.departure_dateTime));
         }
-    }, [isSearchAgain, displayDerpatureDateTime]);
+        dispatch(setSearchPageIsSearchAgain(false));
+        dispatch(setFetchTerbaru());
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchAgain, dispatch, setSearchPageIsSearchAgain]);
 
     const chooseDate = (value) => {
         setSelectDate(value);
-        dispatch(setDerpatureDateTime(dayjs(value).tz('Asia/Jakarta').format()));
-        // dispatch(setFetchFlightStatus());
-        setFetchDataStatus(true);
+        dispatch(setSearchPageDate(dayjs(value).tz('Asia/Jakarta').format()));
+        dispatch(setFetchTerbaru());
     };
 
     console.log('====================================');
-    // console.log(flights);
-    // console.log('test', flightData.berangkat);
     const fixedHour = (hours) => {
         let arrOfHours = hours.split(':');
         let arr = [];
         while (arr.length < 2) {
             arr.push(arrOfHours[arr.length]);
         }
-        // let final = arr.join(':');
         return arr.join(':');
     };
 
     console.log('====================================');
+
+    const handleChoosedFlight = (data) => {
+        dispatch(setChoosedFlight(data));
+        // console.log('Choosed data', data);
+    };
+
+    const handleResetChooseFlight = () => {
+        dispatch(setResetChoosedFlight());
+    };
 
     return (
         <>
@@ -197,7 +271,8 @@ export default function SearchFlight() {
                         onClick={() => router.back()}>
                         <FiArrowLeft className='ml-[21px] h-6 w-6 ' />
                         <p>
-                            {from} {' > '} {to} - {totalPassenger} Penumpang - {flighClass}
+                            {searchPage.from || homeSearch.from} {' > '} {searchPage.to || homeSearch.to} - {totalPassenger}{' '}
+                            Penumpang - {flighClass}
                         </p>
                     </div>
                     <div
@@ -255,115 +330,122 @@ export default function SearchFlight() {
                                 <div className='flex items-center gap-2'>
                                     <MdFlight className='h-[20px] w-[20px]' /> <h1>Your Flight</h1>
                                 </div>
-                                <h1 className='font-bold'>
-                                    {/* {chooseFlightDisplay.type === 'Idle' ? '' : chooseFlightDisplay.type} */}
-                                </h1>
+                                <h1 className='font-bold'>{homeSearch.flight_type}</h1>
                             </div>
                             <div className='mt-3 flex flex-col gap-3'>
                                 {/* flight 1 */}
                                 <div>
-                                    {/* {chooseFlightDisplay.one_way.is_data && (
-                                        <div className='flex flex-col gap-3 p-2 border border-net-3'>
+                                    {homeSearch.from && (
+                                        <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                             <div className='flex items-center gap-4 '>
-                                                <div className='p-2 rounded-rad-2 bg-pur-4'>
+                                                <div className='rounded-rad-2 bg-pur-4 p-2'>
                                                     <TbCircleNumber1 className='h-[24px] w-[24px] text-white' />
                                                 </div>
                                                 <div>
-                                                    <h1 className='font-medium text-body-3'>
-                                                        {formatToLocale(one_way.departure_date)}
+                                                    <h1 className='text-body-3 font-medium'>
+                                                        {formatToLocale(homeSearch.departure_dateTime)}
                                                     </h1>
-                                                    <div className='flex items-center gap-2 font-bold text-body-5'>
-                                                        <h3>{one_way.from}</h3>
+                                                    <div className='flex items-center gap-2 text-body-5 font-bold'>
+                                                        <h3>{homeSearch.from}</h3>
                                                         <BsArrowRight />
-                                                        <h3>{one_way.to}</h3>
+                                                        <h3>{homeSearch.to}</h3>
                                                     </div>
                                                 </div>
                                             </div>
-                                           
-                                            {chooseFlightDisplay.one_way.is_choose && (
+
+                                            {choosedFlight1.is_choose && (
                                                 <div className='w-full'>
-                                                    <h1 className='font-bold text-title-2'>{one_way.airline}</h1>
+                                                    <h1 className='text-title-2 font-bold'>{choosedFlight1.airline}</h1>
                                                     <div className='flex items-center gap-4'>
                                                         <div>
-                                                            <p className='font-bold text-body-6'>
-                                                                {fixedHour(one_way.departure_time)}
+                                                            <p className='text-body-6 font-bold'>
+                                                                {fixedHour(choosedFlight1.departure_time)}
                                                             </p>
-                                                            <p className='font-medium text-body-4'>{one_way.from_airport_code}</p>
+                                                            <p className='text-body-4 font-medium'>
+                                                                {choosedFlight1.from_airport_code}
+                                                            </p>
                                                         </div>
                                                         <TbPlaneInflight />
                                                         <div>
-                                                            <p className='font-bold text-body-6'>
-                                                                {fixedHour(one_way.arrival_time)}
+                                                            <p className='text-body-6 font-bold'>
+                                                                {fixedHour(choosedFlight1.arrival_time)}
                                                             </p>
-                                                            <p className='font-medium text-body-4'>{one_way.to_airport_code}</p>
+                                                            <p className='text-body-4 font-medium'>
+                                                                {choosedFlight1.to_airport_code}
+                                                            </p>
                                                         </div>
                                                         <div>
-                                                            <p>{one_way.duration}h</p>
+                                                            <p>{choosedFlight1.duration}h</p>
                                                             <p>Direct</p>
                                                         </div>
                                                     </div>
                                                     <Button
                                                         onClick={() => handleResetChooseFlight()}
-                                                        className='w-full py-2 text-white bg-pur-3 text-body-6'>
+                                                        className='w-full bg-pur-3 py-2 text-body-6 text-white'>
                                                         Change departure flight
                                                     </Button>
                                                 </div>
                                             )}
-                                      
                                         </div>
-                                    )} */}
+                                    )}
                                 </div>
                                 {/* flight 1 */}
 
                                 {/* fligth 2 */}
                                 <div>
-                                    {/* {chooseFlightDisplay.two_way.is_data && (
-                                        <div className='flex flex-col gap-3 p-2 border border-net-3'>
+                                    {homeSearch.return_dateTime && (
+                                        <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                             <div className='flex items-center gap-4'>
-                                                <div className='p-2 rounded-rad-2 bg-pur-4'>
+                                                <div className='rounded-rad-2 bg-pur-4 p-2'>
                                                     <TbCircleNumber2 className='h-[24px] w-[24px] text-white' />
                                                 </div>
                                                 <div>
-                                                    <h1 className='font-medium text-body-3'>
-                                                        {formatToLocale(two_way.departure_date)}
+                                                    <h1 className='text-body-3 font-medium'>
+                                                        {formatToLocale(homeSearch.return_dateTime)}
                                                     </h1>
-                                                    <div className='flex items-center gap-2 font-bold text-body-5'>
-                                                        <h3>{two_way.from}</h3>
+                                                    <div className='flex items-center gap-2 text-body-5 font-bold'>
+                                                        <h3>{homeSearch.to}</h3>
                                                         <BsArrowRight />
-                                                        <h3>{two_way.to}</h3>
+                                                        <h3>{homeSearch.from}</h3>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {chooseFlightDisplay.two_way.is_choose && (
+                                            {choosedFlight2.is_choose && (
                                                 <div className='w-full'>
-                                                    <h1 className='font-bold text-title-2'>{two_way.airline}</h1>
+                                                    <h1 className='text-title-2 font-bold'>{choosedFlight2.airline}</h1>
                                                     <div className='flex items-center gap-4'>
                                                         <div>
-                                                            <p className='font-bold text-body-6'>
-                                                                {fixedHour(two_way.departure_time)}
+                                                            <p className='text-body-6 font-bold'>
+                                                                {fixedHour(choosedFlight2.departure_time)}
                                                             </p>
-                                                            <p className='font-medium text-body-4'>{two_way.from_airport_code}</p>
+                                                            <p className='text-body-4 font-medium'>
+                                                                {choosedFlight2.from_airport_code}
+                                                            </p>
                                                         </div>
                                                         <TbPlaneInflight />
                                                         <div>
-                                                            <p className='font-bold text-body-6'>
-                                                                {fixedHour(two_way.arrival_time)}
+                                                            <p className='text-body-6 font-bold'>
+                                                                {fixedHour(choosedFlight2.arrival_time)}
                                                             </p>
-                                                            <p className='font-medium text-body-4'>{two_way.to_airport_code}</p>
+                                                            <p className='text-body-4 font-medium'>
+                                                                {choosedFlight2.to_airport_code}
+                                                            </p>
                                                         </div>
                                                         <div>
-                                                            <p>{two_way.duration}h</p>
+                                                            <p>{choosedFlight2.duration}h</p>
                                                             <p>Direct</p>
                                                         </div>
                                                     </div>
-                                                    <Button className='w-full py-2 text-white bg-pur-3 text-body-6'>
+                                                    <Button
+                                                        onClick={() => handleResetChooseFlight()}
+                                                        className='w-full bg-pur-3 py-2 text-body-6 text-white'>
                                                         Change departure flight
                                                     </Button>
                                                 </div>
                                             )}
                                         </div>
-                                    )} */}
+                                    )}
                                 </div>
                                 {/* fligth 2 */}
                             </div>
@@ -441,7 +523,9 @@ export default function SearchFlight() {
                                             </div>
                                             <div className='flex flex-col gap-[6px] text-title-2'>
                                                 <p className='font-bold text-pur-4'>IDR {formatRupiah(data.price)}</p>
-                                                <Button className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
+                                                <Button
+                                                    onClick={() => handleChoosedFlight(data)}
+                                                    className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
                                                     Pilih
                                                 </Button>
                                             </div>
@@ -543,11 +627,11 @@ export default function SearchFlight() {
                                 />
                             }
                             handleActionHomeSearch={() => {
-                                router.refresh();
-                                setIsSearchAgain(!isSearchAgain); // search again
+                                dispatch(setSearchPageIsSearchAgain(true));
+                                // setIsSearchAgain(true)
                                 handleOpenHomeSearch(); // close modal
-                                // dispatch(setFetchFlightStatus()); // not used
-                                setFetchDataStatus(true); // fetch again
+                                dispatch(setFetchFlightStatus(true));
+                                router.refresh();
                             }}
                         />
                     </div>

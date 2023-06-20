@@ -10,6 +10,8 @@ import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import BottomNavbar from '@/components/BottomNavbar';
+
 export default function Akun() {
     const { data: session, status } = useSession();
     const [fetchData, setFetchData] = useState(true);
@@ -71,7 +73,7 @@ export default function Akun() {
     return (
         <>
             <Navbar className={'hidden lg:block'} />
-            <div className='container mx-auto  grid max-w-screen-lg  grid-cols-12  gap-3 font-poppins'>
+            <div className='container mx-auto  hidden max-w-screen-lg  grid-cols-12  gap-3 font-poppins lg:grid'>
                 <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Akun</h1>
                 <div
                     className='col-span-12 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
@@ -160,7 +162,44 @@ export default function Akun() {
                     </div>
                 </div>
             </div>
-            <div className='mt-[100px]'></div>
+
+            {/* RESPONSIVE MODE */}
+            <div className='mx-[24px] mt-[64px]  font-poppins lg:hidden'>
+                <h1 className=' text-head-2 font-bold'>Akun</h1>
+
+                <div className='mt-[36px]'>
+                    {option &&
+                        option.map((opt) => (
+                            <div
+                                key={opt.id} //opt.action;
+                                //handleSelectedMenu(opt.id);
+                                onClick={() => (opt.id === 3 ? signOut() : handleSelectedMenu(opt.id))}
+                                className={`${
+                                    selectedMenu === opt.id ? 'group bg-pur-3 text-white' : 'group bg-white text-black'
+                                }  flex cursor-pointer items-center gap-4 rounded-rad-2 border-b-[1px] px-3 py-4 hover:bg-pur-3 `}>
+                                {opt.icons}
+                                <p
+                                    className={`${
+                                        selectedMenu === opt.id ? ' text-white' : ' text-black'
+                                    } font-poppins text-title-2 font-medium  group-hover:text-white`}>
+                                    <span
+                                        className={`${
+                                            selectedMenu === opt.id ? ' text-white' : ' text-black'
+                                        }  group-hover:text-white`}>
+                                        {opt.menu}
+                                    </span>
+                                </p>
+                            </div>
+                        ))}
+                </div>
+
+                <div className='mt-4 flex justify-center'>
+                    <h1 className='text-body-3 text-net-3'>Version 1.1.0</h1>
+                </div>
+
+                <BottomNavbar />
+            </div>
+            {/* RESPONSIVE MODE */}
         </>
     );
 }

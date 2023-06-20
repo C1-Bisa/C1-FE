@@ -8,15 +8,18 @@ import {
     flightSlice,
     fetchAirport,
     getAirportFetchStatus,
-    getDisplayFromAirport,
-    getDisplayToAirport,
+    // getDisplayFromAirport,
+    // getDisplayToAirport,
     getFilteredFromAirport,
     getFilteredToAirport,
     getIsTwoWay,
-    getArrivalDateTime,
-    getDerpatureDateTime,
+    // getArrivalDateTime,
+    // getDerpatureDateTime,
     getFlightClass,
     getTotalPassenger,
+    // getFirstSearch,
+    // getSecondSearch,
+    getHomeSearch,
 } from '@/store/flight';
 
 // redux
@@ -51,11 +54,22 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     // redux setup
     const dispatch = useDispatch();
 
+    const homeSearch = useSelector(getHomeSearch);
+    // about search
+    // const firstSearch = useSelector(getFirstSearch);
+    // const secondSearch = useSelector(getSecondSearch);
+
+    // console.log('HomeSearch', homeSearch);
+
+    // console.log('Data first search home:', firstSearch);
+    // console.log('Data second search home:', secondSearch);
+    // about search
+
     // airport actions
     const fromAirports = useSelector(getFilteredFromAirport); // list of filtered airport
     const toAirports = useSelector(getFilteredToAirport); // list of filtered airport
-    const fromAirportDisplay = useSelector(getDisplayFromAirport); // selected airport
-    const toAirportDisplay = useSelector(getDisplayToAirport); // selected airport
+    // const fromAirportDisplay = useSelector(getDisplayFromAirport); // selected airport
+    // const toAirportDisplay = useSelector(getDisplayToAirport); // selected airport
     // airport actions
 
     // for total passenger actions
@@ -67,8 +81,8 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     // for flight class action
 
     // for derpature & arrival date
-    const derpatureDateTime = useSelector(getDerpatureDateTime);
-    const arrivalDateTime = useSelector(getArrivalDateTime);
+    // const derpatureDateTime = useSelector(getDerpatureDateTime);
+    // const arrivalDateTime = useSelector(getArrivalDateTime);
     // for derpature & arrival date
 
     // for loading status fetch flight
@@ -78,12 +92,16 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     const {
         filteredFromAirport,
         filteredToAirport,
-        setOneWayFrom,
-        setOneWayTo,
+        // setOneWayFrom,
+        // setOneWayTo,
         setOneWaySwitch,
         setIsTwoWay,
-        setArrivalDateTime,
-        setDerpatureDateTime,
+        // setArrivalDateTime,
+        // setDerpatureDateTime,
+        setHomePageSearchDeparture,
+        setHomePageSearchReturn,
+        setHomePageSearchFrom,
+        setHomePageSearchTo,
     } = flightSlice.actions;
     const isTwoWay = useSelector(getIsTwoWay);
     // redux flight setup
@@ -113,31 +131,44 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     const handleOpenCalendarRange = () => setOpenCalendarRange(!openCalendarRange);
     // calendar modal show up end
 
+    // console.log({
+    //     TEST_derpa: derpatureDateTime,
+    //     TEST_return: arrivalDateTime,
+    // });
     //calendar local state start
-    const [pickedDate, setPickedDate] = useState((derpatureDateTime && new Date(derpatureDateTime)) || new Date());
+    const [pickedDate, setPickedDate] = useState(homeSearch.departure_dateTime && new Date(homeSearch.departure_dateTime));
     const [pickedRangeDate, setPickedRangeDate] = useState(
-        (arrivalDateTime && [new Date(derpatureDateTime), new Date(arrivalDateTime)]) || new Date()
+        (homeSearch.return_dateTime && [new Date(homeSearch.departure_dateTime), new Date(homeSearch.return_dateTime)]) ||
+            new Date(homeSearch.departure_dateTime)
     );
     //calendar local state end
+    // useEffect(() => {
+    //     if (!homeSearch.return_dateTime) {
+    //         setPickedRangeDate([new Date(homeSearch.derpature_dateTime)]);
+    //     }
+    // }, [homeSearch.return_dateTime, homeSearch.derpature_dateTime]);
 
     // effect for reformat from redux
     useEffect(() => {
+        // if (pickedDate) {
+        //     dispatch(setDerpatureDateTime(dayjs(pickedDate).tz('Asia/Jakarta').format()));
+        // }
         if (pickedDate) {
-            dispatch(setDerpatureDateTime(dayjs(pickedDate).tz('Asia/Jakarta').format()));
+            dispatch(setHomePageSearchDeparture(dayjs(pickedDate).tz('Asia/Jakarta').format()));
         }
-    }, [pickedDate, dispatch, setDerpatureDateTime]);
+    }, [pickedDate, dispatch, setHomePageSearchDeparture]);
 
     useEffect(() => {
         if (pickedRangeDate && Array.isArray(pickedRangeDate)) {
-            dispatch(setArrivalDateTime(dayjs(pickedRangeDate[1]).tz('Asia/Jakarta').format()));
+            dispatch(setHomePageSearchReturn(dayjs(pickedRangeDate[1]).tz('Asia/Jakarta').format()));
         }
-    }, [pickedRangeDate, dispatch, setArrivalDateTime]);
+    }, [pickedRangeDate, dispatch, setHomePageSearchReturn]);
     // effect for reformat from redux
 
     // handle picked data from calendar modal start
     const handlePickedDate = (date) => {
         setPickedDate(date);
-        dispatch(setDerpatureDateTime(dayjs(date).tz('Asia/Jakarta').format()));
+        dispatch(setHomePageSearchDeparture(dayjs(date).tz('Asia/Jakarta').format()));
         setPickedRangeDate((prev) => {
             if (prev === date) {
                 return [date];
@@ -152,11 +183,12 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
     const handlePickedRangeDate = (date) => {
         setPickedRangeDate((prev) => {
-            dispatch(setArrivalDateTime(dayjs(date).tz('Asia/Jakarta').format()));
+            dispatch(setHomePageSearchReturn(dayjs(date).tz('Asia/Jakarta').format()));
             if (prev[0] !== pickedDate) {
                 return [pickedDate, date];
             }
-            return [pickedRangeDate[0], date];
+            // return [pickedRangeDate[0], date];
+            return [pickedDate, date];
         });
         handleOpenCalendarRange();
     };
@@ -168,9 +200,9 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     // handling focusing airport input start
     const [focusFromInput, setFocusFromInput] = useState(false);
     const [focusToInput, setFocusToInput] = useState(false);
-    const [chosenFromAirport, setChosenFromAirport] = useState(fromAirportDisplay || '');
+    const [chosenFromAirport, setChosenFromAirport] = useState(homeSearch.from || '');
     const handleChosenFromAirport = (chosenFromAirport) => setChosenFromAirport(chosenFromAirport);
-    const [chosenToAirport, setChosenToAirport] = useState(toAirportDisplay || '');
+    const [chosenToAirport, setChosenToAirport] = useState(homeSearch.to || '');
     const handleChosenToAirport = (chosenFromAirport) => setChosenToAirport(chosenFromAirport);
     // handling focusing airport input end
 
@@ -178,8 +210,10 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     const [isToggle, setIsToggle] = useState(false);
     const handleToggleAction = () => {
         dispatch(setOneWaySwitch());
-        setChosenFromAirport(toAirportDisplay);
-        setChosenToAirport(fromAirportDisplay);
+        // setChosenFromAirport(toAirportDisplay);
+        // setChosenToAirport(fromAirportDisplay);
+        setChosenFromAirport(homeSearch.to);
+        setChosenToAirport(homeSearch.from);
         setIsToggle(!isToggle);
     };
     // toggle rotate for switching airport end
@@ -197,11 +231,13 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
     // handling choosing one of from/to airport start
     const handleChooseFromAirport = (value) => {
-        dispatch(setOneWayFrom(value));
+        // dispatch(setOneWayFrom(value));
+        dispatch(setHomePageSearchFrom(value));
         setFocusFromInput(false);
     };
     const handleChooseToAirport = (value) => {
-        dispatch(setOneWayTo(value));
+        // dispatch(setOneWayTo(value));
+        dispatch(setHomePageSearchTo(value));
         setFocusToInput(false);
     };
     // handling choosing one of from/to airport end
@@ -280,7 +316,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                             <Input
                                                 id={'departure'}
                                                 readOnly
-                                                value={formatToLocale(derpatureDateTime)}
+                                                value={formatToLocale(homeSearch.departure_dateTime)}
                                                 onClick={handleOpenCalendar}
                                                 className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
                                             />
@@ -302,11 +338,17 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                             <Input
                                                 id={'return'}
                                                 readOnly
-                                                value={!arrivalDateTime ? 'Pilih Tanggal' : formatToLocale(arrivalDateTime)}
+                                                value={
+                                                    !homeSearch.return_dateTime
+                                                        ? 'Pilih Tanggal'
+                                                        : formatToLocale(homeSearch.return_dateTime)
+                                                }
                                                 onClick={handleOpenCalendarRange}
                                                 className={`${!isTwoWay ? 'invisible' : 'visible'} 
                         ${
-                            !arrivalDateTime ? 'text-[14px] font-normal text-pur-5' : 'text-body-6 font-medium text-black'
+                            !homeSearch.return_dateTime
+                                ? 'text-[14px] font-normal text-pur-5'
+                                : 'text-body-6 font-medium text-black'
                         } cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins  font-medium`}
                                                 // value={'Pilih Tanggal'}
                                             />
