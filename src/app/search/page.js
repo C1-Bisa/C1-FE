@@ -11,12 +11,8 @@ import { RiArrowUpDownLine } from 'react-icons/ri';
 import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 import { TbCircleNumber1, TbCircleNumber2, TbPlaneInflight } from 'react-icons/tb';
 import { BsArrowRight } from 'react-icons/bs';
-import { MdFlight } from 'react-icons/md';
+import { MdFlight, MdFlightLand, MdFlightTakeoff } from 'react-icons/md';
 import Image from 'next/image';
-// import { FiArrowLeft, FiChevronRight, FiBox, FiHeart, FiDollarSign } from 'react-icons/fi';
-// import { FiX } from 'react-icons/fi';
-// import { RiArrowUpDownLine } from 'react-icons/ri';
-// import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 
 // dayjs
 import dayjs from 'dayjs';
@@ -36,21 +32,6 @@ import Navbar from '@/components/Navbar';
 import HomeSearch from '@/components/HomeSearch';
 import ChooseFilterTicketModal from '@/components/ChooseFilterTicketModal';
 import {
-    // getOneWay,
-    // getTwoWay,
-    // getDisplayDerpatureDatetime,
-    // getFlights,
-    // fetchFlight,
-    // getFlightFetchStatus,
-    // getTest,
-    // getFirstSearch,
-    // getSecondSearch,
-    // getDisplayArrivalDatetime,
-    // getDisplayFlightType,
-    // getChoosedFligth1,
-    // getChoosedFligth2,
-    // getDisplayFligth1,
-    // getDisplayFligth,
     flightSlice,
     getTotalPassenger,
     getFlightClass,
@@ -63,7 +44,15 @@ import {
     fetchFlight,
     getFlightDatasStatus,
     getFlightDatas,
+    getIsReadyToOrder,
+    getFlightTitle,
+    getPassengerTypeTotal,
+    fetchDetailFlight,
+    getFlightDetailData,
+    getFlightDetailDataStatus,
+    getFlightDetailId,
 } from '@/store/flight';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 // import { MdFlight } from 'react-icons/md';
 
 const extractWord = (words) => {
@@ -73,35 +62,57 @@ const extractWord = (words) => {
         .join('\n');
     const lines = text.split(/\n/);
 
-    // console.log('ini', text);
     const withBreaks = lines.flatMap((line, index) =>
         index > 0 ? [<br key={`br-${index}`} />, <Fragment key={index}>{line}</Fragment>] : [line]
     );
-
     return withBreaks;
 };
 
 export default function SearchFlight() {
+    const [openDetailFlight, setOpenDetailFlight] = useState(false);
+    const handleDetailFlight = () => setOpenDetailFlight(!openDetailFlight);
     const router = useRouter();
     const dispatch = useDispatch();
 
+    const flightTitle = useSelector(getFlightTitle);
+
+    // pop up is ready to order
+    const isReadyToOrder = useSelector(getIsReadyToOrder);
+    // pop up is ready to order
+
     const statusFetch = useSelector(getFlightDatasStatus);
+    const statusDetaiFlight = useSelector(getFlightDetailDataStatus);
+    const detailFlight = useSelector(getFlightDetailData);
+
+    console.log('THIS IS DETAIL FLIGHT', detailFlight);
 
     const homeSearch = useSelector(getHomeSearch);
     const searchPage = useSelector(getSearchPage);
+
+    // console.log('homes flight 1', homeSearch);
+    // console.log('searc flight 2', searchPage);
     const searchAgain = useSelector(getSearchPageIsSearchAgain);
 
-    console.log('SERR', searchPage);
+    // console.log('SERR', searchPage);
 
-    const fetchFlightStatus = useSelector(getFetchFlightStatus);
+    // const fetchDetailFlight =
+    // const fetchFlightStatus = useSelector(getFetchFlightStatus);
+    // console.log('fetchFlightStatus HEHEHEH', fetchFlightStatus);
 
-    console.log('fetchFlightStatus', fetchFlightStatus);
     const choosedFlight1 = useSelector(getChoosedFlight1);
     const choosedFlight2 = useSelector(getChoosedFlight2);
+    const flightIDs = useSelector(getFlightDetailId);
+    const passengerType = useSelector(getPassengerTypeTotal);
+
+    console.log('choose flight 1', choosedFlight1);
+    console.log('choose flight 2', choosedFlight2);
+    // console.log('DATA BUAT GET DETAIL', detailFligt);
 
     // list of flight data
     const flightData = useSelector(getFlightDatas);
-    // list of flight data
+
+    console.log('INIIII', flightData);
+    // // list of flight data
 
     // detail of list data
     const [isDetail, setIsDetail] = useState(false);
@@ -129,6 +140,7 @@ export default function SearchFlight() {
         setSearchPageDate,
         setSearchPageIsSearchAgain,
         setFetchTerbaru,
+        setIsReadyToOrder,
     } = flightSlice.actions;
 
     // dateInAWeek
@@ -215,7 +227,26 @@ export default function SearchFlight() {
         // setFetchDataStatus(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [statusFetch, dispatch]);
-    // flight end
+
+    useEffect(() => {
+        if (statusDetaiFlight === 'idle') {
+            const detailFligt = {
+                flight_id: flightIDs,
+                dewasa: passengerType.dewasa,
+                anak: passengerType.anak,
+                bayi: passengerType.bayi,
+            };
+            console.log('BEFORE ADDING THE DATA', detailFlight);
+            dispatch(
+                fetchDetailFlight({
+                    flight_id: detailFligt.flight_id,
+                    dewasa: detailFligt.dewasa,
+                    anak: detailFligt.anak,
+                    bayi: detailFligt.bayi,
+                })
+            );
+        }
+    }, [statusDetaiFlight, dispatch, fetchDetailFlight]);
 
     useEffect(() => {
         if (searchAgain) {
@@ -223,7 +254,7 @@ export default function SearchFlight() {
                 searchPage.search_date || homeSearch.departure_dateTime,
                 searchPage.search_date_return || homeSearch.return_dateTime
             );
-            setValues(date);
+            setValues(date); // ketika dia di masukin data ? kalo refresh knapa g ada data
             setSelectDate(new Date(searchPage.search_date || homeSearch.departure_dateTime));
         }
         dispatch(setSearchPageIsSearchAgain(false));
@@ -252,11 +283,20 @@ export default function SearchFlight() {
 
     const handleChoosedFlight = (data) => {
         dispatch(setChoosedFlight(data));
-        // console.log('Choosed data', data);
     };
 
     const handleResetChooseFlight = () => {
         dispatch(setResetChoosedFlight());
+    };
+    const reformatDate = (date, option = { day: 'numeric', month: 'long', year: 'numeric' }) =>
+        new Date(date).toLocaleString('id', option);
+
+    const reformatDuration = (duration) => {
+        let text = String(duration)
+            .split('')
+            .filter((txt) => txt !== '9');
+
+        return `${text[0]}h ${text[1]}m`;
     };
 
     return (
@@ -316,13 +356,14 @@ export default function SearchFlight() {
 
                 {/* one way start  & list flight*/}
                 <div className='col-span-12  mt-[40px] grid grid-cols-12 gap-10 font-poppins'>
-                    <div className='col-span-12 flex justify-end'>
+                    <div className='col-span-12 flex items-center justify-end'>
                         <Button
                             onClick={() => handleOpenChooseFilterFlight()}
                             className='flex items-center gap-2 rounded-rad-4 border border-pur-4 px-3 py-2 font-poppins text-body-3 font-medium text-pur-4'>
                             <RiArrowUpDownLine /> Termurah
                         </Button>
                     </div>
+
                     {/* left flight start */}
                     <div className='col-span-4'>
                         <div className='rounded-rad-4 px-6 py-6 font-poppins shadow-low'>
@@ -450,7 +491,7 @@ export default function SearchFlight() {
                                 {/* fligth 2 */}
                             </div>
                         </div>
-                        <div className='rounded-rad-4 px-6 py-6 font-poppins shadow-low'>
+                        <div className='mt-4 rounded-rad-4 px-6 py-6 font-poppins shadow-low'>
                             <h3 className='mb-[24px]'>Filter</h3>
                             <div className='flex flex-col gap-1'>
                                 <div className='flex items-center justify-between border border-b-[1px] border-l-0 border-r-0 border-t-0 border-net-2 py-2'>
@@ -480,122 +521,129 @@ export default function SearchFlight() {
                     {/* right fligth start */}
                     {/* Test */}
                     <div className='col-span-8 font-poppins'>
-                        <div className='grid grid-cols-12 gap-4'>
+                        <h1 className='text-head-2 font-bold'>Pilih {flightTitle}</h1>
+                        <div className='mt-3 grid grid-cols-12 gap-4'>
                             {flightData.length ? (
-                                flightData.map((data, index) => (
-                                    <div key={index} className='col-span-12 flex flex-col gap-2 rounded-rad-3 p-4 shadow-low'>
-                                        {/* list top start */}
-                                        <div className='flex items-center justify-between'>
-                                            <div className='flex items-center gap-2'>
-                                                <div className='relative h-[24px] w-[24px] '>
-                                                    <Image src={'./images/flight_badge.svg'} fill alt='' />
-                                                </div>
-                                                <h3 className='text-body-5 font-medium'>
-                                                    {data.airline} - {data.flight_class}
-                                                </h3>
-                                            </div>
-                                            <div onClick={() => handleIsDetail(data.id)}>
-                                                {isDetail && chosenDetailFlight === data.id ? (
-                                                    <IoIosArrowDropup className='h-[28px] w-[28px] text-net-3' />
-                                                ) : (
-                                                    <IoIosArrowDropdown className='h-[28px] w-[28px] text-net-3' />
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className='flex items-center justify-between'>
-                                            <div className='flex items-center gap-4'>
-                                                <div>
-                                                    <p className='text-body-6 font-bold'>{fixedHour(data.departure_time)}</p>
-                                                    <p className='text-body-3 font-medium'>{data.airport_from_code}</p>
-                                                </div>
-                                                <div className='flex flex-col items-center justify-center'>
-                                                    <p className='text-body-4 text-net-3'>{data.duration}h</p>
-                                                    <div className='relative h-[8px] w-[233px]'>
-                                                        <Image alt='' src={'./images/arrow.svg'} fill />
-                                                    </div>
-                                                    <p className='text-body-4 text-net-3'>Direct</p>
-                                                </div>
-                                                <div>
-                                                    <p className='text-body-6 font-bold'>{fixedHour(data.arrival_time)}</p>
-                                                    <p className='text-body-3 font-medium'>{data.airport_to_code}</p>
-                                                </div>
-                                            </div>
-                                            <div className='flex flex-col gap-[6px] text-title-2'>
-                                                <p className='font-bold text-pur-4'>IDR {formatRupiah(data.price)}</p>
-                                                <Button
-                                                    onClick={() => handleChoosedFlight(data)}
-                                                    className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
-                                                    Pilih
-                                                </Button>
-                                            </div>
-                                        </div>
-
-                                        {isDetail && chosenDetailFlight === data.id && (
-                                            <div className='mt-5 border-[1px] border-b-0 border-l-0 border-r-0 border-t-net-3'>
-                                                <h1 className='mb-1 mt-[22px] text-body-6 font-bold text-pur-5'>
-                                                    Detail Penerbangan
-                                                </h1>
-
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h2 className='text-title-2 font-bold'>
-                                                            {fixedHour(data.departure_time)}
-                                                        </h2>
-                                                        <p className='text-body-6 font-normal'>
-                                                            {formatToLocale(data.departure_date)}
-                                                        </p>
-                                                        <p className='text-body-6 font-normal'>{data.airport_from}</p>
-                                                    </div>
-                                                    <div>
-                                                        <h3 className='font-bold text-pur-3'>Keberangkaran</h3>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mb-2 mt-4 flex justify-center'>
-                                                    <div className='w-1/2 border-[1px] border-t-net-2'></div>
-                                                </div>
-
-                                                <div className='flex items-center gap-4'>
-                                                    <div className='relative h-[24px] w-[24px]'>
+                                flightData.map((data, index) => {
+                                    return (
+                                        <div key={index} className='col-span-12 flex flex-col gap-2 rounded-rad-3 p-4 shadow-low'>
+                                            {/* list top start */}
+                                            <div className='flex items-center justify-between'>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='relative h-[24px] w-[24px] '>
                                                         <Image src={'./images/flight_badge.svg'} fill alt='' />
                                                     </div>
-                                                    <div className='flex flex-col gap-4'>
-                                                        <div>
-                                                            <h1 className='text-body-6 font-bold'>
-                                                                {data.airline} - {data.flight_class}
-                                                            </h1>
-                                                            <h2 className='text-body-5 font-bold'>{data.airlane_code}</h2>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className='text-body-5 font-bold'>Informasi :</h3>
-                                                            <p className='text-body-5 font-normal'>
-                                                                {extractWord(data.description)}
-                                                            </p>
-                                                        </div>
-                                                    </div>
+                                                    <h3 className='text-body-5 font-medium'>
+                                                        {data.airline} - {data.flight_class}
+                                                    </h3>
                                                 </div>
-
-                                                <div className='mb-2 mt-4 flex justify-center'>
-                                                    <div className='w-1/2 border-[1px] border-t-net-2'></div>
-                                                </div>
-
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h2 className='text-title-2 font-bold'>{fixedHour(data.arrival_time)}</h2>
-                                                        <p className='text-body-6 font-normal'>
-                                                            {formatToLocale(data.arrival_date)}
-                                                        </p>
-                                                        <p className='text-body-6 font-normal'>{data.airport_to}</p>
-                                                    </div>
-                                                    <div>
-                                                        <h3 className='font-bold text-pur-3'>Kedatangan</h3>
-                                                    </div>
+                                                <div onClick={() => handleIsDetail(data.id)}>
+                                                    {isDetail && chosenDetailFlight === data.id ? (
+                                                        <IoIosArrowDropup className='h-[28px] w-[28px] text-net-3' />
+                                                    ) : (
+                                                        <IoIosArrowDropdown className='h-[28px] w-[28px] text-net-3' />
+                                                    )}
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
-                                ))
+
+                                            <div className='flex items-center justify-between'>
+                                                <div className='flex items-center gap-4'>
+                                                    <div>
+                                                        <p className='text-body-6 font-bold'>{fixedHour(data.departure_time)}</p>
+                                                        <p className='text-body-3 font-medium'>{data.airport_from_code}</p>
+                                                    </div>
+                                                    <div className='flex flex-col items-center justify-center'>
+                                                        <p className='text-body-4 text-net-3'>
+                                                            {reformatDuration(data.duration)}h
+                                                        </p>
+                                                        <div className='relative h-[8px] w-[233px]'>
+                                                            <Image alt='' src={'./images/arrow.svg'} fill />
+                                                        </div>
+                                                        <p className='text-body-4 text-net-3'>Direct</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className='text-body-6 font-bold'>{fixedHour(data.arrival_time)}</p>
+                                                        <p className='text-body-3 font-medium'>{data.airport_to_code}</p>
+                                                    </div>
+                                                </div>
+                                                <div className='flex flex-col gap-[6px] text-title-2'>
+                                                    <p className='font-bold text-pur-4'>IDR {formatRupiah(data.price)}</p>
+                                                    <Button
+                                                        onClick={() => handleChoosedFlight(data)}
+                                                        className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
+                                                        Pilih
+                                                    </Button>
+                                                </div>
+                                            </div>
+
+                                            {isDetail && chosenDetailFlight === data.id && (
+                                                <div className='mt-5 border-[1px] border-b-0 border-l-0 border-r-0 border-t-net-3'>
+                                                    <h1 className='mb-1 mt-[22px] text-body-6 font-bold text-pur-5'>
+                                                        Detail Penerbangan
+                                                    </h1>
+
+                                                    <div className='flex justify-between'>
+                                                        <div>
+                                                            <h2 className='text-title-2 font-bold'>
+                                                                {fixedHour(data.departure_time)}
+                                                            </h2>
+                                                            <p className='text-body-6 font-normal'>
+                                                                {formatToLocale(data.departure_date)}
+                                                            </p>
+                                                            <p className='text-body-6 font-normal'>{data.airport_from}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className='font-bold text-pur-3'>Keberangkaran</h3>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='mb-2 mt-4 flex justify-center'>
+                                                        <div className='w-1/2 border-[1px] border-t-net-2'></div>
+                                                    </div>
+
+                                                    <div className='flex items-center gap-4'>
+                                                        <div className='relative h-[24px] w-[24px]'>
+                                                            <Image src={'./images/flight_badge.svg'} fill alt='' />
+                                                        </div>
+                                                        <div className='flex flex-col gap-4'>
+                                                            <div>
+                                                                <h1 className='text-body-6 font-bold'>
+                                                                    {data.airline} - {data.flight_class}
+                                                                </h1>
+                                                                <h2 className='text-body-5 font-bold'>{data.airlane_code}</h2>
+                                                            </div>
+                                                            <div>
+                                                                <h3 className='text-body-5 font-bold'>Informasi :</h3>
+                                                                <p className='text-body-5 font-normal'>
+                                                                    {extractWord(data.description)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='mb-2 mt-4 flex justify-center'>
+                                                        <div className='w-1/2 border-[1px] border-t-net-2'></div>
+                                                    </div>
+
+                                                    <div className='flex justify-between'>
+                                                        <div>
+                                                            <h2 className='text-title-2 font-bold'>
+                                                                {fixedHour(data.arrival_time)}
+                                                            </h2>
+                                                            <p className='text-body-6 font-normal'>
+                                                                {formatToLocale(data.arrival_date)}
+                                                            </p>
+                                                            <p className='text-body-6 font-normal'>{data.airport_to}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className='font-bold text-pur-3'>Kedatangan</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
                             ) : (
                                 <div className='col-span-12 flex items-center justify-center gap-4 p-4'>
                                     <Image alt='' src={'/images/not_found_flight.svg'} height={210} width={210} />
@@ -648,6 +696,171 @@ export default function SearchFlight() {
                 )}
             </div>
             {/* filtet flight end */}
+
+            <div>
+                {isReadyToOrder && (
+                    <div className='fixed inset-0 flex items-center justify-end bg-black bg-opacity-60 font-poppins'>
+                        <div className='relative h-screen w-1/2 bg-white font-poppins'>
+                            <div className='mx-[16px] flex flex-col gap-3'>
+                                <div className='flex items-center '>
+                                    <Button
+                                        className='rounded-rad-2 bg-white px-2 py-2 shadow-low'
+                                        onClick={() => dispatch(setIsReadyToOrder(false))}>
+                                        <FiX className='h-[30px] w-[30px]' />
+                                    </Button>
+                                    <h1 className='m-5 text-3xl font-bold'>Flight Summary</h1>
+                                </div>
+                                {/* Departure / Keberangkatan */}
+                                {choosedFlight1.departure_date && (
+                                    <div className='flex flex-col gap-3'>
+                                        <div className='flex items-center gap-2'>
+                                            <MdFlightTakeoff className='h-[30px] w-[30px] text-net-3' />
+                                            <div className='flex items-center gap-2'>
+                                                <h1>Keberangkatan</h1>
+                                                <h1>{reformatDate(choosedFlight1.departure_date)}</h1>
+                                            </div>
+                                        </div>
+                                        <div className='flex gap-10 rounded-rad-2 p-4 shadow-low'>
+                                            <h1 className='font-bold'>{choosedFlight1.airline}</h1>
+                                            <div className='flex items-center gap-4'>
+                                                <div>
+                                                    <h1 className='text-body-6 font-bold'>
+                                                        {fixedHour(choosedFlight1.departure_time)}
+                                                    </h1>
+                                                    <h1 className='text-body-6'>{choosedFlight1.from_airport_code}</h1>
+                                                </div>
+                                                <div className='flex flex-col items-center '>
+                                                    <h1 className='text-body-3 text-net-3'>
+                                                        {reformatDuration(choosedFlight1.duration)}
+                                                    </h1>
+                                                    <div className='relative h-[8px] w-[233px]'>
+                                                        <Image alt='' src={'./images/arrow.svg'} fill />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h1 className='text-body-6 font-bold'>
+                                                        {fixedHour(choosedFlight1.arrival_time)}
+                                                    </h1>
+                                                    <h1 className='text-body-6'>{choosedFlight1.to_airport_code}</h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {/* Departure / Keberangkatan */}
+
+                                {/* Arrival / Kepulangan */}
+                                {choosedFlight2.departure_date && (
+                                    <div className='mt-3 flex flex-col gap-3'>
+                                        <div className='flex items-center gap-2'>
+                                            <MdFlightLand className='h-[30px] w-[30px] text-net-3' />
+                                            <div className='flex items-center gap-2'>
+                                                <h1>Kepulangan</h1>
+                                                <h1>{reformatDate(choosedFlight2.departure_date)}</h1>
+                                            </div>
+                                        </div>
+                                        <div className='flex gap-10 rounded-rad-2 p-4 shadow-low'>
+                                            <h1 className='font-bold'>{choosedFlight2.airline}</h1>
+                                            <div className='flex items-center gap-4'>
+                                                <div>
+                                                    <h1 className='text-body-6 font-bold'>
+                                                        {fixedHour(choosedFlight2.departure_time)}
+                                                    </h1>
+                                                    <h1 className='text-body-6'>{choosedFlight2.from_airport_code}</h1>
+                                                </div>
+                                                <div className='flex flex-col items-center '>
+                                                    <h1 className='text-body-3 text-net-3'>
+                                                        {reformatDuration(choosedFlight2.duration)}
+                                                    </h1>
+                                                    <div className='relative h-[8px] w-[233px]'>
+                                                        <Image alt='' src={'./images/arrow.svg'} fill />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h1 className='text-body-6 font-bold'>
+                                                        {fixedHour(choosedFlight2.arrival_time)}
+                                                    </h1>
+                                                    <h1 className='text-body-6'>{choosedFlight2.to_airport_code}</h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {/* Arrival / Kepulangan */}
+                            </div>
+                            <div className='absolute bottom-5 right-4 w-[80%]'>
+                                <div
+                                    onClick={() => handleDetailFlight()}
+                                    className='flex flex-col rounded-rad-3 px-5 py-3 shadow-low'>
+                                    <div className='flex justify-between gap-10'>
+                                        <div className='flex gap-5'>
+                                            {openDetailFlight ? (
+                                                <FaChevronDown className='h-[24px] w-[24px]' />
+                                            ) : (
+                                                <FaChevronUp className='h-[24px] w-[24px]' />
+                                            )}
+
+                                            <div className='flex flex-col gap-1'>
+                                                <h1 className='text-title-1 font-medium'>Total</h1>
+                                                <h1 className='text-head-2 font-bold'>
+                                                    IDR <span>{detailFlight.totalPrice}</span>
+                                                </h1>
+                                            </div>
+                                        </div>
+                                        <Button className='h-max w-max rounded-rad-3 bg-pur-4 px-5 py-3 text-title-2 text-white'>
+                                            Continue to Order
+                                        </Button>
+                                    </div>
+                                    <div className='my-3 w-full border'></div>
+                                    <div>
+                                        {!openDetailFlight && <h1 className='mb-2 font-medium'>Open Detail</h1>}
+                                        {openDetailFlight && (
+                                            <div>
+                                                <h1 className='mb-2 font-medium'>Detail {' : '}</h1>
+
+                                                {choosedFlight1.airline && (
+                                                    <div className='flex justify-between'>
+                                                        <div className='flex gap-3'>
+                                                            <h1 className='text-body-5 font-bold'>{choosedFlight1.airline}</h1>
+                                                            {passengerType.dewasa > 0 && (
+                                                                <h1 className='text-body-5'>Dewasa ({passengerType.dewasa}x)</h1>
+                                                            )}
+                                                            {passengerType.anak > 0 && (
+                                                                <h1 className='text-body-5'>Anak ({passengerType.anak}x)</h1>
+                                                            )}
+                                                            {passengerType.bayi > 0 && (
+                                                                <h1 className='text-body-5'>Bayi ({passengerType.bayi}x)</h1>
+                                                            )}
+                                                        </div>
+                                                        <h1>IDR{detailFlight.totalPrice}</h1>
+                                                    </div>
+                                                )}
+                                                {choosedFlight2.airline && (
+                                                    <div className='flex justify-between'>
+                                                        <div className='flex gap-3'>
+                                                            <h1 className='text-body-5 font-bold'>{choosedFlight2.airline}</h1>
+                                                            {passengerType.dewasa > 0 && (
+                                                                <h1 className='text-body-5'>Dewasa ({passengerType.dewasa}x)</h1>
+                                                            )}
+                                                            {passengerType.anak > 0 && (
+                                                                <h1 className='text-body-5'>Anak ({passengerType.anak}x)</h1>
+                                                            )}
+                                                            {passengerType.bayi > 0 && (
+                                                                <h1 className='text-body-5'>Bayi ({passengerType.bayi}x)</h1>
+                                                            )}
+                                                        </div>
+                                                        <h1>IDR{detailFlight.totalPrice}</h1>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
             {/* ======= Modal and Pop  end ====== */}
         </>
     );

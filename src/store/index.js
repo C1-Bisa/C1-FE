@@ -5,6 +5,7 @@ import ticketSlice from './ticket';
 import scheduleSlice from './schedule';
 import airportSlice from './airport';
 import passengerSlice from './passenger';
+import historySlice from './history';
 import testSlice from './test';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -45,6 +46,7 @@ const rootReducer = combineReducers({
     schedule: scheduleSlice,
     ticket: ticketSlice,
     test: testSlice,
+    history: historySlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

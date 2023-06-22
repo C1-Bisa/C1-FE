@@ -250,14 +250,7 @@ export default function OTPIdEmail() {
                     <div className='col-span-12 flex flex-col gap-16 '>
                         <div className=' ml-[24px] mt-[64px]'>
                             <button onClick={() => router.push('/register')}>
-                                <Image
-                                    // className='ml-[341px] mt-[45px]'
-                                    src={`/images/backh.svg`}
-                                    alt=''
-                                    width={24}
-                                    height={24}
-                                    quality={100}
-                                />
+                                <Image src={`/images/backh.svg`} alt='' width={24} height={24} quality={100} />
                             </button>
                             <h1 className='mt-[48px]  text-head-2 font-bold'>Masukkan OTP</h1>
                         </div>

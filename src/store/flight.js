@@ -4,18 +4,19 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { convertToDate, convertToTime } from '@/utils/converDateTime';
 import axios from 'axios';
 
-const URL = 'https://airplaneapikel1-production.up.railway.app/api/v1/airport';
+const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/airport';
+const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
+const DETAIL_FLIGHT = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/getDetail';
 
 export const fetchAirport = createAsyncThunk('flight/fetchAirport', async () => {
     try {
         const response = await axios.get(URL);
         return response.data.data.airport;
     } catch (error) {
-        return error.message;
+        console.log('ERRROR AIRPORT', error.message);
+        // return error.message;
     }
 });
-
-const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
 
 export const fetchFlight = createAsyncThunk(
     'flight/fetchFlight',
@@ -29,18 +30,41 @@ export const fetchFlight = createAsyncThunk(
                 returnDate,
                 flight_class,
             };
-            const response = await axios.post(SEARCH_URL, objectTemplate);
 
+            const response = await axios.post(SEARCH_URL, objectTemplate);
+            // console.log('FLIGHT DATAS', response);
             return response.data.data.flight;
         } catch (error) {
-            console.log('hehee', error);
-            return error.message;
+            console.log('ERRROR FLIGHT', error.message);
+            // return error.message;
         }
     }
 );
 
+export const fetchDetailFlight = createAsyncThunk('flight/fetchDetailFlight', async ({ flight_id, dewasa, anak, bayi }) => {
+    try {
+        const objectTemplate = {
+            flight_id,
+            dewasa,
+            anak,
+            bayi,
+        };
+
+        const response = await axios.post(DETAIL_FLIGHT, objectTemplate);
+        console.log('FLIGHT DATAS', response);
+        return response.data.data;
+    } catch (error) {
+        console.log('ERRROR DETAIL_FLIGHT', error.message);
+        // return error.message;
+    }
+});
+
 const initialState = {
     // airport start
+    fetchDetailFlight: 'sans', //'idle' | 'loading' | 'succeeded' | 'failed' | sans
+    flightDetailData: {},
+    flightDetailId: [],
+
     airports: [], // initial airport
     flightDatas: [],
     filteredFromAirport: [], // list of filtered from  airport
@@ -50,6 +74,7 @@ const initialState = {
 
     fetchFlightStatusTwo: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
     fetchFlightStatus: true,
+    flight_title: 'Keberangkatan',
     homeSearch: {
         flight_type: 'One Trip',
         from: '',
@@ -116,6 +141,8 @@ const initialState = {
     totalPassenger: 1,
 
     isTwoWay: false,
+
+    isReadyToOrder: false,
 };
 
 export const flightSlice = createSlice({
@@ -138,13 +165,87 @@ export const flightSlice = createSlice({
             state.filteredToAirport = searchToAirport;
         },
 
-        setOneWaySwitch: (state) => {},
+        setOneWaySwitch: (state) => {
+            if (state.isTwoWay) {
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+
+                const tempHomeSearch = state.homeSearch.from;
+                state.homeSearch.from = state.homeSearch.to;
+                state.homeSearch.to = tempHomeSearch;
+                state.flight_title = 'Keberangkatan';
+                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.to = state.homeSearch.to;
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+                state.searchPage.isSearchAgain = true;
+                state.fetchFlightStatusTwo = 'idle';
+                return;
+            }
+
+            const tempHomeSearch = state.homeSearch.from;
+            state.homeSearch.from = state.homeSearch.to;
+            state.homeSearch.to = tempHomeSearch;
+            state.flight_title = 'Keberangkatan';
+            state.searchPage.from = state.homeSearch.from;
+            state.searchPage.to = state.homeSearch.to;
+            state.searchPage.search_date = state.homeSearch.departure_dateTime;
+            state.searchPage.isSearchAgain = true;
+            state.fetchFlightStatusTwo = 'idle';
+        },
 
         // SWITCHING TO TWAY
         setIsTwoWay: (state, action) => {
-            if (!action.payload) {
+            if (action.payload === false && state.choosedFlight.flight_1.is_choose && state.choosedFlight.flight_2.is_choose) {
+                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.to = state.homeSearch.to;
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
+                // state.flight_title = 'Keberangkatan';
+                state.isTwoWay = action.payload;
+                return;
+            }
+
+            if (action.payload === false && state.choosedFlight.flight_1.is_choose) {
+                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.to = state.homeSearch.to;
+                state.homeSearch.return_dateTime = '';
+                state.homeSearch.flight_type = 'One Trip';
+                // state.flight_title = 'Keberangkatan';
+                state.isTwoWay = action.payload;
+                return;
+            }
+
+            if (action.payload === false) {
+                state.homeSearch.return_dateTime = '';
+                state.homeSearch.flight_type = 'One Trip';
+                state.flight_title = 'Keberangkatan';
                 state.isTwoWay = action.payload;
                 return;
             }
@@ -189,7 +290,29 @@ export const flightSlice = createSlice({
         },
 
         setChoosedFlight: (state, action) => {
+            if (!state.choosedFlight.flight_1.is_choose && !state.isTwoWay) {
+                state.flightDetailId = [action.payload.id];
+                state.choosedFlight.flight_1.flight_id = action.payload.id;
+                state.choosedFlight.flight_1.airline = action.payload.airline;
+                state.choosedFlight.flight_1.from = action.payload.from;
+                state.choosedFlight.flight_1.from_airport_name = action.payload.airport_from;
+                state.choosedFlight.flight_1.from_airport_code = action.payload.airport_from_code;
+                state.choosedFlight.flight_1.to = action.payload.to;
+                state.choosedFlight.flight_1.to_airport_name = action.payload.airport_to;
+                state.choosedFlight.flight_1.to_airport_code = action.payload.airport_to_code;
+                state.choosedFlight.flight_1.departure_date = action.payload.departure_date;
+                state.choosedFlight.flight_1.departure_time = action.payload.departure_time;
+                state.choosedFlight.flight_1.arrival_date = action.payload.arrival_date;
+                state.choosedFlight.flight_1.arrival_time = action.payload.arrival_time;
+                state.choosedFlight.flight_1.duration = action.payload.duration;
+                state.choosedFlight.flight_1.is_choose = true;
+                state.isReadyToOrder = true;
+                state.fetchDetailFlight = 'idle';
+                return;
+            }
+
             if (!state.choosedFlight.flight_1.is_choose && state.isTwoWay) {
+                state.flightDetailId = [action.payload.id];
                 state.choosedFlight.flight_1.flight_id = action.payload.id;
                 state.choosedFlight.flight_1.airline = action.payload.airline;
                 state.choosedFlight.flight_1.from = action.payload.from;
@@ -205,6 +328,7 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_1.duration = action.payload.duration;
                 state.choosedFlight.flight_1.is_choose = true;
 
+                state.flight_title = 'Kepulangan';
                 state.searchPage.from = state.homeSearch.to;
                 state.searchPage.to = state.homeSearch.from;
                 state.searchPage.search_date = state.homeSearch.return_dateTime;
@@ -214,6 +338,7 @@ export const flightSlice = createSlice({
             }
 
             if (state.choosedFlight.flight_1.is_choose && state.isTwoWay) {
+                state.flightDetailId = [...state.flightDetailId, action.payload.id];
                 state.choosedFlight.flight_2.flight_id = action.payload.id;
                 state.choosedFlight.flight_2.airline = action.payload.airline;
                 state.choosedFlight.flight_2.from = action.payload.from;
@@ -227,7 +352,11 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_2.arrival_date = action.payload.arrival_date;
                 state.choosedFlight.flight_2.arrival_time = action.payload.arrival_time;
                 state.choosedFlight.flight_2.duration = action.payload.duration;
+                // state.flight_title = 'Kepulangan';
                 state.choosedFlight.flight_2.is_choose = true;
+                state.isReadyToOrder = true;
+                state.fetchDetailFlight = 'idle';
+                return;
             }
 
             if (state.choosedFlight.flight_2.is_choose) {
@@ -235,6 +364,7 @@ export const flightSlice = createSlice({
                 return;
             }
 
+            state.flightDetailId = [action.payload.id];
             state.choosedFlight.flight_1.flight_id = action.payload.id;
             state.choosedFlight.flight_1.airline = action.payload.airline;
             state.choosedFlight.flight_1.from = action.payload.from;
@@ -254,7 +384,9 @@ export const flightSlice = createSlice({
             state.fetchFlightStatus = action.payload;
         },
         setResetChoosedFlight: (state) => {
-            if (state.choosedFlight.flight_1.is_choose && state.choosedFlight.flight_2.is_choose) {
+            if (state.choosedFlight.flight_1.is_choose && state.choosedFlight.flight_2.is_choose && state.isTwoWay) {
+                state.flight_title = 'Keberangkatan';
+                state.flightDetailId = [];
                 state.choosedFlight.flight_1.is_choose = false;
                 state.choosedFlight.flight_1.flight_id = '';
                 state.choosedFlight.flight_1.airline = '';
@@ -284,14 +416,43 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_2.arrival_date = '';
                 state.choosedFlight.flight_2.arrival_time = '';
                 state.choosedFlight.flight_2.duration = '';
+                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.to = state.homeSearch.to;
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+
+                state.searchPage.isSearchAgain = true;
+                state.fetchFlightStatusTwo = 'idle';
+                return;
+            }
+
+            if (state.choosedFlight.flight_1.is_choose && state.isTwoWay && !state.choosedFlight.flight_2.is_choose) {
+                state.flight_title = 'Keberangkatan';
+                state.flightDetailId = [];
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
 
                 state.searchPage.from = state.homeSearch.from;
                 state.searchPage.to = state.homeSearch.to;
                 state.searchPage.search_date = state.homeSearch.departure_dateTime;
                 state.searchPage.isSearchAgain = true;
+
                 state.fetchFlightStatusTwo = 'idle';
                 return;
             }
+            state.flight_title = 'Keberangkatan';
+            state.flightDetailId = [];
             state.choosedFlight.flight_1.is_choose = false;
             state.choosedFlight.flight_1.flight_id = '';
             state.choosedFlight.flight_1.airline = '';
@@ -321,6 +482,7 @@ export const flightSlice = createSlice({
             state.choosedFlight.flight_2.arrival_date = '';
             state.choosedFlight.flight_2.arrival_time = '';
             state.choosedFlight.flight_2.duration = '';
+
             state.fetchFlightStatusTwo = 'idle';
         },
 
@@ -356,6 +518,21 @@ export const flightSlice = createSlice({
         },
 
         setSearchPageDate: (state, action) => {
+            if (action.payload !== state.homeSearch.departure_dateTime && !state.isTwoWay) {
+                state.homeSearch.departure_dateTime = action.payload;
+                state.searchPage.search_date = action.payload;
+                return;
+            }
+            if (action.payload !== state.homeSearch.departure_dateTime && state.isTwoWay) {
+                state.homeSearch.departure_dateTime = action.payload;
+                state.searchPage.search_date = action.payload;
+                return;
+            }
+            if (action.payload !== state.homeSearch.return_dateTime && state.isTwoWay && state.choosedFlight.flight_1.is_choose) {
+                state.homeSearch.return_dateTime = action.payload;
+                state.searchPage.search_date = action.payload;
+                return;
+            }
             state.searchPage.search_date = action.payload;
         },
 
@@ -366,8 +543,91 @@ export const flightSlice = createSlice({
         setFetchTerbaru: (state) => {
             state.fetchFlightStatusTwo = 'idle';
         },
-        setResetAll: (state) => {},
+        // setResetAll: (state) => {},
+        setIsReadyToOrder: (state, action) => {
+            if (!action.payload && state.isTwoWay) {
+                state.fetchDetailFlight = 'sans';
+                state.flightDetailId = [];
+                state.flight_title = 'Keberangkatan';
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+
+                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.to = state.homeSearch.to;
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+                state.searchPage.isSearchAgain = true;
+                state.fetchFlightStatusTwo = 'idle';
+                state.isReadyToOrder = action.payload;
+                return;
+            }
+            if (!action.payload) {
+                state.fetchDetailFlight = 'sans';
+                state.flightDetailId = [];
+                state.flight_title = 'Keberangkatan';
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+                state.fetchFlightStatusTwo = 'idle';
+                state.isReadyToOrder = action.payload;
+                return;
+            }
+            state.isReadyToOrder = action.payload;
+        },
     },
+
     extraReducers: (builder) => {
         builder.addCase(fetchAirport.pending, (state) => {
             state.fetchAirportStatus = 'loading';
@@ -389,12 +649,28 @@ export const flightSlice = createSlice({
         builder.addCase(fetchFlight.rejected, (state, action) => {
             state.fetchFlightStatusTwo = 'failed';
         });
+        builder.addCase(fetchDetailFlight.pending, (state) => {
+            state.fetchFlightStatusTwo = 'loading';
+        });
+        builder.addCase(fetchDetailFlight.fulfilled, (state, action) => {
+            state.fetchFlightStatusTwo = 'succeeded';
+            state.flightDetailData = action.payload;
+        });
+        builder.addCase(fetchDetailFlight.rejected, (state, action) => {
+            state.fetchFlightStatusTwo = 'failed';
+        });
     },
 });
 
+export const getFlightDetailDataStatus = (state) => state.flight.fetchDetailFlight; //detail flight status
+export const getFlightDetailData = (state) => state.flight.flightDetailData; //detail flight
 //test
+export const getPassengerTypeTotal = (state) => state.flight.passengerType;
+export const getFlightDetailId = (state) => state.flight.flightDetailId;
 export const getFlightDatas = (state) => state.flight.flightDatas;
+export const getFlightTitle = (state) => state.flight.flight_title;
 export const getFlightDatasStatus = (state) => state.flight.fetchFlightStatusTwo;
+export const getIsReadyToOrder = (state) => state.flight.isReadyToOrder;
 
 export const getSearchPageIsSearchAgain = (state) => state.flight.searchPage.isSearchAgain;
 export const getHomeSearch = (state) => state.flight.homeSearch;

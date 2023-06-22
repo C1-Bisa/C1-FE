@@ -193,7 +193,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
         handleOpenCalendarRange();
     };
     const handleCalendarToggleAction = () => {
-        dispatch(setIsTwoWay(!isTwoWay));
+        dispatch(setIsTwoWay(isTwoWay ? false : true));
     };
     // handle picked data from calendar modal end
 
@@ -344,7 +344,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                         : formatToLocale(homeSearch.return_dateTime)
                                                 }
                                                 onClick={handleOpenCalendarRange}
-                                                className={`${!isTwoWay ? 'invisible' : 'visible'} 
+                                                className={`${isTwoWay ? 'visible' : 'invisible'} 
                         ${
                             !homeSearch.return_dateTime
                                 ? 'text-[14px] font-normal text-pur-5'

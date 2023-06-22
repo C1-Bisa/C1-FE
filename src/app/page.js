@@ -20,7 +20,7 @@ import {
     MdOutlineAccountCircle,
 } from 'react-icons/md';
 import { FaUser } from 'react-icons/fa';
-import { FiHome } from 'react-icons/fi';
+import { FiHome, FiX } from 'react-icons/fi';
 import { SlNotebook } from 'react-icons/sl';
 // import { BiSolidUser } from 'react-icons/bi';
 // import { BiSolidUser } from 'react-icons/bi';
@@ -70,7 +70,7 @@ export default function Home() {
                         <h1>test</h1>
                     </div>
                     {/* input flight */}
-                    <div className=' flex flex-col gap-1 rounded-rad-2 border p-2 '>
+                    <div className='flex flex-col gap-1 rounded-rad-2 border p-2'>
                         <div className='my-1 grid grid-cols-12'>
                             <div className='col-span-4 flex gap-[10px]'>
                                 <MdFlightTakeoff className='h-[20px] w-[20px] text-net-3' />
@@ -82,7 +82,7 @@ export default function Home() {
                             />
                         </div>
 
-                        <div className=' flex items-center gap-3'>
+                        <div className='flex items-center gap-3 '>
                             <div className='h-[1px] w-full border text-net-3'></div>
                             <Image alt='' src={'/images/up_down.svg'} width={20} height={20} />
                         </div>
@@ -101,7 +101,7 @@ export default function Home() {
                     {/* input flight */}
 
                     {/* pp */}
-                    <div className=' flex justify-between'>
+                    <div className='flex justify-between '>
                         <h1 className='text-body-5'>Pulang-Pergi?</h1>
                         <ToggleSwitch />
                     </div>
@@ -156,13 +156,13 @@ export default function Home() {
                         </div>
                     </div>
                     {/* penumpang */}
-                    <Button className=' w-full rounded-rad-3 bg-pur-4 py-3 text-white'>Cari Penerbangan</Button>
+                    <Button className='w-full rounded-rad-3 bg-pur-4 py-3 text-white'>Cari Penerbangan</Button>
 
                     {/* destinasi */}
 
                     <h1 className='text-title-2 font-medium'>Destinasi Favorite</h1>
                     <div className='mb-28 grid grid-cols-12 gap-3'>
-                        <div className='col-span-6   flex  flex-col gap-2 rounded-rad-2 p-1 shadow-low'>
+                        <div className='col-span-6 flex flex-col gap-2 rounded-rad-2 p-1 shadow-low'>
                             <div className='relative h-[100px] w-full'>
                                 <Image alt='' src={'/images/sidney.svg'} fill style={{ objectFit: 'cover' }} />
                             </div>
@@ -170,12 +170,12 @@ export default function Home() {
                                 <h1 className='text-body-3 font-medium'>Jakarta {'->'} Bangkok</h1>
                                 <p className='text-body-1 font-bold'>AirAsia</p>
                                 <p className='text-body-2 font-medium'>20 - 30 Maret 2023</p>
-                                <p className='text-body-2  text-black'>
+                                <p className='text-body-2 text-black'>
                                     Mulai dari <span className='font-bold text-alert-3'>IDR 950.000</span>
                                 </p>
                             </div>
                         </div>
-                        <div className='col-span-6 flex flex-col  gap-2 rounded-rad-2 p-1 shadow-low'>
+                        <div className='col-span-6 flex flex-col gap-2 rounded-rad-2 p-1 shadow-low'>
                             <div className='relative h-[100px] w-full '>
                                 <Image alt='' src={'/images/sidney.svg'} fill style={{ objectFit: 'cover' }} />
                             </div>
@@ -183,7 +183,7 @@ export default function Home() {
                                 <h1 className='text-body-3 font-medium'>Jakarta {'->'} Bangkok</h1>
                                 <p className='text-body-1 font-bold'>AirAsia</p>
                                 <p className='text-body-2 font-medium'>20 - 30 Maret 2023</p>
-                                <p className='text-body-2  text-black'>
+                                <p className='text-body-2 text-black'>
                                     Mulai dari <span className='font-bold text-alert-3'>IDR 950.000</span>
                                 </p>
                             </div>
@@ -192,22 +192,22 @@ export default function Home() {
                     {/* destinasi */}
 
                     {/* bottom navbar */}
-                    {/* <div className='fixed inset-x-0 bottom-0 flex justify-around  bg-white  p-2 text-center text-3xl '>
+                    {/* <div className='fixed inset-x-0 bottom-0 flex justify-around p-2 text-3xl text-center bg-white '>
                         <div className='flex flex-col items-center justify-center gap-1'>
                             <FiHome />
-                            <h1 className='text-body-1 font-bold'>Home</h1>
+                            <h1 className='font-bold text-body-1'>Home</h1>
                         </div>
                         <div className='flex flex-col items-center justify-center gap-1'>
                             <SlNotebook />
-                            <h1 className='text-body-1 font-bold'>Riwayat</h1>
+                            <h1 className='font-bold text-body-1'>Riwayat</h1>
                         </div>
                         <div className='flex flex-col items-center justify-center gap-1'>
                             <MdNotifications />
-                            <h1 className='text-body-1 font-bold'>Notifikasi</h1>
+                            <h1 className='font-bold text-body-1'>Notifikasi</h1>
                         </div>
                         <div className='flex flex-col items-center justify-center gap-1'>
                             <MdOutlineAccountCircle />
-                            <h1 className='text-body-1 font-bold'> Akun</h1>
+                            <h1 className='font-bold text-body-1'> Akun</h1>
                         </div>
                     </div> */}
                     <BottomNavbar />
@@ -216,10 +216,10 @@ export default function Home() {
             {/* RESPONSIVE MODE*/}
 
             {/* <div className='fixed inset-0 flex items-center justify-end bg-black bg-opacity-60'>
-                <div className='relative h-screen w-1/2 bg-white font-poppins'>
+                <div className='relative w-1/2 h-screen bg-white font-poppins'>
                     <h1 className='m-5 text-3xl font-bold'>Your Ticket</h1>
 
-                    <Button className='absolute bottom-5 right-5 rounded-rad-3 bg-pur-4 px-8 py-5 text-xl text-white'>
+                    <Button className='absolute px-8 py-5 text-xl text-white bottom-5 right-5 rounded-rad-3 bg-pur-4'>
                         Order Now
                     </Button>
                 </div>
