@@ -14,7 +14,7 @@ export default function Input({
             id={id}
             placeholder={placeholder}
             type={type}
-            className={`${className} w-full appearance-none border font-poppins outline-none`}
+            className={`${className} w-full cursor-pointer appearance-none border font-poppins outline-none `}
         />
     );
 }

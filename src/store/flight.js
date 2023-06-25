@@ -8,6 +8,10 @@ const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/airport';
 const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
 const DETAIL_FLIGHT = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/getDetail';
 
+function genId() {
+    return (Math.random() + 1).toString(36).substring(7);
+}
+
 export const fetchAirport = createAsyncThunk('flight/fetchAirport', async () => {
     try {
         const response = await axios.get(URL);
@@ -140,6 +144,79 @@ const initialState = {
     },
     totalPassenger: 1,
 
+    passengerForm: [
+        {
+            form_id: `1`,
+            label_form: 1,
+            type: 'Adult',
+            fields: [
+                {
+                    field_category: 'title',
+                    field_id: `title1`,
+                    field_label: 'Title',
+                    field_value: 'Mr.',
+                    field_options: [
+                        {
+                            option_label: 'Mr.',
+                        },
+                        {
+                            option_label: 'Ms.',
+                        },
+                    ],
+                    field_type: 'select',
+                },
+                {
+                    field_category: 'name',
+                    field_id: `name1`,
+                    field_label: 'Nama Lengkap',
+                    field_value: '',
+                    field_type: 'text',
+                },
+                {
+                    field_category: 'family_name',
+                    field_id: `family_name1`,
+                    field_label: 'Nama Keluarga',
+                    field_value: '',
+                    field_type: 'text',
+                },
+                {
+                    field_category: 'birthday',
+                    field_id: `birthday1`,
+                    field_label: 'Tanggal Lahir',
+                    field_value: '',
+                    field_type: 'date',
+                },
+                {
+                    field_category: 'kewarganegaraan',
+                    field_id: `kewarganegaraan1`,
+                    field_label: 'Kewarganegaraan',
+                    field_value: '',
+                    field_type: 'text',
+                },
+                {
+                    field_category: 'ktp_paspor',
+                    field_id: `ktp_paspor1`,
+                    field_label: 'KTP/Paspor',
+                    field_value: '',
+                    field_type: 'text',
+                },
+                {
+                    field_category: 'negara_penerbit',
+                    field_id: `negara_penerbit1`,
+                    field_label: 'Negara Penerbit',
+                    field_value: '',
+                    field_type: 'text',
+                },
+                {
+                    field_category: 'expired',
+                    field_id: `expired1`,
+                    field_label: 'Berlaku Sampai',
+                    field_value: '',
+                    field_type: 'date',
+                },
+            ],
+        },
+    ],
     isTwoWay: false,
 
     isReadyToOrder: false,
@@ -260,32 +337,266 @@ export const flightSlice = createSlice({
         addDewasaPassenger: (state) => {
             state.passengerType.dewasa += 1;
             state.totalPassenger += 1;
+            state.passengerForm = [
+                ...state.passengerForm,
+                {
+                    form_id: genId(),
+                    label_form: 1,
+                    type: 'Adult',
+                    fields: [
+                        {
+                            field_category: 'title',
+                            field_id: `title_${genId()}`,
+                            field_label: 'Title',
+                            field_value: 'Mr.',
+                            field_options: [
+                                {
+                                    option_label: 'Mr.',
+                                },
+                                {
+                                    option_label: 'Ms.',
+                                },
+                            ],
+                            field_type: 'select',
+                        },
+                        {
+                            field_category: 'name',
+                            field_id: `name_${genId()}`,
+                            field_label: 'Nama Lengkap',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'family_name',
+                            field_id: `family_name_${genId()}`,
+                            field_label: 'Nama Keluarga',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'birthday',
+                            field_id: `birthday_${genId()}`,
+                            field_label: 'Tanggal Lahir',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                        {
+                            field_category: 'kewarganegaraan',
+                            field_id: `kewarganegaraan_${genId()}`,
+                            field_label: 'Kewarganegaraan',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'ktp_paspor',
+                            field_id: `ktp_paspor_${genId()}`,
+                            field_label: 'KTP/Paspor',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'negara_penerbit',
+                            field_id: `negara_penerbit_${genId()}`,
+                            field_label: 'Negara Penerbit',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'expired',
+                            field_id: `expired_${genId()}`,
+                            field_label: 'Berlaku Sampai',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                    ],
+                },
+            ];
+
+            state.passengerForm = state.passengerForm.sort((a, b) => a.label_form - b.label_form);
         },
         addAnakPassenger: (state) => {
             state.passengerType.anak += 1;
-            state.totalPassenger += 1;
+            state.totalPassenger += 1; //index terakhirnya == Dewasa
+            state.passengerForm = [
+                ...state.passengerForm,
+                {
+                    form_id: genId(),
+                    label_form: 2,
+                    type: 'Child',
+                    fields: [
+                        {
+                            field_category: 'title',
+                            field_id: `title_${genId()}`,
+                            field_label: 'Title',
+                            field_value: 'Mr.',
+                            field_options: [
+                                {
+                                    option_label: 'Mr.',
+                                },
+                                {
+                                    option_label: 'Ms.',
+                                },
+                            ],
+                            field_type: 'select',
+                        },
+                        {
+                            field_category: 'name',
+                            field_id: `name_${genId()}`,
+                            field_label: 'Nama Lengkap',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'family_name',
+                            field_id: `family_name_${genId()}`,
+                            field_label: 'Nama Keluarga',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'birthday',
+                            field_id: `birthday_${genId()}`,
+                            field_label: 'Tanggal Lahir',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                        {
+                            field_category: 'kewarganegaraan',
+                            field_id: `kewarganegaraan_${genId()}`,
+                            field_label: 'Kewarganegaraan',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'ktp_paspor',
+                            field_id: `ktp_paspor_${genId()}`,
+                            field_label: 'KTP/Paspor',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'negara_penerbit',
+                            field_id: `negara_penerbit_${genId()}`,
+                            field_label: 'Negara Penerbit',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'expired',
+                            field_id: `expired_${genId()}`,
+                            field_label: 'Berlaku Sampai',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                    ],
+                },
+            ];
+
+            state.passengerForm = state.passengerForm.sort((a, b) => a.label_form - b.label_form);
         },
         addBayiPassenger: (state) => {
             state.passengerType.bayi += 1;
             state.totalPassenger += 1;
+            state.passengerForm = [
+                ...state.passengerForm,
+                {
+                    form_id: genId(),
+                    label_form: 3,
+                    type: 'Baby',
+                    fields: [
+                        {
+                            field_category: 'title',
+                            field_id: `title_${genId()}`,
+                            field_label: 'Title',
+                            field_value: 'Mr.',
+                            field_options: [
+                                {
+                                    option_label: 'Mr.',
+                                },
+                                {
+                                    option_label: 'Ms.',
+                                },
+                            ],
+                            field_type: 'select',
+                        },
+                        {
+                            field_category: 'name',
+                            field_id: `name_${genId()}`,
+                            field_label: 'Nama Lengkap',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'family_name',
+                            field_id: `family_name_${genId()}`,
+                            field_label: 'Nama Keluarga',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'birthday',
+                            field_id: `birthday_${genId()}`,
+                            field_label: 'Tanggal Lahir',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                        {
+                            field_category: 'kewarganegaraan',
+                            field_id: `kewarganegaraan_${genId()}`,
+                            field_label: 'Kewarganegaraan',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'ktp_paspor',
+                            field_id: `ktp_paspor_${genId()}`,
+                            field_label: 'KTP/Paspor',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'negara_penerbit',
+                            field_id: `negara_penerbit_${genId()}`,
+                            field_label: 'Negara Penerbit',
+                            field_value: '',
+                            field_type: 'text',
+                        },
+                        {
+                            field_category: 'expired',
+                            field_id: `expired_${genId()}`,
+                            field_label: 'Berlaku Sampai',
+                            field_value: '',
+                            field_type: 'date',
+                        },
+                    ],
+                },
+            ];
+
+            state.passengerForm = state.passengerForm.sort((a, b) => a.label_form - b.label_form);
         },
 
         minusDewasaPassenger: (state) => {
             if (state.passengerType.dewasa > 1) {
                 state.passengerType.dewasa -= 1;
                 state.totalPassenger -= 1;
+                const idxDewasa = state.passengerForm.findIndex((item) => item.type == 'Adult');
+                state.passengerForm = state.passengerForm.filter((pass, index) => index !== idxDewasa);
             }
         },
         minusAnakPassenger: (state) => {
             if (state.passengerType.anak > 0) {
                 state.passengerType.anak -= 1;
                 state.totalPassenger -= 1;
+                const idxAnak = state.passengerForm.findIndex((item) => item.type == 'Child');
+                state.passengerForm = state.passengerForm.filter((pass, index) => index !== idxAnak);
             }
         },
         minusBayiPassenger: (state) => {
             if (state.passengerType.bayi > 0) {
                 state.passengerType.bayi -= 1;
                 state.totalPassenger -= 1;
+                const idxBayi = state.passengerForm.findIndex((item) => item.type == 'Baby');
+                state.passengerForm = state.passengerForm.filter((pass, index) => index !== idxBayi);
             }
         },
 
@@ -550,7 +861,7 @@ export const flightSlice = createSlice({
                 state.flightDetailId = [];
                 state.flight_title = 'Keberangkatan';
                 state.choosedFlight.flight_1.is_choose = false;
-                state.choosedFlight.flight_1.flight_id = '';
+                // state.choosedFlight.flight_1.flight_id = '';
                 state.choosedFlight.flight_1.airline = '';
                 state.choosedFlight.flight_1.from = '';
                 state.choosedFlight.flight_1.from_airport_name = '';
@@ -565,7 +876,7 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_1.duration = '';
 
                 state.choosedFlight.flight_2.is_choose = false;
-                state.choosedFlight.flight_2.flight_id = '';
+                // state.choosedFlight.flight_2.flight_id = '';
                 state.choosedFlight.flight_2.airline = '';
                 state.choosedFlight.flight_2.from = '';
                 state.choosedFlight.flight_2.from_airport_name = '';
@@ -592,7 +903,7 @@ export const flightSlice = createSlice({
                 state.flightDetailId = [];
                 state.flight_title = 'Keberangkatan';
                 state.choosedFlight.flight_1.is_choose = false;
-                state.choosedFlight.flight_1.flight_id = '';
+                // state.choosedFlight.flight_1.flight_id = '';
                 state.choosedFlight.flight_1.airline = '';
                 state.choosedFlight.flight_1.from = '';
                 state.choosedFlight.flight_1.from_airport_name = '';
@@ -607,7 +918,7 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_1.duration = '';
 
                 state.choosedFlight.flight_2.is_choose = false;
-                state.choosedFlight.flight_2.flight_id = '';
+                // state.choosedFlight.flight_2.flight_id = '';
                 state.choosedFlight.flight_2.airline = '';
                 state.choosedFlight.flight_2.from = '';
                 state.choosedFlight.flight_2.from_airport_name = '';
@@ -625,6 +936,14 @@ export const flightSlice = createSlice({
                 return;
             }
             state.isReadyToOrder = action.payload;
+        },
+
+        setFetchDetailFlight: (state) => {
+            state.fetchFlightStatusTwo = 'idle';
+        },
+
+        setPassengerForm: (state, action) => {
+            state.passengerForm = action.payload;
         },
     },
 
@@ -650,18 +969,19 @@ export const flightSlice = createSlice({
             state.fetchFlightStatusTwo = 'failed';
         });
         builder.addCase(fetchDetailFlight.pending, (state) => {
-            state.fetchFlightStatusTwo = 'loading';
+            state.fetchDetailFlight = 'loading';
         });
         builder.addCase(fetchDetailFlight.fulfilled, (state, action) => {
-            state.fetchFlightStatusTwo = 'succeeded';
+            state.fetchDetailFlight = 'succeeded';
             state.flightDetailData = action.payload;
         });
         builder.addCase(fetchDetailFlight.rejected, (state, action) => {
-            state.fetchFlightStatusTwo = 'failed';
+            state.fetchDetailFlight = 'failed';
         });
     },
 });
 
+export const getPassengerForm = (state) => state.flight.passengerForm; //detail flight status
 export const getFlightDetailDataStatus = (state) => state.flight.fetchDetailFlight; //detail flight status
 export const getFlightDetailData = (state) => state.flight.flightDetailData; //detail flight
 //test

@@ -11,7 +11,7 @@ import { RiArrowUpDownLine } from 'react-icons/ri';
 import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 import { TbCircleNumber1, TbCircleNumber2, TbPlaneInflight } from 'react-icons/tb';
 import { BsArrowRight } from 'react-icons/bs';
-import { MdFlight, MdFlightLand, MdFlightTakeoff } from 'react-icons/md';
+import { MdDetails, MdFlight, MdFlightLand, MdFlightTakeoff } from 'react-icons/md';
 import Image from 'next/image';
 
 // dayjs
@@ -141,6 +141,7 @@ export default function SearchFlight() {
         setSearchPageIsSearchAgain,
         setFetchTerbaru,
         setIsReadyToOrder,
+        setFetchDetailFlight,
     } = flightSlice.actions;
 
     // dateInAWeek
@@ -567,7 +568,7 @@ export default function SearchFlight() {
                                                     </div>
                                                 </div>
                                                 <div className='flex flex-col gap-[6px] text-title-2'>
-                                                    <p className='font-bold text-pur-4'>IDR {formatRupiah(data.price)}</p>
+                                                    <p className='font-bold text-pur-4'>{formatRupiah(data.price)}</p>
                                                     <Button
                                                         onClick={() => handleChoosedFlight(data)}
                                                         className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
@@ -791,7 +792,7 @@ export default function SearchFlight() {
                             <div className='absolute bottom-5 right-4 w-[80%]'>
                                 <div
                                     onClick={() => handleDetailFlight()}
-                                    className='flex flex-col rounded-rad-3 px-5 py-3 shadow-low'>
+                                    className='flex cursor-pointer flex-col rounded-rad-3 px-5 py-3 shadow-low'>
                                     <div className='flex justify-between gap-10'>
                                         <div className='flex gap-5'>
                                             {openDetailFlight ? (
@@ -803,11 +804,18 @@ export default function SearchFlight() {
                                             <div className='flex flex-col gap-1'>
                                                 <h1 className='text-title-1 font-medium'>Total</h1>
                                                 <h1 className='text-head-2 font-bold'>
-                                                    IDR <span>{detailFlight.totalPrice}</span>
+                                                    <span>{formatRupiah(detailFlight.totalPrice)}</span>
+                                                    {/* IDR <span>{detailFlight.totalPrice}</span> */}
                                                 </h1>
                                             </div>
                                         </div>
-                                        <Button className='h-max w-max rounded-rad-3 bg-pur-4 px-5 py-3 text-title-2 text-white'>
+                                        <Button
+                                            onClick={() => {
+                                                router.push('/order');
+                                                dispatch(setFetchDetailFlight());
+                                                dispatch(setIsReadyToOrder(false));
+                                            }}
+                                            className='h-max w-max rounded-rad-3 bg-pur-4 px-5 py-3 text-title-2 text-white'>
                                             Continue to Order
                                         </Button>
                                     </div>
@@ -832,7 +840,14 @@ export default function SearchFlight() {
                                                                 <h1 className='text-body-5'>Bayi ({passengerType.bayi}x)</h1>
                                                             )}
                                                         </div>
-                                                        <h1>IDR{detailFlight.totalPrice}</h1>
+                                                        <h1>
+                                                            <span className='ml-1'>
+                                                                {formatRupiah(
+                                                                    detailFlight.berangkat.price *
+                                                                        (passengerType.dewasa + passengerType.anak)
+                                                                )}
+                                                            </span>
+                                                        </h1>
                                                     </div>
                                                 )}
                                                 {choosedFlight2.airline && (
@@ -849,9 +864,22 @@ export default function SearchFlight() {
                                                                 <h1 className='text-body-5'>Bayi ({passengerType.bayi}x)</h1>
                                                             )}
                                                         </div>
-                                                        <h1>IDR{detailFlight.totalPrice}</h1>
+                                                        <h1>
+                                                            <span className='ml-1'>
+                                                                {formatRupiah(
+                                                                    detailFlight.pulang.price *
+                                                                        (passengerType.dewasa + passengerType.anak)
+                                                                )}
+                                                            </span>
+                                                        </h1>
                                                     </div>
                                                 )}
+                                                <div className='flex justify-between '>
+                                                    <h1 className='text-body-5 font-bold'>Tax</h1>
+                                                    <h1>
+                                                        <span className='ml-1'>{formatRupiah(detailFlight.tax)}</span>
+                                                    </h1>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

@@ -83,7 +83,7 @@ export default function Login() {
                             />
                         </div>
                     </div>
-                    <div className=' relative col-span-6 flex  flex-col items-center justify-center px-0'>
+                    <div className='relative col-span-6 flex flex-col items-center justify-center px-0 '>
                         <form onSubmit={handleLogin} className='flex  w-[452px] flex-col  gap-5'>
                             <h1 className='text-heading-2 mb-2 font-poppins text-2xl font-bold'>Masuk</h1>
                             <div className='flex flex-col'>
@@ -138,7 +138,7 @@ export default function Login() {
             <section className='h-screen bg-white lg:hidden'>
                 <div className='grid h-full w-full grid-cols-12'>
                     <div className='col-span-12 flex flex-col justify-center  px-[26px] '>
-                        <form onSubmit={handleLogin} className='flex w-full flex-col gap-5  '>
+                        <form onSubmit={handleLogin} className='flex w-full flex-col gap-5 '>
                             <h1 className='text-heading-2 mb-2 font-poppins text-2xl font-bold'>Masuk</h1>
                             <div className='flex flex-col'>
                                 <Label htmlFor='email'>Email/No Telepon</Label>

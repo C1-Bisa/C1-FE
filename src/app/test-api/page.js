@@ -521,3 +521,14 @@
 //       </div>
 //   );
 // }
+
+// "type": "Adult",
+// "title": "Mr.",
+// "name": "Daffa Reynand Susanto",
+// "family_name": "Susanto",
+// "birthday": "1996-09-29",
+// "nationality": "IDN",
+// "nik": 2421412,
+// "issued_country": "IDN",
+// "expired": "2023-07-17",
+// "seat": "A3"

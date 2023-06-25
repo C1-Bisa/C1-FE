@@ -188,7 +188,7 @@ export default function Payment() {
                     <div className='col-span-5'>
                         <div className='flex flex-col gap-3'>
                             <div className='flex items-center justify-between'>
-                                <h1 className='text-title-3  font-bold '>Detail Pesanan</h1>
+                                <h1 className='text-title-3 font-bold '>Detail Pesanan</h1>
                                 <p className='w-max rounded-rad-4 bg-alert-1 px-3 py-1 text-body-6 text-white'>Issued</p>
                             </div>
                             <h1 className=' text-title'>
@@ -280,14 +280,3 @@ export default function Payment() {
         </>
     );
 }
-
-// .dropdown__select {
-//     padding: 0 16px;
-//     justify-content: space-between;
-//     display: flex;
-//     align-items: center;
-//     border-radius: 4px;
-//     width: 100%;
-//     height: 50px;
-//     background-color: #3c3c3c;
-// }

@@ -1,5 +1,5 @@
 'use client';
-// import Card from '@/components/Card';
+
 import Card from './Card';
 import { FaCheckCircle } from 'react-icons/fa';
 import { useState } from 'react';
