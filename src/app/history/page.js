@@ -435,13 +435,13 @@ export default function History() {
                                                 <div className='flex justify-between'>
                                                     <div>
                                                         <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.departure_time)}
+                                                            {fixedHour(historyItem?.transaction?.Flights[1]?.departure_time)}
                                                         </h1>
                                                         <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.departure_date)}
+                                                            {reformatDate(historyItem?.transaction?.Flights[1]?.departure_date)}
                                                         </h1>
                                                         <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[0]?.Airport_from?.airport_name}
+                                                            {historyItem?.transaction?.Flights[1]?.Airport_from?.airport_name}
                                                         </h1>
                                                     </div>
                                                     <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
@@ -454,11 +454,11 @@ export default function History() {
                                                     <div className='flex flex-col gap-4'>
                                                         <div>
                                                             <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_name} -{' '}
-                                                                {historyItem?.transaction?.Flights[0]?.flight_class}
+                                                                {historyItem?.transaction?.Flights[1]?.Airline.airline_name} -{' '}
+                                                                {historyItem?.transaction?.Flights[1]?.flight_class}
                                                             </h3>
                                                             <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_code}
+                                                                {historyItem?.transaction?.Flights[1]?.Airline.airline_code}
                                                             </h3>
                                                         </div>
                                                         <div>
@@ -493,13 +493,13 @@ export default function History() {
                                                 <div className='flex justify-between'>
                                                     <div>
                                                         <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.arrival_time)}
+                                                            {fixedHour(historyItem?.transaction?.Flights[1]?.arrival_time)}
                                                         </h1>
                                                         <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.arrival_date)}
+                                                            {reformatDate(historyItem?.transaction?.Flights[1]?.arrival_date)}
                                                         </h1>
                                                         <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[0]?.Airport_to.airport_name}
+                                                            {historyItem?.transaction?.Flights[1]?.Airport_to.airport_name}
                                                         </h1>
                                                     </div>
                                                     <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
@@ -509,10 +509,13 @@ export default function History() {
                                     </div>
                                 )}
                                 <div className='mb-2 mt-4 w-full border text-net-3'></div>
-                                <h1 className='text-body-6 font-bold'>Rincian Harga</h1>
+                                <h1 className='mb-2 text-body-6 font-bold'>Rincian Harga</h1>
                                 <div>
-                                    {historyItem?.price && (
+                                    {historyItem?.transaction?.Flights[0] && (
                                         <div className='flex flex-col gap-1'>
+                                            <h1 className='font-bold'>
+                                                {historyItem?.transaction?.Flights[0].Airline.airline_name}
+                                            </h1>
                                             {historyItem?.type_passenger?.adult > 0 && (
                                                 <div className='flex justify-between text-body-6'>
                                                     <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
@@ -541,13 +544,70 @@ export default function History() {
                                                     <h1> RP 0</h1>
                                                 </div>
                                             )}
+
+                                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
+                                            <div
+                                                className={`${
+                                                    historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
+                                                } flex justify-between text-body-6`}>
+                                                <h1>Tax</h1>
+                                                <h1>
+                                                    <span>{formatRupiah(historyItem?.price?.tax)}</span>
+                                                </h1>
+                                            </div>
+                                            <div
+                                                className={`${
+                                                    historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
+                                                } flex justify-between text-title-2 font-bold`}>
+                                                <h1>Total</h1>
+                                                <h1 className='text-pur-4'>
+                                                    <span className='ml-1'>{formatRupiah(historyItem?.price?.total)}</span>
+                                                </h1>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {historyItem?.transaction?.Flights[1] && (
+                                        <div className='flex flex-col gap-1'>
+                                            <h1 className='font-bold'>
+                                                {historyItem?.transaction?.Flights[1].Airline.airline_name}
+                                            </h1>
+                                            {historyItem?.type_passenger?.adult > 0 && (
+                                                <div className='flex justify-between text-body-6'>
+                                                    <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
+                                                    <h1>
+                                                        {' '}
+                                                        {formatRupiah(
+                                                            historyItem?.type_passenger?.adult * historyItem?.price?.arrival
+                                                        )}
+                                                    </h1>
+                                                </div>
+                                            )}
+                                            {historyItem?.type_passenger?.child > 0 && (
+                                                <div className='flex justify-between text-body-6'>
+                                                    <h1>{historyItem?.type_passenger?.child} Anak</h1>
+                                                    <h1>
+                                                        {' '}
+                                                        {formatRupiah(
+                                                            historyItem?.type_passenger?.child * historyItem?.price?.arrival
+                                                        )}
+                                                    </h1>
+                                                </div>
+                                            )}
+                                            {historyItem?.type_passenger?.baby > 0 && (
+                                                <div className='flex justify-between text-body-6'>
+                                                    <h1>{historyItem?.type_passenger?.baby} Bayi</h1>
+                                                    <h1> RP 0</h1>
+                                                </div>
+                                            )}
+
+                                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
                                             <div className='flex justify-between text-body-6'>
                                                 <h1>Tax</h1>
                                                 <h1>
                                                     <span>{formatRupiah(historyItem?.price?.tax)}</span>
                                                 </h1>
                                             </div>
-                                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
                                             <div className='flex justify-between text-title-2 font-bold'>
                                                 <h1>Total</h1>
                                                 <h1 className='text-pur-4'>

@@ -51,7 +51,7 @@ export default function Order() {
 
     //next auth
     const { data: session, status } = useSession();
-    const token = session?.user?.token;
+    const token = session?.user?.token; //loading
 
     //redux
     const dispatch = useDispatch();
@@ -263,36 +263,38 @@ export default function Order() {
 
     /*Effect */
     useEffect(() => {
-        if (fetchDataUser) {
-            async function fetchUserData() {
-                try {
-                    const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/user/getProfile';
-                    const res = await axios.get(URL, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
+        if (token || status === 'unauthenticated') {
+            if (fetchDataUser) {
+                async function fetchUserData() {
+                    try {
+                        const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/user/getProfile';
+                        const res = await axios.get(URL, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
 
-                    setUserData({
-                        name: res.data.data.nama,
-                        email: res.data.data.email,
-                        phone: res.data.data.phone,
-                    });
+                        setUserData({
+                            name: res.data.data.nama,
+                            email: res.data.data.email,
+                            phone: res.data.data.phone,
+                        });
 
-                    console.log('CURRENT USER:', res.data);
-                } catch (error) {
-                    handleVisibleAlertError('Anda Harus Login Terlebih Dahulu!', 'failed');
-                    setTimeout(() => {
-                        router.replace('/');
-                    }, 2500);
+                        console.log('CURRENT USER:', res.data);
+                    } catch (error) {
+                        handleVisibleAlertError('Anda Harus Login Terlebih Dahulu!', 'failed');
+                        setTimeout(() => {
+                            router.replace('/');
+                        }, 2500);
+                    }
                 }
+                fetchUserData();
             }
-            fetchUserData();
+            setFetchDataUser(false);
         }
-        setFetchDataUser(false);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchDataUser]);
+    }, [fetchDataUser, status, token]);
 
     useEffect(() => {
         if (choosedFlight2?.flight_id) {

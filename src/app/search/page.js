@@ -368,7 +368,7 @@ export default function SearchFlight() {
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <p>{choosedFlight1.duration}h</p>
+                                                            <p>{reformatDuration(choosedFlight1.duration)}</p>
                                                             <p>Direct</p>
                                                         </div>
                                                     </div>
@@ -426,7 +426,7 @@ export default function SearchFlight() {
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <p>{choosedFlight2.duration}h</p>
+                                                            <p>{reformatDuration(choosedFlight2.duration)}</p>
                                                             <p>Direct</p>
                                                         </div>
                                                     </div>
