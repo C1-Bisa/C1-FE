@@ -91,8 +91,8 @@ export default function Login() {
                                 <Input
                                     id='email'
                                     placeholder='Contoh: johndoe@gmail.com'
-                                    value={loginData.email}
                                     name={'email'}
+                                    value={loginData.email}
                                     onChange={handleLoginData}
                                 />
                             </div>

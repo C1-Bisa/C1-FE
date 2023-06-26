@@ -16,6 +16,7 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import BottomNavbar from '@/components/BottomNavbar';
 import AlertBottom from '@/components/AlertBottom';
+import AlertTop from '@/components/AlertTop';
 
 export default function Akun() {
     //router
@@ -99,17 +100,22 @@ export default function Akun() {
     }, [fetchData, session, token]);
 
     return (
-        <>
+        <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='container mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
-                <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Akun</h1>
-                <div
-                    className='col-span-12 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
-                    onClick={() => router.push('/')}>
-                    <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
-                    <p>Beranda</p>
-                </div>
 
+            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                <div className='container mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
+                    <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Akun</h1>
+                    <div
+                        className='col-span-12 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                        onClick={() => router.push('/')}>
+                        <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
+                        <p>Beranda</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className='container mx-auto mt-[27px] hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                 <div className='col-span-12 grid grid-cols-12 gap-[56px]'>
                     <div className='col-span-4'>
                         {option &&
@@ -188,12 +194,12 @@ export default function Akun() {
                             </div>
                         )}
 
-                        <AlertBottom
+                        {/* <AlertBottom
                             visibleAlert={visibleAlert}
                             handleVisibleAlert={handleVisibleAlert}
                             text={alertText}
                             type={alertType}
-                        />
+                        /> */}
                     </div>
                 </div>
             </div>
@@ -235,6 +241,14 @@ export default function Akun() {
                 <BottomNavbar />
             </div>
             {/* RESPONSIVE MODE */}
-        </>
+
+            <AlertTop
+                visibleAlert={visibleAlert}
+                handleVisibleAlert={handleVisibleAlert}
+                text={alertText}
+                type={alertType}
+                bgType='none'
+            />
+        </div>
     );
 }

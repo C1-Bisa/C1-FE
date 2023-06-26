@@ -30,6 +30,7 @@
 //     return dates;
 // };
 
+// two way
 export const getDateInRange = (dateInput, returnInput = null) => {
     if (returnInput) {
         const dates = [];
@@ -48,11 +49,6 @@ export const getDateInRange = (dateInput, returnInput = null) => {
             date.setDate(date.getDate() + 1);
         }
 
-        // dates.push({
-        //     id: 1 + dates.length,
-        //     date: new Date(returnInput),
-        //     active: false,
-        // });
         return dates;
     }
 
@@ -86,3 +82,15 @@ export const getDateInRange = (dateInput, returnInput = null) => {
 
     return dates;
 };
+
+//One way
+// berangkat 26
+// awal : 26
+// akhir : 26 + 7
+
+// Two Way
+// berangkat : 26
+// pulang : 30
+
+// awal : 30 - 7 , [23, 24, ..., 26, 30]
+// akhir : 30

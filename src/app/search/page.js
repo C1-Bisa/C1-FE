@@ -1,10 +1,18 @@
 'use client';
 
-import axios from 'axios';
+//Core
+import Image from 'next/image';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
+
+//Third Parties
+import axios from 'axios';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import { FiArrowLeft, FiChevronRight, FiBox, FiHeart, FiDollarSign } from 'react-icons/fi';
 import { FiX } from 'react-icons/fi';
 import { RiArrowUpDownLine } from 'react-icons/ri';
@@ -12,25 +20,10 @@ import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 import { TbCircleNumber1, TbCircleNumber2, TbPlaneInflight } from 'react-icons/tb';
 import { BsArrowRight } from 'react-icons/bs';
 import { MdDetails, MdFlight, MdFlightLand, MdFlightTakeoff } from 'react-icons/md';
-import Image from 'next/image';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
-// dayjs
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-dayjs.extend(utc);
-dayjs.extend(timezone);
-// dayjs
-
-import { convertToDate, convertToTime } from '@/utils/converDateTime';
-import { formatToLocale } from '@/utils/formatToLocale';
-import { formatRupiah } from '@/utils/formatRupiah';
-
-import { getDateInRange } from '@/utils/getDateInRange';
-import Button from '@/components/Button';
-import Navbar from '@/components/Navbar';
-import HomeSearch from '@/components/HomeSearch';
-import ChooseFilterTicketModal from '@/components/ChooseFilterTicketModal';
+//Redux
+import { useDispatch, useSelector } from 'react-redux';
 import {
     flightSlice,
     getTotalPassenger,
@@ -52,86 +45,32 @@ import {
     getFlightDetailDataStatus,
     getFlightDetailId,
 } from '@/store/flight';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-// import { MdFlight } from 'react-icons/md';
 
-const extractWord = (words) => {
-    const text = words
-        .split(/((?:\w+ ){3})/g)
-        .filter(Boolean)
-        .join('\n');
-    const lines = text.split(/\n/);
+//Components
+import Button from '@/components/Button';
+import Navbar from '@/components/Navbar';
+import HomeSearch from '@/components/HomeSearch';
+import ChooseFilterTicketModal from '@/components/ChooseFilterTicketModal';
 
-    const withBreaks = lines.flatMap((line, index) =>
-        index > 0 ? [<br key={`br-${index}`} />, <Fragment key={index}>{line}</Fragment>] : [line]
-    );
-    return withBreaks;
-};
+//Utils
+import { getDateInRange } from '@/utils/getDateInRange';
+import { convertToDate, convertToTime } from '@/utils/converDateTime';
+import { formatToLocale } from '@/utils/formatToLocale';
+import { formatRupiah } from '@/utils/formatRupiah';
+import { extractWord } from '@/utils/extractWord';
+import { reformatDate } from '@/utils/reformatDate';
+import { reformatDuration } from '@/utils/reformatDuration';
+import { fixedHour } from '@/utils/fixedHour';
 
 export default function SearchFlight() {
-    const [openDetailFlight, setOpenDetailFlight] = useState(false);
-    const handleDetailFlight = () => setOpenDetailFlight(!openDetailFlight);
+    /*=== router ===*/
     const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
     const dispatch = useDispatch();
-
-    const flightTitle = useSelector(getFlightTitle);
-
-    // pop up is ready to order
-    const isReadyToOrder = useSelector(getIsReadyToOrder);
-    // pop up is ready to order
-
-    const statusFetch = useSelector(getFlightDatasStatus);
-    const statusDetaiFlight = useSelector(getFlightDetailDataStatus);
-    const detailFlight = useSelector(getFlightDetailData);
-
-    console.log('THIS IS DETAIL FLIGHT', detailFlight);
-
-    const homeSearch = useSelector(getHomeSearch);
-    const searchPage = useSelector(getSearchPage);
-
-    // console.log('homes flight 1', homeSearch);
-    // console.log('searc flight 2', searchPage);
-    const searchAgain = useSelector(getSearchPageIsSearchAgain);
-
-    // console.log('SERR', searchPage);
-
-    // const fetchDetailFlight =
-    // const fetchFlightStatus = useSelector(getFetchFlightStatus);
-    // console.log('fetchFlightStatus HEHEHEH', fetchFlightStatus);
-
-    const choosedFlight1 = useSelector(getChoosedFlight1);
-    const choosedFlight2 = useSelector(getChoosedFlight2);
-    const flightIDs = useSelector(getFlightDetailId);
-    const passengerType = useSelector(getPassengerTypeTotal);
-
-    console.log('choose flight 1', choosedFlight1);
-    console.log('choose flight 2', choosedFlight2);
-    // console.log('DATA BUAT GET DETAIL', detailFligt);
-
-    // list of flight data
-    const flightData = useSelector(getFlightDatas);
-
-    console.log('INIIII', flightData);
-    // // list of flight data
-
-    // detail of list data
-    const [isDetail, setIsDetail] = useState(false);
-    const [chosenDetailFlight, setChosenDetailFlight] = useState(0);
-    const handleIsDetail = (id) => {
-        setIsDetail(!isDetail);
-        setChosenDetailFlight(id);
-    };
-    // detail of list data
-
-    // modal filter ticket start
-    const [openChooseFilterFlight, setOpenChooseFilterFlight] = useState(false);
-    const handleOpenChooseFilterFlight = () => setOpenChooseFilterFlight(!openChooseFilterFlight);
-    // modal filter ticket end
-
-    const totalPassenger = useSelector(getTotalPassenger); // used in total pass purple
-    const flighClass = useSelector(getFlightClass); // used in flight pass purple
-
-    // handling derpature date
     const {
         // setDerpatureDateTime,
         setChoosedFlight,
@@ -143,24 +82,66 @@ export default function SearchFlight() {
         setIsReadyToOrder,
         setFetchDetailFlight,
     } = flightSlice.actions;
+    const flightTitle = useSelector(getFlightTitle);
+    const isReadyToOrder = useSelector(getIsReadyToOrder);
+    const statusFetch = useSelector(getFlightDatasStatus);
+    const statusDetaiFlight = useSelector(getFlightDetailDataStatus);
+    const detailFlight = useSelector(getFlightDetailData);
+    const homeSearch = useSelector(getHomeSearch);
+    const searchPage = useSelector(getSearchPage);
+    const searchAgain = useSelector(getSearchPageIsSearchAgain);
+    const choosedFlight1 = useSelector(getChoosedFlight1);
+    const choosedFlight2 = useSelector(getChoosedFlight2);
+    const flightIDs = useSelector(getFlightDetailId);
+    const passengerType = useSelector(getPassengerTypeTotal);
+    const flightData = useSelector(getFlightDatas);
+    const totalPassenger = useSelector(getTotalPassenger); // used in total pass purple
+    const flighClass = useSelector(getFlightClass); // used in flight pass purple
 
-    // dateInAWeek
+    /*=== state ===*/
     const [values, setValues] = useState([]);
-
-    console.log('dayofWeek', values);
+    const [openHomeSearch, setOpenHomeSearch] = useState(false);
+    const [isSearchAgain, setIsSearchAgain] = useState(false);
+    const [openDetailFlight, setOpenDetailFlight] = useState(false);
+    const [isDetail, setIsDetail] = useState(false);
+    const [chosenDetailFlight, setChosenDetailFlight] = useState(0);
+    const [openChooseFilterFlight, setOpenChooseFilterFlight] = useState(false);
     const [selectDate, setSelectDate] = useState(new Date(searchPage.search_date) || '');
     const [selectOffsetDate, setSelectOffsetDate] = useState(
         new Date(searchPage.search_date_return || homeSearch.return_dateTime) || ''
     );
-    // dateInAWeek
-    // handling derpature date
 
-    // open homesearch
-    const [openHomeSearch, setOpenHomeSearch] = useState(false);
+    /*=== function ===*/
+    const handleDetailFlight = () => setOpenDetailFlight(!openDetailFlight);
+    const handleOpenChooseFilterFlight = () => setOpenChooseFilterFlight(!openChooseFilterFlight);
     const handleOpenHomeSearch = () => setOpenHomeSearch(!openHomeSearch);
-    const [isSearchAgain, setIsSearchAgain] = useState(false);
-    // open homesearch
+    const handleChoosedFlight = (data) => {
+        dispatch(setChoosedFlight(data));
+    };
 
+    const handleResetChooseFlight = () => {
+        dispatch(setResetChoosedFlight());
+    };
+
+    const handleIsDetail = (id) => {
+        setIsDetail(!isDetail);
+        setChosenDetailFlight(id);
+    };
+    const chooseDate = (value) => {
+        setSelectDate(value);
+        dispatch(setSearchPageDate(dayjs(value).tz('Asia/Jakarta').format()));
+        dispatch(setFetchTerbaru());
+    };
+
+    /*=== DEBUG STATE ===*/
+    console.log('====================================');
+    console.log('choose flight 1', choosedFlight1);
+    console.log('choose flight 2', choosedFlight2);
+    console.log('INIIII', flightData);
+    console.log('dayofWeek', values);
+    console.log('====================================');
+
+    /*=== effects ===*/
     useEffect(() => {
         if (searchAgain === false) {
             dispatch(setSearchPageIsSearchAgain(true));
@@ -247,6 +228,7 @@ export default function SearchFlight() {
                 })
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [statusDetaiFlight, dispatch, fetchDetailFlight]);
 
     useEffect(() => {
@@ -264,97 +246,66 @@ export default function SearchFlight() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchAgain, dispatch, setSearchPageIsSearchAgain]);
 
-    const chooseDate = (value) => {
-        setSelectDate(value);
-        dispatch(setSearchPageDate(dayjs(value).tz('Asia/Jakarta').format()));
-        dispatch(setFetchTerbaru());
-    };
-
-    console.log('====================================');
-    const fixedHour = (hours) => {
-        let arrOfHours = hours.split(':');
-        let arr = [];
-        while (arr.length < 2) {
-            arr.push(arrOfHours[arr.length]);
-        }
-        return arr.join(':');
-    };
-
-    console.log('====================================');
-
-    const handleChoosedFlight = (data) => {
-        dispatch(setChoosedFlight(data));
-    };
-
-    const handleResetChooseFlight = () => {
-        dispatch(setResetChoosedFlight());
-    };
-    const reformatDate = (date, option = { day: 'numeric', month: 'long', year: 'numeric' }) =>
-        new Date(date).toLocaleString('id', option);
-
-    const reformatDuration = (duration) => {
-        let text = String(duration)
-            .split('')
-            .filter((txt) => txt !== '9');
-
-        return `${text[0]}h ${text[1]}m`;
-    };
-
     return (
-        <>
+        <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
-                {/* search flight menu start */}
-                <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Pilih Penerbangan</h1>
-                <div className='frid col-span-12 grid grid-cols-12 gap-4'>
-                    <div
-                        className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 font-poppins text-title-2 font-medium text-white'
-                        onClick={() => router.back()}>
-                        <FiArrowLeft className='ml-[21px] h-6 w-6 ' />
-                        <p>
-                            {searchPage.from || homeSearch.from} {' > '} {searchPage.to || homeSearch.to} - {totalPassenger}{' '}
-                            Penumpang - {flighClass}
-                        </p>
-                    </div>
-                    <div
-                        className=' col-span-3 cursor-pointer rounded-rad-3 bg-alert-1 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
-                        onClick={() => handleOpenHomeSearch()}>
-                        <p>Ubah Pencarian</p>
-                    </div>
-                </div>
-                {/* search flight menu end */}
 
-                {/* day of week start */}
-                <div className='col-span-12 mt-[27px] grid grid-cols-8 divide-x-2'>
-                    {values.length ? (
-                        values.map((val, index) => (
-                            <div key={index} className='col-span-1 cursor-pointer px-2' onClick={() => chooseDate(val.date)}>
-                                <div
-                                    className={`${
-                                        new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                            ? 'bg-[#A06ECE] text-white'
-                                            : 'text-[#151515]'
-                                    } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
-                                    <h3 className='text-[14px] font-bold'>
-                                        {val.date.toLocaleDateString('id-ID', { weekday: 'long' })}
-                                    </h3>
-                                    <p
+            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
+                    {/* search flight menu start */}
+                    <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Pilih Penerbangan</h1>
+                    <div className='frid col-span-12 grid grid-cols-12 gap-4'>
+                        <div
+                            className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 font-poppins text-title-2 font-medium text-white'
+                            onClick={() => router.back()}>
+                            <FiArrowLeft className='ml-[21px] h-6 w-6 ' />
+                            <p>
+                                {searchPage.from || homeSearch.from} {' > '} {searchPage.to || homeSearch.to} - {totalPassenger}{' '}
+                                Penumpang - {flighClass}
+                            </p>
+                        </div>
+                        <div
+                            className=' col-span-3 cursor-pointer rounded-rad-3 bg-alert-1 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
+                            onClick={() => handleOpenHomeSearch()}>
+                            <p>Ubah Pencarian</p>
+                        </div>
+                    </div>
+                    {/* search flight menu end */}
+
+                    {/* day of week start */}
+                    <div className='col-span-12 mt-[27px] grid grid-cols-8 divide-x-2'>
+                        {values.length ? (
+                            values.map((val, index) => (
+                                <div key={index} className='col-span-1 cursor-pointer px-2' onClick={() => chooseDate(val.date)}>
+                                    <div
                                         className={`${
                                             new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                                ? 'text-white'
-                                                : 'text-[#8A8A8A]'
-                                        } text-[12px] font-normal`}>
-                                        {val.date.toLocaleDateString()}
-                                    </p>
+                                                ? 'bg-[#A06ECE] text-white'
+                                                : 'text-[#151515]'
+                                        } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
+                                        <h3 className='text-[14px] font-bold'>
+                                            {val.date.toLocaleDateString('id-ID', { weekday: 'long' })}
+                                        </h3>
+                                        <p
+                                            className={`${
+                                                new Date(val.date).getDate() === new Date(selectDate).getDate()
+                                                    ? 'text-white'
+                                                    : 'text-[#8A8A8A]'
+                                            } text-[12px] font-normal`}>
+                                            {val.date.toLocaleDateString()}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))
-                    ) : (
-                        <h1>Loadinggg</h1>
-                    )}
+                            ))
+                        ) : (
+                            <h1>Loadinggg</h1>
+                        )}
+                    </div>
+                    {/* day of week end */}
                 </div>
-                {/* day of week end */}
+            </div>
 
+            <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
                 {/* one way start  & list flight*/}
                 <div className='col-span-12  mt-[40px] grid grid-cols-12 gap-10 font-poppins'>
                     <div className='col-span-12 flex items-center justify-end'>
@@ -555,7 +506,7 @@ export default function SearchFlight() {
                                                     </div>
                                                     <div className='flex flex-col items-center justify-center'>
                                                         <p className='text-body-4 text-net-3'>
-                                                            {reformatDuration(data.duration)}h
+                                                            {reformatDuration(data.duration)}
                                                         </p>
                                                         <div className='relative h-[8px] w-[233px]'>
                                                             <Image alt='' src={'./images/arrow.svg'} fill />
@@ -811,7 +762,8 @@ export default function SearchFlight() {
                                         </div>
                                         <Button
                                             onClick={() => {
-                                                router.push('/order');
+                                                router.replace('/order');
+                                                router.refresh();
                                                 dispatch(setFetchDetailFlight());
                                                 dispatch(setIsReadyToOrder(false));
                                             }}
@@ -890,6 +842,6 @@ export default function SearchFlight() {
                 )}
             </div>
             {/* ======= Modal and Pop  end ====== */}
-        </>
+        </div>
     );
 }

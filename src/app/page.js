@@ -1,17 +1,10 @@
 'use client';
 
+//Core
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import HomeSearch from '@/components/HomeSearch';
 import Image from 'next/image';
-import { useDispatch } from 'react-redux';
-import { flightSlice } from '@/store/flight';
-import Button from '@/components/Button';
-import ToggleSwitch from '@/components/ToggleSwitch';
-// import { useSession, signOut, signIn } from 'next-auth/react';
-// import { getTest } from '@/store/flight';
 
-// responsive mode
+//Third Parties
 import {
     MdFlightTakeoff,
     MdDateRange,
@@ -22,20 +15,41 @@ import {
 import { FaUser } from 'react-icons/fa';
 import { FiHome, FiX } from 'react-icons/fi';
 import { SlNotebook } from 'react-icons/sl';
-// import { BiSolidUser } from 'react-icons/bi';
-// import { BiSolidUser } from 'react-icons/bi';
-// import { MdFlightTakeoff } from 'react-icons/md';
+
+//Redux
+import { useDispatch } from 'react-redux';
+import { flightSlice } from '@/store/flight';
+
+//Components
+import Navbar from '@/components/Navbar';
+import HomeSearch from '@/components/HomeSearch';
+import Button from '@/components/Button';
+import ToggleSwitch from '@/components/ToggleSwitch';
 import Input from '@/components/Input';
 import BottomNavbar from '@/components/BottomNavbar';
-// responsive mode
+
+//Utils
+//----
 
 export default function Home() {
+    /*=== router ===*/
     const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
     const dispatch = useDispatch();
-    // const test_data = useSelector(getTest);
-    // console.log('Test BRO:>', test_data);
-    // const { data: session, status } = useSession();
     const { setFetchFlightStatus, setSearchPageIsSearchAgain } = flightSlice.actions;
+
+    /*=== state ===*/
+    //----
+
+    /*=== function ===*/
+    //----
+
+    /*=== effects ===*/
+    //----
 
     return (
         <>
@@ -77,6 +91,7 @@ export default function Home() {
                                 <p className='text-net-3'>From</p>
                             </div>
                             <Input
+                                readOnly
                                 className='col-span-8 border-none text-title-2 font-medium text-black'
                                 value={'Jakarta (JKTA)'}
                             />
@@ -93,6 +108,7 @@ export default function Home() {
                                 <p className='text-net-3'>To</p>
                             </div>
                             <Input
+                                readOnly
                                 className='col-span-8 border-none text-title-2 font-medium text-black'
                                 value={'Melbourne (MLB)'}
                             />
@@ -115,6 +131,7 @@ export default function Home() {
                                 <div>
                                     <h1 className='text-body-5 font-medium text-net-3'>Derpature</h1>
                                     <Input
+                                        readOnly
                                         className='mt-1 border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-1 font-poppins text-body-5 font-medium'
                                         value={'1 Maret 2023'}
                                     />
@@ -125,6 +142,7 @@ export default function Home() {
                                 <div>
                                     <h1 className='text-body-5 font-medium text-net-3'>Return</h1>
                                     <Input
+                                        readOnly
                                         className='mt-1 border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-1 font-poppins text-body-5 font-medium'
                                         value={'1 Maret 2023'}
                                     />
@@ -138,6 +156,7 @@ export default function Home() {
                                 <div>
                                     <h1 className='text-body-5 font-medium text-net-3'>Passenger</h1>
                                     <Input
+                                        readOnly
                                         className='mt-1 border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-1 font-poppins text-body-5 font-medium'
                                         value={'1 Maret 2023'}
                                     />
@@ -148,6 +167,7 @@ export default function Home() {
                                 <div>
                                     <h1 className='text-body-5 font-medium text-net-3'>Seat Class</h1>
                                     <Input
+                                        readOnly
                                         className='mt-1 border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-1 font-poppins text-body-5 font-medium'
                                         value={'1 Maret 2023'}
                                     />
@@ -214,16 +234,6 @@ export default function Home() {
                 </div>
             </div>
             {/* RESPONSIVE MODE*/}
-
-            {/* <div className='fixed inset-0 flex items-center justify-end bg-black bg-opacity-60'>
-                <div className='relative w-1/2 h-screen bg-white font-poppins'>
-                    <h1 className='m-5 text-3xl font-bold'>Your Ticket</h1>
-
-                    <Button className='absolute px-8 py-5 text-xl text-white bottom-5 right-5 rounded-rad-3 bg-pur-4'>
-                        Order Now
-                    </Button>
-                </div>
-            </div> */}
         </>
     );
 }

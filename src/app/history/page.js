@@ -23,9 +23,10 @@ import Button from '@/components/Button';
 import Navbar from '@/components/Navbar';
 import BottomNavbar from '@/components/BottomNavbar';
 import RiwayatPesananKanan from '@/components/RiwayatPesananKanan';
+import AlertTop from '@/components/AlertTop';
 
 //Utils
-import { reformatDate } from '@/store/reformatDate';
+import { reformatDate } from '@/utils/reformatDate';
 import { reformatDuration } from '@/utils/reformatDuration';
 import { fixedHour } from '@/utils/fixedHour';
 import { formatRupiah } from '@/utils/formatRupiah';
@@ -37,7 +38,7 @@ export default function History() {
 
     //next auth
     const { data: session, status } = useSession();
-    let token = session?.user?.token;
+    const token = session?.user?.token; //becarefull it has lifecycle too, prevent with checking it first
 
     //redux
     const dispatch = useDispatch();
@@ -106,7 +107,7 @@ export default function History() {
             console.log(error.message);
         }
     };
-    /*Effect */
+    /*=== effects ===*/
     useEffect(() => {
         if (token) {
             if (fetchData) {
@@ -141,72 +142,79 @@ export default function History() {
     }, [fetchData, session, token]);
 
     useEffect(() => {
-        if (fetchStatus) {
-            const fetchBooking = async () => {
-                try {
-                    const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/getHistoryTransaction';
+        if (token) {
+            if (fetchStatus) {
+                const fetchBooking = async () => {
+                    try {
+                        const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/transaction/history';
 
-                    const response = await axios.get(URL, {
-                        headers: {
-                            Authorization: `Bearer ${session?.user?.token}`,
-                        },
-                    });
+                        const response = await axios.get(URL, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        });
 
-                    const results = response.data.data.reduce((acc, current) => {
-                        acc[String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))] =
+                        const results = response.data.data.reduce((acc, current) => {
                             acc[
-                                String(
-                                    reformatDate(current?.transaction?.transaction_date, {
-                                        month: 'long',
-                                        year: 'numeric',
-                                    })
-                                )
-                            ] || [];
-                        acc[
-                            String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
-                        ].push(current);
-                        return acc;
-                    }, {});
+                                String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
+                            ] =
+                                acc[
+                                    String(
+                                        reformatDate(current?.transaction?.transaction_date, {
+                                            month: 'long',
+                                            year: 'numeric',
+                                        })
+                                    )
+                                ] || [];
+                            acc[
+                                String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
+                            ].push(current);
+                            return acc;
+                        }, {});
 
-                    let result = Object.keys(results).map((key, index) => {
-                        return {
-                            id: index + 1,
-                            month: key,
-                            data: results[key],
-                        };
-                    });
-                    setHistoryData(result);
-                    setHistoryItem(result[0]?.data[0]);
-                    // console.log('RESPOND DATA', response.data);
-                } catch (error) {
-                    console.log(error.message.data);
-                }
-            };
-            fetchBooking();
+                        let result = Object.keys(results).map((key, index) => {
+                            return {
+                                id: index + 1,
+                                month: key,
+                                data: results[key],
+                            };
+                        });
+                        setHistoryData(result);
+                        setHistoryItem(result[0]?.data[0]);
+                        // console.log('RESPOND DATA', response.data);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                };
+                fetchBooking();
+            }
+            setFetchStatus(false);
         }
-        setFetchStatus(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchStatus, token]);
 
     console.log('DATA HISTORy', historyData);
     return (
-        <>
+        <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
             {/* DESKTOP MODE */}
-            <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
-                <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
-                <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
-                    <div
-                        className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
-                        onClick={() => router.push('/')}>
-                        <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
-                        <p>Beranda</p>
-                    </div>
-                    <div className='col-span-2 flex items-center gap-4'>
-                        <Button className='flex items-center gap-2 rounded-rad-4 border-[1px] border-pur-4 px-2 py-[4px] text-title-2'>
-                            <FiFilter className='h-5 w-5 text-net-3 ' /> Filter
-                        </Button>
-                        <IoSearchSharp className='h-6 w-6 text-pur-4' />
+
+            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
+                    <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
+                    <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
+                        <div
+                            className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                            onClick={() => router.push('/')}>
+                            <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
+                            <p>Beranda</p>
+                        </div>
+                        <div className='col-span-2 flex items-center gap-4'>
+                            <Button className='flex items-center gap-2 rounded-rad-4 border-[1px] border-pur-4 px-2 py-[4px] text-title-2'>
+                                <FiFilter className='h-5 w-5 text-net-3 ' /> Filter
+                            </Button>
+                            <IoSearchSharp className='h-6 w-6 text-pur-4' />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -302,9 +310,7 @@ export default function History() {
                                                                     </div>
                                                                     <div>
                                                                         <h3 className='text-body-5 font-bold text-pur-5'>
-                                                                            {formatRupiah(
-                                                                                historyItem?.transaction?.Flights[0]?.price
-                                                                            )}
+                                                                            {formatRupiah(historyItem?.price?.total)}
                                                                         </h3>
                                                                     </div>
                                                                 </div>
@@ -336,7 +342,96 @@ export default function History() {
                                             </span>
                                         </h2>
                                         {historyItem?.transaction?.Flights[0] && (
-                                            <div>
+                                            <div className={`${historyItem?.transaction?.Flights[1] && 'mt-3'} `}>
+                                                {historyItem?.transaction?.Flights[1] && (
+                                                    <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
+                                                        Keberangkatan
+                                                    </h1>
+                                                )}
+                                                <div className='flex justify-between'>
+                                                    <div>
+                                                        <h1 className='text-title-2 font-bold'>
+                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.departure_time)}
+                                                        </h1>
+                                                        <h1 className='text-body-6'>
+                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.departure_date)}
+                                                        </h1>
+                                                        <h1 className='text-body-6 font-medium'>
+                                                            {historyItem?.transaction?.Flights[0]?.Airport_from?.airport_name}
+                                                        </h1>
+                                                    </div>
+                                                    <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
+                                                </div>
+                                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='relative h-[24px] w-[24px] '>
+                                                        <Image src={'/images/flight_badge.svg'} fill alt='' />
+                                                    </div>
+                                                    <div className='flex flex-col gap-4'>
+                                                        <div>
+                                                            <h3 className='text-body-5 font-bold'>
+                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_name} -{' '}
+                                                                {historyItem?.transaction?.Flights[0]?.flight_class}
+                                                            </h3>
+                                                            <h3 className='text-body-5 font-bold'>
+                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_code}
+                                                            </h3>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                                            <div>
+                                                                {historyItem?.transaction?.Passengers &&
+                                                                    historyItem?.transaction?.Passengers?.map(
+                                                                        (passenger, index) => {
+                                                                            return (
+                                                                                <div key={index} className=''>
+                                                                                    <h1 className='text-body-5 font-medium text-pur-5'>
+                                                                                        Penumpang {index + 1}:{' '}
+                                                                                        <span className='ml-1'>
+                                                                                            {passenger.title}
+                                                                                            {passenger.name}
+                                                                                        </span>
+                                                                                    </h1>
+                                                                                    <h2>
+                                                                                        ID:{' '}
+                                                                                        <span className='ml-1'>
+                                                                                            {passenger.nik_paspor}
+                                                                                        </span>
+                                                                                    </h2>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='mb-4 mt-2 w-full border text-net-3'></div>
+                                                <div className='flex justify-between'>
+                                                    <div>
+                                                        <h1 className='text-title-2 font-bold'>
+                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.arrival_time)}
+                                                        </h1>
+                                                        <h1 className='text-body-6'>
+                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.arrival_date)}
+                                                        </h1>
+                                                        <h1 className='text-body-6 font-medium'>
+                                                            {historyItem?.transaction?.Flights[0]?.Airport_to.airport_name}
+                                                        </h1>
+                                                    </div>
+                                                    <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div
+                                            className={`${
+                                                historyItem?.transaction?.Flights[1] ? 'block' : 'hidden'
+                                            } mb-2 mt-4 w-full border text-net-3`}></div>
+                                        {historyItem?.transaction?.Flights[1] && (
+                                            <div className='mt-3'>
+                                                <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
+                                                    Kepulangan
+                                                </h1>
                                                 <div className='flex justify-between'>
                                                     <div>
                                                         <h1 className='text-title-2 font-bold'>
@@ -489,12 +584,12 @@ export default function History() {
                         </div>
                     )}
 
-                    <AlertBottom
+                    {/* <AlertBottom
                         visibleAlert={visibleAlert}
                         handleVisibleAlert={handleVisibleAlert}
                         text={alertText}
                         type={alertType}
-                    />
+                    /> */}
                 </div>
             </div>
 
@@ -716,6 +811,13 @@ export default function History() {
                 <BottomNavbar />
             </div> */}
             {/* MOBILE MODE */}
-        </>
+            <AlertTop
+                visibleAlert={visibleAlert}
+                handleVisibleAlert={handleVisibleAlert}
+                text={alertText}
+                type={alertType}
+                bgType='none'
+            />
+        </div>
     );
 }

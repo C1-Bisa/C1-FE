@@ -7,7 +7,7 @@ export const config = {
         '/reset-password/:path/:path',
         '/history/:path',
         '/notifikasi/:path',
-        '/order/:path',
+        // '/order/:path',
         '/order/:path/:path',
         '/order/:path/:path/:path',
     ],

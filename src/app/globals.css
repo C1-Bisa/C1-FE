@@ -17,21 +17,21 @@ input[type='password']::-ms-clear {
     display: none;
 }
 
-/*Scroll bar nav*/
-::-webkit-scrollbar {
+/* Scroll bar nav */
+/* ::-webkit-scrollbar {
     width: auto;
-}
+} */
 
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
     -webkit-box-shadow: auto;
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
@@ -39,7 +39,7 @@ input[type='password']::-ms-clear {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
     background: auto;
-}
+} */
 
 /* Date Range Picker start */
 .react-daterange-picker__calendar,

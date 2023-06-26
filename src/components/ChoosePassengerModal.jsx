@@ -1,20 +1,26 @@
 'use client';
 
+//Core
 import Image from 'next/image';
+
+//Third Parties
+import { FiPlus, FiMinus } from 'react-icons/fi';
+
+//Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { getAnakPassenger, getBayiPassenger, getDewasaPassenger, flightSlice } from '../store/flight';
+
+//Components
 import Card from './Card';
 import Input from './Input';
 import Button from './Button';
-import { FiPlus, FiMinus } from 'react-icons/fi';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { getAnakPassenger, getBayiPassenger, getDewasaPassenger, flightSlice } from '../store/flight';
+//Utils
+//---
 
 export default function ChoosePassengerTypeModal({ handleOpenPassengerModal }) {
+    //redux
     const dispatch = useDispatch();
-    const dewasaPassenger = useSelector(getDewasaPassenger);
-    const anakPassenger = useSelector(getAnakPassenger);
-    const bayiPassenger = useSelector(getBayiPassenger);
-
     const {
         addAnakPassenger,
         addBayiPassenger,
@@ -23,6 +29,9 @@ export default function ChoosePassengerTypeModal({ handleOpenPassengerModal }) {
         minusBayiPassenger,
         minusDewasaPassenger,
     } = flightSlice.actions;
+    const dewasaPassenger = useSelector(getDewasaPassenger);
+    const anakPassenger = useSelector(getAnakPassenger);
+    const bayiPassenger = useSelector(getBayiPassenger);
 
     const passengerType = [
         {
