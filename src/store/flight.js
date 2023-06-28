@@ -301,33 +301,136 @@ export const flightSlice = createSlice({
         // SWITCHING TO TWAY
         setIsTwoWay: (state, action) => {
             if (action.payload === false && state.choosedFlight.flight_1.is_choose && state.choosedFlight.flight_2.is_choose) {
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+                state.searchPage.search_date_return = '';
                 state.searchPage.from = state.homeSearch.from;
                 state.searchPage.to = state.homeSearch.to;
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
                 // state.flight_title = 'Keberangkatan';
+                // state.searchPage.isSearchAgain = true;
+                // state.fetchFlightStatusTwo = 'idle';
                 state.isTwoWay = action.payload;
                 return;
             }
 
             if (action.payload === false && state.choosedFlight.flight_1.is_choose) {
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+                state.searchPage.search_date_return = '';
                 state.searchPage.from = state.homeSearch.from;
                 state.searchPage.to = state.homeSearch.to;
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
                 // state.flight_title = 'Keberangkatan';
+                // state.searchPage.isSearchAgain = true;
+                // state.fetchFlightStatusTwo = 'idle';
                 state.isTwoWay = action.payload;
                 return;
             }
 
             if (action.payload === false) {
+                state.choosedFlight.flight_1.is_choose = false;
+                state.choosedFlight.flight_1.flight_id = '';
+                state.choosedFlight.flight_1.airline = '';
+                state.choosedFlight.flight_1.from = '';
+                state.choosedFlight.flight_1.from_airport_name = '';
+                state.choosedFlight.flight_1.from_airport_code = '';
+                state.choosedFlight.flight_1.to = '';
+                state.choosedFlight.flight_1.to_airport_name = '';
+                state.choosedFlight.flight_1.to_airport_code = '';
+                state.choosedFlight.flight_1.departure_date = '';
+                state.choosedFlight.flight_1.departure_time = '';
+                state.choosedFlight.flight_1.arrival_date = '';
+                state.choosedFlight.flight_1.arrival_time = '';
+                state.choosedFlight.flight_1.duration = '';
+
+                state.choosedFlight.flight_2.is_choose = false;
+                state.choosedFlight.flight_2.flight_id = '';
+                state.choosedFlight.flight_2.airline = '';
+                state.choosedFlight.flight_2.from = '';
+                state.choosedFlight.flight_2.from_airport_name = '';
+                state.choosedFlight.flight_2.from_airport_code = '';
+                state.choosedFlight.flight_2.to = '';
+                state.choosedFlight.flight_2.to_airport_name = '';
+                state.choosedFlight.flight_2.to_airport_code = '';
+                state.choosedFlight.flight_2.departure_date = '';
+                state.choosedFlight.flight_2.departure_time = '';
+                state.choosedFlight.flight_2.arrival_date = '';
+                state.choosedFlight.flight_2.arrival_time = '';
+                state.choosedFlight.flight_2.duration = '';
+
+                state.searchPage.search_date = state.homeSearch.departure_dateTime;
+                state.searchPage.search_date_return = '';
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
                 state.flight_title = 'Keberangkatan';
+                // state.searchPage.isSearchAgain = true;
+                // state.fetchFlightStatusTwo = 'idle';
                 state.isTwoWay = action.payload;
                 return;
             }
 
+            // state.searchPage.search_date_return = '';
             state.homeSearch.flight_type = 'Round Trip';
             state.isTwoWay = action.payload;
         },
@@ -861,15 +964,17 @@ export const flightSlice = createSlice({
         setHomePageSearchDeparture: (state, action) => {
             state.homeSearch.departure_dateTime = action.payload;
             state.searchPage.search_date = action.payload;
-            if (!state.searchPage.departure_date || !state.searchPage.departure_time) {
-                state.searchPage.departure_date = convertToDate(action.payload);
-                state.searchPage.departure_time = convertToTime(action.payload);
-            }
+            // if (!state.searchPage.departure_date || !state.searchPage.departure_time) {
+            //     state.searchPage.departure_date = convertToDate(action.payload);
+            //     state.searchPage.departure_time = convertToTime(action.payload);
+            // }
         },
 
         setHomePageSearchReturn: (state, action) => {
             state.homeSearch.return_dateTime = action.payload;
-            state.searchPage.search_date_return = action.payload;
+            if (state.isTwoWay) {
+                state.searchPage.search_date_return = action.payload;
+            }
         },
 
         setHomePageSearchFrom: (state, action) => {
@@ -904,16 +1009,16 @@ export const flightSlice = createSlice({
                 return;
             }
             // two way : while we choosing second flight
-            if (action.payload !== state.homeSearch.return_dateTime && state.isTwoWay && state.choosedFlight.flight_1.is_choose) {
-                if (new Date(action.payload) < new Date(state.homeSearch.departure_dateTime)) {
-                    console.log('====================================');
-                    console.log('STATE OUTPUT LU LEBIH KECIL');
-                    console.log('====================================');
-                }
-                state.homeSearch.return_dateTime = action.payload;
-                state.searchPage.search_date = action.payload;
-                return;
-            }
+            // if (action.payload !== state.homeSearch.return_dateTime && state.isTwoWay && state.choosedFlight.flight_1.is_choose) {
+            //     if (new Date(action.payload) < new Date(state.homeSearch.departure_dateTime)) {
+            //         console.log('====================================');
+            //         console.log('STATE OUTPUT LU LEBIH KECIL');
+            //         console.log('====================================');
+            //     }
+            //     state.homeSearch.return_dateTime = action.payload;
+            //     state.searchPage.search_date = action.payload;
+            //     return;
+            // }
             state.searchPage.search_date = action.payload;
         },
 

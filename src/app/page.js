@@ -29,6 +29,7 @@ import Input from '@/components/Input';
 import BottomNavbar from '@/components/BottomNavbar';
 import { useState } from 'react';
 import ToggleRotate from '@/components/ToggleRotate';
+import Label from '@/components/Label';
 
 //Utils
 //----
@@ -147,10 +148,10 @@ export default function Home() {
                 }}
             />
 
-            <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12  font-poppins lg:grid'>
+            <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                 <div className='col-span-12 grid grid-cols-12'>
                     <h1 className='col-span-12 mb-4 text-title-2 font-bold'>Destinasi Favorit</h1>
-                    <div className='col-span-12 flex items-center  gap-4'>
+                    <div className='col-span-12 flex items-center gap-4'>
                         {menuDataShape &&
                             menuDataShape.map((menu, index) => {
                                 return (
@@ -170,7 +171,7 @@ export default function Home() {
                     {destinationDataShape &&
                         destinationDataShape.map((destination, index) => {
                             return (
-                                <div key={index} className='col-span-3  rounded-rad-2 p-1 shadow-low'>
+                                <div key={index} className='col-span-3 rounded-rad-2 p-1 shadow-low'>
                                     <div className='relative h-[140px] w-full'>
                                         <Image alt='' src={destination.imgUrl} fill style={{ objectFit: 'cover' }} />
                                     </div>
@@ -192,26 +193,26 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className='mx-auto hidden  h-screen max-w-screen-lg lg:block'>
+            <div className='mx-auto hidden h-screen max-w-screen-lg lg:block'>
                 <h1 className='mt-5'>Content</h1>
             </div>
             {/* DEKSTOP MODE */}
 
             {/* RESPONSIVE MODE */}
-            <div className='h-screen  font-poppins lg:hidden '>
-                <div style={{ height: 'calc(100vh - 40vh)' }} className='bg-pur-3  px-4'>
+            <div className='h-screen font-poppins lg:hidden '>
+                <div style={{ height: 'calc(100vh - 40vh)' }} className='bg-pur-3 px-4 '>
                     <h1 className='pt-[32px] text-head-2 font-bold text-white'>Hei, Mau Kemana</h1>
-                    <div className=' mt-2 grid grid-cols-12 rounded-rad-2 bg-white'>
+                    <div className='mt-2 grid grid-cols-12 rounded-rad-2 bg-white shadow-low'>
                         {/* form airport */}
                         <div className='col-span-12 m-5 border px-1'>
                             <div>
                                 <div className='grid grid-cols-12'>
-                                    <div className='col-span-3 flex items-center gap-2  text-net-3'>
+                                    <div className='col-span-3 flex items-center gap-2 text-net-3'>
                                         <MdFlightTakeoff />
                                         <p className='text-body-4'>From</p>
                                     </div>
                                     <Input
-                                        className='col-span-9 border-b-0 border-l-0 border-r-0 border-t-0  py-3 font-poppins text-title-1 font-medium'
+                                        className='col-span-9 border-b-0 border-l-0 border-r-0 border-t-0 py-3 font-poppins text-title-1 font-medium'
                                         placeholder={'Silahkan pilih lokasi...'}
                                         readOnly
                                         // value={chosenFromAirport}
@@ -227,12 +228,12 @@ export default function Home() {
                                     />
                                 </div>
                                 <div className='grid grid-cols-12'>
-                                    <div className='col-span-3 flex items-center gap-2  text-net-3'>
+                                    <div className='col-span-3 flex items-center gap-2 text-net-3'>
                                         <MdFlightTakeoff />
                                         <p className='text-body-4'>to</p>
                                     </div>
                                     <Input
-                                        className='col-span-9 border-b-0 border-l-0 border-r-0 border-t-0  py-3 font-poppins text-title-1 font-medium'
+                                        className='col-span-9 border-b-0 border-l-0 border-r-0 border-t-0 py-3 font-poppins text-title-1 font-medium'
                                         placeholder={'Silahkan pilih lokasi...'}
                                         readOnly
                                         // value={chosenFromAirport}
@@ -243,13 +244,125 @@ export default function Home() {
                             </div>
                         </div>
                         {/* form airport */}
-                        <div className='col-spam-12 flex justify-between item'>
 
+                        {/* toggle switch */}
+                        <div className='col-span-12 flex items-center justify-between px-4'>
+                            <h1 className='text-body-6 font-medium'>Pulang Pergi</h1>
+                            <ToggleSwitch
+                                // isToggle={isTwoWay}
+                                // handleToggleAction={handleCalendarToggleAction}
+                                id={'toggle_calendar'}
+                                // className={'absolute right-[-36px]'}
+                            />
                         </div>
+                        {/* toggle switch */}
+
+                        {/* choose airport */}
+                        <div className='col-span-12 my-4 grid grid-cols-12 gap-2 px-4'>
+                            <div className='col-span-6 flex items-center gap-3'>
+                                <MdDateRange className='h-[40px] w-[40px] text-net-4' />
+                                <div>
+                                    <Label className='font-poppins text-body-6 font-medium text-net-3' htmlFor={'departure'}>
+                                        Departure
+                                    </Label>
+
+                                    <Input
+                                        id={'departure'}
+                                        readOnly
+                                        // value={formatToLocale(homeSearch.departure_dateTime)}
+                                        // onClick={handleOpenCalendar}
+                                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-span-6 flex items-center gap-3'>
+                                <MdDateRange className='h-[40px] w-[40px] text-net-4' />
+                                <div>
+                                    <Label className='font-poppins text-body-6 font-medium text-net-3' htmlFor={'return'}>
+                                        Return
+                                    </Label>
+
+                                    <Input
+                                        id={'return'}
+                                        readOnly
+                                        // value={formatToLocale(homeSearch.departure_dateTime)}
+                                        // onClick={handleOpenCalendar}
+                                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-span-6 flex items-center gap-3'>
+                                <FaUser className='h-[36px] w-[36px] text-net-4' />
+                                <div>
+                                    <Label className='font-poppins text-body-6 font-medium text-net-3' htmlFor={'passenger'}>
+                                        Passengers
+                                    </Label>
+                                    <Input
+                                        id={'passenger'}
+                                        readOnly
+                                        // onClick={handleOpenPassengerModal}
+                                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                                        // value={`${totalPassenger} penumpang`}
+                                        placeholder={'10 penumpang'}
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-span-6 flex items-center gap-3'>
+                                <MdAirlineSeatReclineNormal className='h-[44px] w-[44px] text-net-4' />
+                                <div>
+                                    <Label className='font-poppins text-body-6 font-medium text-net-3' htmlFor={'seat'}>
+                                        Seat Class
+                                    </Label>
+                                    <Input
+                                        id={'seat'}
+                                        readOnly
+                                        // onClick={handleOpenFlightClassModal}
+                                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                                        // value={flightClass}
+                                        placeholder={'Pilih kelas pesawat'}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='col-span-12 mt-6'>
+                                <Button className='font-body-6 w-full rounded-rad-2 bg-pur-3 py-3 text-white'>
+                                    Cari Penerbangan
+                                </Button>
+                            </div>
+                        </div>
+                        {/* choose airport */}
                     </div>
                 </div>
-                <div style={{ height: 'calc(100vh - 60vh)' }} className='bg-white  px-4'>
-                    <h1>Content 2</h1>
+                <div className='mt-[120px] px-4 '>
+                    <h1 className='text-title-2 font-bold'>Destinasi Favorit</h1>
+                    <div className='mt-8 grid grid-cols-12 gap-3 '>
+                        {destinationDataShape &&
+                            destinationDataShape.map((destination, index) => {
+                                return (
+                                    <div key={index} className='col-span-6 rounded-rad-2 p-2 shadow-low'>
+                                        <div className='relative h-[140px] w-full'>
+                                            <Image alt='' src={destination.imgUrl} fill style={{ objectFit: 'cover' }} />
+                                        </div>
+                                        <div className='flex flex-col gap-1'>
+                                            <div className='flex items-center gap-2'>
+                                                <h1 className='text-body-4 font-medium'>{destination.from}</h1>
+                                                <p>{'->'}</p>
+                                                <h1 className='text-body-4 font-medium'>{destination.to}</h1>
+                                            </div>
+                                            <p className='text-body-4 font-bold text-pur-3'>AirAsia</p>
+                                            <p className='text-body-4 font-medium'>20 - 30 Maret 2023</p>
+                                            <p className='text-body-4 text-black'>
+                                                Mulai dari <span className='font-bold text-alert-3'>IDR 950.000</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </div>
+                </div>
+
+                <div className='mt-[50px] h-screen px-4'>
+                    <h1 className=''>Content</h1>
                 </div>
 
                 <BottomNavbar />

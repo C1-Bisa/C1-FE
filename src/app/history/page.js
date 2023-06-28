@@ -213,7 +213,7 @@ export default function History() {
     console.log('DATA HISTORy', historyData);
     if (isLoading) {
         return (
-            <div className='overflow-x-hidden'>
+            <div className='hidden overflow-x-hidden lg:block'>
                 <Navbar className={'hidden lg:block'} />
                 {/* DESKTOP MODE */}
 
@@ -238,7 +238,7 @@ export default function History() {
                 </div>
                 <div
                     style={{ height: 'calc(100vh - 270px)' }}
-                    className=' container mx-auto   hidden max-w-screen-lg flex-col items-center  justify-center gap-3  font-poppins lg:flex'>
+                    className='container mx-auto hidden max-w-screen-lg flex-col items-center justify-center gap-3 font-poppins lg:flex'>
                     <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>
                     <Image alt='' src={'/new_images/loading.svg'} width={200} height={200} priority style={{ width: 'auto' }} />
                 </div>
@@ -272,7 +272,7 @@ export default function History() {
 
             <div
                 style={{ height: 'calc(100vh - 270px)' }}
-                className='container mx-auto  hidden max-w-screen-lg font-poppins lg:block'>
+                className='container mx-auto hidden max-w-screen-lg font-poppins lg:block'>
                 <div className='grid grid-cols-12 '>
                     {historyData.length > 0 ? (
                         <div className='col-span-12 grid grid-cols-12 gap-10'>
@@ -923,6 +923,52 @@ export default function History() {
                 </div>
                 <BottomNavbar />
             </div> */}
+
+            <div className='h-screen bg-pur-3 font-poppins lg:hidden'>
+                <div className='mx-4 flex items-center justify-between pt-8 text-head-2 font-bold text-white'>
+                    <h1>Riwayat Pesanan</h1>
+                    <MdSearch className='h-6 w-6' />
+                </div>
+                <div className='mx-4 mt-8 flex justify-end'>
+                    <Button className='flex items-center gap-2 rounded-rad-4 bg-white px-3 py-1 text-body-6'>
+                        <FiFilter /> Filter
+                    </Button>
+                </div>
+
+                <div className='mx-4 mt-3'>
+                    <h1 className='text-title-1 font-bold text-white'>Januari</h1>
+                    <div className='mt-4 flex flex-col gap-2'>
+                        <div className='rounded-rad-3 bg-white p-4'>
+                            {/* status */}
+                            <p className='w-max rounded-rad-4 bg-alert-3 px-3 py-1 text-body-6 text-white'>unpaid</p>
+                            {/* status */}
+                            <div className='mt-6 flex items-center justify-between'>
+                                <div className='flex items-start gap-2'>
+                                    <IoLocationSharp className='h-[24px] w-[24px] text-net-3' />
+                                    <div className='text-body-6'>
+                                        <p className='font-bold'>Jakarta</p>
+                                        <p>5 Maret 2023</p>
+                                        <p>19:10</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1>4h</h1>
+                                    <div className='w-full border'></div>
+                                </div>
+                                <div className='flex items-start gap-2'>
+                                    <IoLocationSharp className='h-[24px] w-[24px] text-net-3' />
+                                    <div className='text-body-6'>
+                                        <p className='font-bold'>Jakarta</p>
+                                        <p>5 Maret 2023</p>
+                                        <p>19:10</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <BottomNavbar />
+            </div>
             {/* MOBILE MODE */}
             <AlertTop
                 visibleAlert={visibleAlert}

@@ -135,8 +135,8 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     };
 
     const handlePickedRangeDate = (date) => {
+        dispatch(setHomePageSearchReturn(dayjs(date).tz('Asia/Jakarta').format()));
         setPickedRangeDate((prev) => {
-            dispatch(setHomePageSearchReturn(dayjs(date).tz('Asia/Jakarta').format()));
             if (prev[0] !== pickedDate) {
                 return [pickedDate, date];
             }
@@ -147,7 +147,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
     //OPEN CALENDAR RANGE
     const handleCalendarToggleAction = () => {
-        dispatch(setIsTwoWay(isTwoWay ? false : true));
+        dispatch(setIsTwoWay(!isTwoWay));
     };
 
     const handleToggleAction = () => {
@@ -172,10 +172,10 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     }, [pickedDate, dispatch, setHomePageSearchDeparture]);
 
     useEffect(() => {
-        if (pickedRangeDate && Array.isArray(pickedRangeDate)) {
+        if (pickedRangeDate && Array.isArray(pickedRangeDate && isTwoWay)) {
             dispatch(setHomePageSearchReturn(dayjs(pickedRangeDate[1]).tz('Asia/Jakarta').format()));
         }
-    }, [pickedRangeDate, dispatch, setHomePageSearchReturn]);
+    }, [pickedRangeDate, dispatch, setHomePageSearchReturn, isTwoWay]);
 
     return (
         <>

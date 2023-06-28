@@ -1,16 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import flightSlice from './flight';
-import ticketSlice from './ticket';
-import scheduleSlice from './schedule';
-import airportSlice from './airport';
-import passengerSlice from './passenger';
-import historySlice from './history';
-import testSlice from './test';
+import flightSlice from './flight'; //Your Slice
+import ticketSlice from './ticket'; //Your Slice
+import scheduleSlice from './schedule'; //Your Slice
+import airportSlice from './airport'; //Your Slice
+import passengerSlice from './passenger'; //Your Slice
+import historySlice from './history'; //Your Slice
+import testSlice from './test'; //Your Slice
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { persistReducer, persistStore } from 'redux-persist';
 import thunk from 'redux-thunk';
 
+//wajib
 const createNoopStorage = () => {
     return {
         getItem(_key) {
@@ -25,8 +26,10 @@ const createNoopStorage = () => {
     };
 };
 
+//storage configure
 const storage = typeof window !== 'undefined' ? createWebStorage('session') : createNoopStorage();
 
+//name
 const persistConfig = {
     key: 'flight',
     storage,

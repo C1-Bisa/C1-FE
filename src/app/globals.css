@@ -18,20 +18,20 @@ input[type='password']::-ms-clear {
 }
 
 /* Scroll bar nav */
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: auto;
-} */
+}
 
 /* Track */
-/* ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     -webkit-box-shadow: auto;
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
-} */
+}
 
 /* Handle */
-/* ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
@@ -39,7 +39,7 @@ input[type='password']::-ms-clear {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
     background: auto;
-} */
+}
 
 /* Date Range Picker start */
 .react-daterange-picker__calendar,
@@ -147,7 +147,7 @@ input[type='password']::-ms-clear {
 }
 
 .react-calendar__tile--active.react-calendar__tile--rangeStart {
-    background: #7126b5;
+    background: #002714;
     border-bottom-left-radius: 8px;
     border-top-left-radius: 8px;
 
@@ -155,14 +155,14 @@ input[type='password']::-ms-clear {
 }
 
 .react-calendar__tile--active.react-calendar__tile--rangeEnd {
-    background: #7126b5;
+    background: #002714;
     border-bottom-right-radius: 8px;
     border-top-right-radius: 8px;
     color: white;
 }
 
 .react-calendar__tile--active {
-    background: #d0b7e6;
+    background: #00cf6c;
     color: black;
 }
 
@@ -184,20 +184,20 @@ abbr[title] {
 }
 
 .react-calendar__tile--hasActive {
-    background: #7126b5;
+    background: #002714;
     border-radius: 8px;
     color: white;
 }
 
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-    background: #7126b5;
+    background: #002714;
     color: white;
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-    background-color: #7126b5;
+    background-color: #002714;
 }
 
 .react-daterange-picker__wrapper {
