@@ -16,7 +16,7 @@ export default function ToggleSwitch({ className, id, isToggle, handleToggleActi
                     className='peer h-0 w-0 opacity-0'
                 />
 
-                <span className='absolute bottom-0 left-0 right-0 top-0 cursor-pointer rounded-[20px] bg-pur-3 transition duration-300 before:absolute before:bottom-[2px] before:left-[2px] before:h-[20px] before:w-[20px] before:cursor-pointer before:rounded-[20px] before:bg-white before:transition before:duration-300 before:content-[""] peer-checked:bg-pur-5 peer-checked:before:translate-x-[16px]' />
+                <span className='absolute bottom-0 left-0 right-0 top-0 cursor-pointer rounded-[20px] bg-net-3 transition duration-300 before:absolute before:bottom-[2px] before:left-[2px] before:h-[20px] before:w-[20px] before:cursor-pointer before:rounded-[20px] before:bg-white before:transition before:duration-300 before:content-[""] peer-checked:bg-pur-5 peer-checked:before:translate-x-[16px]' />
             </Label>
         </div>
     );

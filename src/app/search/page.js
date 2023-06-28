@@ -44,6 +44,7 @@ import {
     getFlightDetailData,
     getFlightDetailDataStatus,
     getFlightDetailId,
+    getFetchFlightStatusNew,
 } from '@/store/flight';
 
 //Components
@@ -72,20 +73,19 @@ export default function SearchFlight() {
     /*=== redux ===*/
     const dispatch = useDispatch();
     const {
-        // setDerpatureDateTime,
         setChoosedFlight,
-        setFetchFlightStatus,
         setResetChoosedFlight,
         setSearchPageDate,
         setSearchPageIsSearchAgain,
-        setFetchTerbaru,
+        setFetchFlightAgain,
         setIsReadyToOrder,
         setFetchDetailFlight,
     } = flightSlice.actions;
     const flightTitle = useSelector(getFlightTitle);
     const isReadyToOrder = useSelector(getIsReadyToOrder);
-    const statusFetch = useSelector(getFlightDatasStatus);
-    const statusDetaiFlight = useSelector(getFlightDetailDataStatus);
+    const statusFetchFlight = useSelector(getFlightDatasStatus);
+    // const statusDetaiFlight = useSelector(getFlightDetailDataStatus);
+    const statusFetchDetaiFlight = useSelector(getFlightDetailDataStatus);
     const detailFlight = useSelector(getFlightDetailData);
     const homeSearch = useSelector(getHomeSearch);
     const searchPage = useSelector(getSearchPage);
@@ -99,17 +99,14 @@ export default function SearchFlight() {
     const flighClass = useSelector(getFlightClass); // used in flight pass purple
 
     /*=== state ===*/
-    const [values, setValues] = useState([]);
+    // const [values, setValues] = useState([]);
+    const [dateOfWeek, setDateOfWeek] = useState([]);
     const [openHomeSearch, setOpenHomeSearch] = useState(false);
-    const [isSearchAgain, setIsSearchAgain] = useState(false);
     const [openDetailFlight, setOpenDetailFlight] = useState(false);
     const [isDetail, setIsDetail] = useState(false);
     const [chosenDetailFlight, setChosenDetailFlight] = useState(0);
     const [openChooseFilterFlight, setOpenChooseFilterFlight] = useState(false);
     const [selectDate, setSelectDate] = useState(new Date(searchPage.search_date) || '');
-    const [selectOffsetDate, setSelectOffsetDate] = useState(
-        new Date(searchPage.search_date_return || homeSearch.return_dateTime) || ''
-    );
 
     /*=== function ===*/
     const handleDetailFlight = () => setOpenDetailFlight(!openDetailFlight);
@@ -130,34 +127,28 @@ export default function SearchFlight() {
     const chooseDate = (value) => {
         setSelectDate(value);
         dispatch(setSearchPageDate(dayjs(value).tz('Asia/Jakarta').format()));
-        dispatch(setFetchTerbaru());
+        dispatch(setFetchFlightAgain());
     };
 
     /*=== DEBUG STATE ===*/
     console.log('====================================');
-    console.log('choose flight 1', choosedFlight1);
-    console.log('choose flight 2', choosedFlight2);
-    console.log('INIIII', flightData);
-    console.log('dayofWeek', values);
+    console.log('DATA HOME', homeSearch);
+    console.log('DATA SEARCH', searchPage);
+    // console.log('INIIII', flightData);
+    // console.log('dayofWeek', values);
     console.log('====================================');
 
     /*=== effects ===*/
     useEffect(() => {
-        if (searchAgain === false) {
-            dispatch(setSearchPageIsSearchAgain(true));
-        }
+        const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime, searchPage.search_date_return);
+        // const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime);
 
-        // const date = getDateInRange(new Date(searchPage.search_date || homeSearch.departure_dateTime), selectOffsetDate);
-        // // console.log('generated date: ', date);
-        // setValues(date);
-
+        setDateOfWeek(date);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchAgain]);
+    }, []);
 
     useEffect(() => {
-        const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
-
-        if (statusFetch === 'idle') {
+        if (statusFetchFlight === 'idle') {
             dispatch(
                 fetchFlight({
                     from: searchPage.from || homeSearch.from,
@@ -170,48 +161,11 @@ export default function SearchFlight() {
             );
         }
 
-        // if (fetchFlightStatus) {
-        //     const fetchFlight = async ({ from, to, departure_date, departure_time, returnDate, flight_class }) => {
-        //         try {
-        //             const objectTemplate = {
-        //                 from,
-        //                 to,
-        //                 departure_date,
-        //                 departure_time,
-        //                 returnDate,
-        //                 flight_class,
-        //             };
-        //             const response = await axios.post(SEARCH_URL, objectTemplate);
-        //             setFlightData(response.data.data.flight);
-        //         } catch (error) {
-        //             console.log('hehee', error);
-        //             return error.message;
-        //         }
-        //     };
-        //     fetchFlight({
-        //         from: searchPage.from || homeSearch.from,
-        //         to: searchPage.to || homeSearch.to,
-        //         departure_date: convertToDate(selectDate) || convertToDate(homeSearch.departure_dateTime),
-        //         departure_time: convertToTime(selectDate) || convertToTime(homeSearch.departure_dateTime),
-        //         returnDate: '',
-        //         flight_class: homeSearch.flight_class,
-        //     });
-        //     // fetchFlight({
-        //     //     from: searchPage.from,
-        //     //     to: searchPage.to,
-        //     //     departure_date: convertToDate(selectDate),
-        //     //     departure_time: convertToTime(selectDate),
-        //     //     returnDate: '',
-        //     //     flight_class: homeSearch.flight_class,
-        //     // });
-        // }
-        // dispatch(setFetchFlightStatus(false));
-        // setFetchDataStatus(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [statusFetch, dispatch]);
+    }, [statusFetchFlight, dispatch]);
 
     useEffect(() => {
-        if (statusDetaiFlight === 'idle') {
+        if (statusFetchDetaiFlight === 'idle') {
             const detailFligt = {
                 flight_id: flightIDs,
                 dewasa: passengerType.dewasa,
@@ -229,22 +183,265 @@ export default function SearchFlight() {
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [statusDetaiFlight, dispatch, fetchDetailFlight]);
+    }, [statusFetchDetaiFlight, dispatch, fetchDetailFlight]);
 
     useEffect(() => {
         if (searchAgain) {
-            const date = getDateInRange(
-                searchPage.search_date || homeSearch.departure_dateTime,
-                searchPage.search_date_return || homeSearch.return_dateTime
-            );
-            setValues(date); // ketika dia di masukin data ? kalo refresh knapa g ada data
+            const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime, searchPage.search_date_return);
+            // const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime);
+            setDateOfWeek(date); // ketika dia di masukin data ? kalo refresh knapa g ada data
             setSelectDate(new Date(searchPage.search_date || homeSearch.departure_dateTime));
         }
         dispatch(setSearchPageIsSearchAgain(false));
-        dispatch(setFetchTerbaru());
+        dispatch(setFetchFlightAgain());
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchAgain, dispatch, setSearchPageIsSearchAgain]);
+    }, [searchAgain, dispatch, setSearchPageIsSearchAgain, setFetchFlightAgain]);
+
+    if (statusFetchFlight === 'loading') {
+        return (
+            <div className='overflow-x-hidden'>
+                <Navbar className={'hidden lg:block'} />
+                <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                    <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
+                        {/* search flight menu start */}
+                        <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Pilih Penerbangan</h1>
+                        <div className='frid col-span-12 grid grid-cols-12 gap-4'>
+                            <div
+                                className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 font-poppins text-title-2 font-medium text-white'
+                                onClick={() => router.back()}>
+                                <FiArrowLeft className='ml-[21px] h-6 w-6 ' />
+                                <p>
+                                    {searchPage.from || homeSearch.from} {' > '} {searchPage.to || homeSearch.to} -{' '}
+                                    {totalPassenger} Penumpang - {flighClass}
+                                </p>
+                            </div>
+                            <div
+                                className=' col-span-3 cursor-pointer rounded-rad-3 bg-alert-1 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
+                                onClick={() => handleOpenHomeSearch()}>
+                                <p>Ubah Pencarian</p>
+                            </div>
+                        </div>
+                        {/* search flight menu end */}
+
+                        {/* day of week start */}
+                        <div className='col-span-12 mt-[27px] grid grid-cols-8 divide-x-2'>
+                            {dateOfWeek?.length ? (
+                                dateOfWeek?.map((val, index) => (
+                                    <div
+                                        key={index}
+                                        className='col-span-1 cursor-pointer px-2'
+                                        onClick={() => chooseDate(val.date)}>
+                                        <div
+                                            className={`${
+                                                new Date(val.date).getDate() === new Date(selectDate).getDate()
+                                                    ? 'bg-pur-2 text-white'
+                                                    : 'text-[#151515]'
+                                            } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
+                                            <h3 className='text-[14px] font-bold'>
+                                                {val.date.toLocaleDateString('id-ID', { weekday: 'long' })}
+                                            </h3>
+                                            <p
+                                                className={`${
+                                                    new Date(val.date).getDate() === new Date(selectDate).getDate()
+                                                        ? 'text-white'
+                                                        : 'text-[#8A8A8A]'
+                                                } text-[12px] font-normal`}>
+                                                {val.date.toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <h1>Loadinggg</h1>
+                            )}
+                        </div>
+                        {/* day of week end */}
+                    </div>
+                </div>
+                <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
+                    <div className='col-span-12  mt-[40px] grid grid-cols-12 gap-10 font-poppins'>
+                        <div className='col-span-12 flex items-center justify-end'>
+                            <Button
+                                onClick={() => handleOpenChooseFilterFlight()}
+                                className='flex items-center gap-2 rounded-rad-4 border border-pur-4 px-3 py-2 font-poppins text-body-3 font-medium text-pur-4'>
+                                <RiArrowUpDownLine /> Termurah
+                            </Button>
+                        </div>
+                        {/* left flight start */}
+                        <div className='col-span-4'>
+                            <div className='rounded-rad-4 px-6 py-6 font-poppins shadow-low'>
+                                <div className='flex justify-between'>
+                                    <div className='flex items-center gap-2'>
+                                        <MdFlight className='h-[20px] w-[20px]' /> <h1>Your Flight</h1>
+                                    </div>
+                                    <h1 className='font-bold'>{homeSearch.flight_type}</h1>
+                                </div>
+                                <div className='mt-3 flex flex-col gap-3'>
+                                    {/* flight 1 */}
+                                    <div>
+                                        {homeSearch.from && (
+                                            <div className='flex flex-col gap-3 border border-net-3 p-2'>
+                                                <div className='flex items-center gap-4 '>
+                                                    <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                        <TbCircleNumber1 className='h-[24px] w-[24px] text-white' />
+                                                    </div>
+                                                    <div>
+                                                        <h1 className='text-body-3 font-medium'>
+                                                            {formatToLocale(homeSearch.departure_dateTime)}
+                                                        </h1>
+                                                        <div className='flex items-center gap-2 text-body-5 font-bold'>
+                                                            <h3>{homeSearch.from}</h3>
+                                                            <BsArrowRight />
+                                                            <h3>{homeSearch.to}</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {choosedFlight1.is_choose && (
+                                                    <div className='w-full'>
+                                                        <h1 className='text-title-2 font-bold'>{choosedFlight1.airline}</h1>
+                                                        <div className='flex items-center gap-4'>
+                                                            <div>
+                                                                <p className='text-body-6 font-bold'>
+                                                                    {fixedHour(choosedFlight1.departure_time)}
+                                                                </p>
+                                                                <p className='text-body-4 font-medium'>
+                                                                    {choosedFlight1.from_airport_code}
+                                                                </p>
+                                                            </div>
+                                                            <TbPlaneInflight />
+                                                            <div>
+                                                                <p className='text-body-6 font-bold'>
+                                                                    {fixedHour(choosedFlight1.arrival_time)}
+                                                                </p>
+                                                                <p className='text-body-4 font-medium'>
+                                                                    {choosedFlight1.to_airport_code}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p>{reformatDuration(choosedFlight1.duration)}</p>
+                                                                <p>Direct</p>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            onClick={() => handleResetChooseFlight()}
+                                                            className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                            Change departure flight
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* flight 1 */}
+
+                                    {/* fligth 2 */}
+                                    <div>
+                                        {homeSearch.return_dateTime && (
+                                            <div className='flex flex-col gap-3 border border-net-3 p-2'>
+                                                <div className='flex items-center gap-4'>
+                                                    <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                        <TbCircleNumber2 className='h-[24px] w-[24px] text-white' />
+                                                    </div>
+                                                    <div>
+                                                        <h1 className='text-body-3 font-medium'>
+                                                            {formatToLocale(homeSearch.return_dateTime)}
+                                                        </h1>
+                                                        <div className='flex items-center gap-2 text-body-5 font-bold'>
+                                                            <h3>{homeSearch.to}</h3>
+                                                            <BsArrowRight />
+                                                            <h3>{homeSearch.from}</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {choosedFlight2.is_choose && (
+                                                    <div className='w-full'>
+                                                        <h1 className='text-title-2 font-bold'>{choosedFlight2.airline}</h1>
+                                                        <div className='flex items-center gap-4'>
+                                                            <div>
+                                                                <p className='text-body-6 font-bold'>
+                                                                    {fixedHour(choosedFlight2.departure_time)}
+                                                                </p>
+                                                                <p className='text-body-4 font-medium'>
+                                                                    {choosedFlight2.from_airport_code}
+                                                                </p>
+                                                            </div>
+                                                            <TbPlaneInflight />
+                                                            <div>
+                                                                <p className='text-body-6 font-bold'>
+                                                                    {fixedHour(choosedFlight2.arrival_time)}
+                                                                </p>
+                                                                <p className='text-body-4 font-medium'>
+                                                                    {choosedFlight2.to_airport_code}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p>{reformatDuration(choosedFlight2.duration)}</p>
+                                                                <p>Direct</p>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            onClick={() => handleResetChooseFlight()}
+                                                            className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                            Change departure flight
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* fligth 2 */}
+                                </div>
+                            </div>
+                            <div className='mt-4 rounded-rad-4 px-6 py-6 font-poppins shadow-low'>
+                                <h3 className='mb-[24px]'>Filter</h3>
+                                <div className='flex flex-col gap-1'>
+                                    <div className='flex items-center justify-between border border-b-[1px] border-l-0 border-r-0 border-t-0 border-net-2 py-2'>
+                                        <p className='flex items-center gap-3'>
+                                            <FiBox /> Transit
+                                        </p>
+                                        <FiChevronRight />
+                                    </div>
+                                    <div className='flex items-center justify-between border border-b-[1px] border-l-0 border-r-0 border-t-0 border-net-2 py-2'>
+                                        <p className='flex items-center gap-3'>
+                                            <FiHeart /> Fasilitas
+                                        </p>
+                                        <FiChevronRight />
+                                    </div>
+                                    <div className='flex items-center justify-between border border-b-[1px] border-l-0 border-r-0 border-t-0 border-net-2 py-2'>
+                                        <p className='flex items-center gap-3'>
+                                            <FiDollarSign /> Harga
+                                        </p>
+                                        <FiChevronRight />
+                                    </div>
+                                </div>
+                            </div>
+                            {/* left filter end */}
+                        </div>
+                        {/* left flight end */}
+                        <div className='col-span-8 grid-cols-12 font-poppins'>
+                            <h1 className='col-span-12 text-head-2 font-bold'>Pilih {flightTitle}</h1>
+                            <div
+                                style={{ height: 'calc(100vh - 340px)' }}
+                                className='container col-span-12 mx-auto   hidden max-w-screen-lg flex-col items-center  justify-center gap-3  font-poppins lg:flex'>
+                                <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>
+                                <Image
+                                    alt=''
+                                    src={'/new_images/loading.svg'}
+                                    width={160}
+                                    height={160}
+                                    priority
+                                    style={{ width: 'auto' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='overflow-x-hidden'>
@@ -274,29 +471,37 @@ export default function SearchFlight() {
 
                     {/* day of week start */}
                     <div className='col-span-12 mt-[27px] grid grid-cols-8 divide-x-2'>
-                        {values.length ? (
-                            values.map((val, index) => (
-                                <div key={index} className='col-span-1 cursor-pointer px-2' onClick={() => chooseDate(val.date)}>
+                        {dateOfWeek?.length ? (
+                            dateOfWeek?.map((val, index) => {
+                                console.log('====================================');
+                                console.log('DATE', val);
+                                console.log('====================================');
+                                return (
                                     <div
-                                        className={`${
-                                            new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                                ? 'bg-[#A06ECE] text-white'
-                                                : 'text-[#151515]'
-                                        } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
-                                        <h3 className='text-[14px] font-bold'>
-                                            {val.date.toLocaleDateString('id-ID', { weekday: 'long' })}
-                                        </h3>
-                                        <p
+                                        key={index}
+                                        className='col-span-1 cursor-pointer px-2'
+                                        onClick={() => chooseDate(val.date)}>
+                                        <div
                                             className={`${
                                                 new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                                    ? 'text-white'
-                                                    : 'text-[#8A8A8A]'
-                                            } text-[12px] font-normal`}>
-                                            {val.date.toLocaleDateString()}
-                                        </p>
+                                                    ? 'bg-pur-2 text-white'
+                                                    : 'text-[#151515]'
+                                            } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
+                                            <h3 className='text-[14px] font-bold'>
+                                                {val.date.toLocaleDateString('id-ID', { weekday: 'long' })}
+                                            </h3>
+                                            <p
+                                                className={`${
+                                                    new Date(val.date).getDate() === new Date(selectDate).getDate()
+                                                        ? 'text-white'
+                                                        : 'text-[#8A8A8A]'
+                                                } text-[12px] font-normal`}>
+                                                {val.date.toLocaleDateString()}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <h1>Loadinggg</h1>
                         )}
@@ -475,10 +680,12 @@ export default function SearchFlight() {
                     <div className='col-span-8 font-poppins'>
                         <h1 className='text-head-2 font-bold'>Pilih {flightTitle}</h1>
                         <div className='mt-3 grid grid-cols-12 gap-4'>
-                            {flightData.length ? (
-                                flightData.map((data, index) => {
+                            {flightData?.length ? (
+                                flightData?.map((data, index) => {
                                     return (
-                                        <div key={index} className='col-span-12 flex flex-col gap-2 rounded-rad-3 p-4 shadow-low'>
+                                        <div
+                                            key={index}
+                                            className='col-span-12 flex cursor-pointer flex-col gap-2 rounded-rad-3 border border-transparent p-4 shadow-low hover:border hover:border-pur-1'>
                                             {/* list top start */}
                                             <div className='flex items-center justify-between'>
                                                 <div className='flex items-center gap-2'>
@@ -517,12 +724,20 @@ export default function SearchFlight() {
                                                         <p className='text-body-6 font-bold'>{fixedHour(data.arrival_time)}</p>
                                                         <p className='text-body-3 font-medium'>{data.airport_to_code}</p>
                                                     </div>
+                                                    <div>
+                                                        <Image
+                                                            alt=''
+                                                            src={'/new_images/icon_baggage.svg'}
+                                                            width={24}
+                                                            height={24}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div className='flex flex-col gap-[6px] text-title-2'>
                                                     <p className='font-bold text-pur-4'>{formatRupiah(data.price)}</p>
                                                     <Button
                                                         onClick={() => handleChoosedFlight(data)}
-                                                        className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white'>
+                                                        className='rounded-rad-3 bg-pur-3 py-1 font-medium text-white'>
                                                         Pilih
                                                     </Button>
                                                 </div>
@@ -597,9 +812,22 @@ export default function SearchFlight() {
                                     );
                                 })
                             ) : (
-                                <div className='col-span-12 flex items-center justify-center gap-4 p-4'>
-                                    <Image alt='' src={'/images/not_found_flight.svg'} height={210} width={210} />
+                                <div
+                                    style={{ height: 'calc(100vh - 340px)' }}
+                                    className='container col-span-12 mx-auto   hidden max-w-screen-lg flex-col items-center  justify-center gap-3  font-poppins lg:flex'>
+                                    {/* <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1> */}
+                                    <Image
+                                        alt=''
+                                        src={'/new_images/empty_flight.svg'}
+                                        width={160}
+                                        height={160}
+                                        priority
+                                        style={{ width: 'auto' }}
+                                    />
                                 </div>
+                                // <div className='col-span-12 flex items-center justify-center gap-4 p-4'>
+                                //     <Image alt='' src={'/new_images/empty_flight.svg'} height={210} width={210} />
+                                // </div>
                             )}
                         </div>
                     </div>
@@ -621,16 +849,17 @@ export default function SearchFlight() {
                                 <FiX
                                     className='absolute right-0 mr-3 mt-2 h-[28px] w-[28px]'
                                     onClick={() => {
+                                        dispatch(setSearchPageIsSearchAgain(true));
+                                        dispatch(setResetChoosedFlight());
                                         handleOpenHomeSearch();
-                                        setIsSearchAgain(!isSearchAgain);
                                     }}
                                 />
                             }
                             handleActionHomeSearch={() => {
                                 dispatch(setSearchPageIsSearchAgain(true));
-                                // setIsSearchAgain(true)
+                                dispatch(setFetchFlightAgain());
+                                dispatch(setResetChoosedFlight());
                                 handleOpenHomeSearch(); // close modal
-                                dispatch(setFetchFlightStatus(true));
                                 router.refresh();
                             }}
                         />
@@ -755,7 +984,7 @@ export default function SearchFlight() {
                                             <div className='flex flex-col gap-1'>
                                                 <h1 className='text-title-1 font-medium'>Total</h1>
                                                 <h1 className='text-head-2 font-bold'>
-                                                    <span>{formatRupiah(detailFlight.totalPrice)}</span>
+                                                    <span>{formatRupiah(detailFlight.totalPrice) || 'Loading...'}</span>
                                                     {/* IDR <span>{detailFlight.totalPrice}</span> */}
                                                 </h1>
                                             </div>
@@ -767,7 +996,7 @@ export default function SearchFlight() {
                                                 dispatch(setFetchDetailFlight());
                                                 dispatch(setIsReadyToOrder(false));
                                             }}
-                                            className='h-max w-max rounded-rad-3 bg-pur-4 px-5 py-3 text-title-2 text-white'>
+                                            className='h-max w-max rounded-rad-3 bg-pur-3 px-5 py-3 text-title-2 text-white'>
                                             Continue to Order
                                         </Button>
                                     </div>

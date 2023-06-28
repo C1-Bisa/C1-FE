@@ -13,14 +13,14 @@ export default function Navbar({ className, isCredential = true, isSearchMode = 
             <div className=' container mx-auto flex max-w-screen-xl justify-between  py-[18px]'>
                 <div className='flex items-center gap-9'>
                     <Image
-                        src={'/images/logo_tiketku.svg'}
+                        src={'/new_images/logo.svg'}
                         width={98}
                         height={53}
                         alt=''
                         onClick={() => router.push('/')}
                         className='cursor-pointer'
                     />
-                    {isSearchMode && <SearchBar />}
+                    {/* {isSearchMode && <SearchBar />} */}
                 </div>
 
                 {isCredential && <SignInButton />}

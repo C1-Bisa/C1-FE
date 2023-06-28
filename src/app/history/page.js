@@ -45,6 +45,8 @@ export default function History() {
     const { setHistoryDetail } = historySlice.actions;
 
     //state
+
+    const [isLoading, setIsLoading] = useState(true);
     const [historyItem, setHistoryItem] = useState(null);
     const [historyData, setHistoryData] = useState([]);
     const [fetchStatus, setFetchStatus] = useState(true);
@@ -87,25 +89,29 @@ export default function History() {
         console.log('History Detail : ', history);
     };
 
-    const handleUpdatePayment = async (transaction_code) => {
-        try {
-            const URL_UPDATE_PAYMENT = 'https://kel1airplaneapi-production.up.railway.app/api/v1/transaction/update';
-            const res = await axios.put(
-                URL_UPDATE_PAYMENT,
-                {
-                    transaction_code,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            console.log('PESAN UPDATE_PAYMENT:', res);
-            setFetchStatus(true);
-        } catch (error) {
-            console.log(error.message);
-        }
+    const handleUpdatePayment = async (transaction) => {
+        // try {
+        //     const URL_UPDATE_PAYMENT = 'https://kel1airplaneapi-production.up.railway.app/api/v1/transaction/update';
+        //     const res = await axios.put(
+        //         URL_UPDATE_PAYMENT,
+        //         {
+        //             transaction_code,
+        //         },
+        //         {
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`,
+        //             },
+        //         }
+        //     );
+        //     console.log('PESAN UPDATE_PAYMENT:', res);
+        //     setFetchStatus(true);
+        // } catch (error) {transaction.Flights[0].Transaction_Flight.transaction_id
+        //     console.log(error.message); transaction.Flights[0].Transaction_Flight.transaction_id
+        // }
+        router.push(`/history/payment/${transaction?.Flights[0]?.Transaction_Flight?.transaction_id}`);
+        console.log('====================================');
+        console.log('HANDLE UP', transaction?.Flights[0]?.Transaction_Flight?.transaction_id);
+        console.log('====================================');
     };
     /*=== effects ===*/
     useEffect(() => {
@@ -154,6 +160,14 @@ export default function History() {
                             },
                         });
 
+                        response.data.data.sort(
+                            (a, b) => new Date(b?.transaction?.transaction_date) - new Date(a?.transaction?.transaction_date)
+                        );
+
+                        console.log('====================================');
+                        console.log('DATAAAA', response.data.data);
+                        console.log('====================================');
+
                         const results = response.data.data.reduce((acc, current) => {
                             acc[
                                 String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
@@ -184,16 +198,53 @@ export default function History() {
                         // console.log('RESPOND DATA', response.data);
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        setIsLoading(false);
                     }
                 };
                 fetchBooking();
             }
+
             setFetchStatus(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchStatus, token]);
 
     console.log('DATA HISTORy', historyData);
+    if (isLoading) {
+        return (
+            <div className='overflow-x-hidden'>
+                <Navbar className={'hidden lg:block'} />
+                {/* DESKTOP MODE */}
+
+                <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                    <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
+                        <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
+                        <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
+                            <div
+                                className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                                onClick={() => router.push('/')}>
+                                <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
+                                <p>Beranda</p>
+                            </div>
+                            <div className='col-span-2 flex items-center gap-4'>
+                                <Button className='flex items-center gap-2 rounded-rad-4 border-[1px] border-pur-4 px-2 py-[4px] text-title-2'>
+                                    <FiFilter className='h-5 w-5 text-net-3 ' /> Filter
+                                </Button>
+                                <IoSearchSharp className='h-6 w-6 text-pur-4' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    style={{ height: 'calc(100vh - 270px)' }}
+                    className=' container mx-auto   hidden max-w-screen-lg flex-col items-center  justify-center gap-3  font-poppins lg:flex'>
+                    <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>
+                    <Image alt='' src={'/new_images/loading.svg'} width={200} height={200} priority style={{ width: 'auto' }} />
+                </div>
+            </div>
+        );
+    }
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
@@ -219,7 +270,9 @@ export default function History() {
                 </div>
             </div>
 
-            <div className='container mx-auto mt-[27px] hidden max-w-screen-lg font-poppins lg:block'>
+            <div
+                style={{ height: 'calc(100vh - 270px)' }}
+                className='container mx-auto  hidden max-w-screen-lg font-poppins lg:block'>
                 <div className='grid grid-cols-12 '>
                     {historyData.length > 0 ? (
                         <div className='col-span-12 grid grid-cols-12 gap-10'>
@@ -619,7 +672,7 @@ export default function History() {
 
                                     {historyItem?.transaction?.transaction_status.toLowerCase() === 'unpaid' ? (
                                         <Button
-                                            onClick={() => handleUpdatePayment(historyItem?.transaction?.transaction_code)}
+                                            onClick={() => handleUpdatePayment(historyItem?.transaction)}
                                             className='mt-8 w-full rounded-rad-4 bg-alert-3 py-4 text-head-1 font-medium text-white hover:bg-red-500 '>
                                             Lanjut Bayar
                                         </Button>
@@ -633,10 +686,10 @@ export default function History() {
                         </div>
                     ) : (
                         <div className='col-span-12 flex h-[500px] items-center justify-center '>
-                            <div className='flex flex-col justify-center gap-8'>
+                            <div className='flex flex-col justify-center gap-4'>
                                 <div className='flex flex-col items-center justify-center text-center'>
-                                    <Image alt='' src={'/images/empty_history.svg'} width={200} height={200} />
-                                    <h1 className='mt-4 text-body-6 font-bold text-pur-5'>Oops! Riwayat Pesanan Kosong!</h1>
+                                    <Image alt='' src={'/new_images/empty_list.svg'} width={200} height={200} />
+                                    <h1 className='mt-4 text-body-6 font-bold text-pur-3'>Oops! Riwayat Pesanan Kosong!</h1>
                                     <h3 className='text-body-6'>Anda belum melakukan penerbangan</h3>
                                 </div>
                                 <Button>Cari Penerbangan</Button>

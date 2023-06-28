@@ -86,7 +86,7 @@ export default function Register() {
                     <div className='relative  col-span-6 '>
                         <div className='relative h-full'>
                             <Image
-                                src={`/images/Ulang_Sandi.jpg`}
+                                src={`/new_images/left_login.svg`}
                                 alt=''
                                 fill={true}
                                 style={{ objectFit: 'cover' }}
