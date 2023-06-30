@@ -423,6 +423,10 @@ export default function Order() {
     }, []);
     //fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'
 
+    console.log('====================================');
+    console.log('DETAIL FLIGHT', detailFlight);
+    console.log('====================================');
+
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
@@ -598,11 +602,27 @@ export default function Order() {
                         <div>
                             <div className={styles.container}>
                                 <div className={styles.header}>
-                                    <div className={styles.choose__seat__title}>
-                                        <h1>Pilih Kursi</h1>
+                                    <div className='my-4 flex items-center justify-between'>
+                                        <h1 className='text-head-1 font-bold'>Pilih Kursi</h1>
+                                        {/* <div>
+                                            <div>
+                                                <div className='bg-[#d0d0d0} h-[36px] w-[36px]'>A1</div>
+                                                <p>Available</p>
+                                            </div>
+                                            <div>
+                                                <div className='bg-[#73CA5C} h-[36px] w-[36px]'>A1</div>
+                                                <p>Unavailable</p>
+                                            </div>
+                                            <div className='flex flex-col'>
+                                                <div className='bg-[#002714} flex flex h-[36px] w-[36px] items-center justify-center text-white'>
+                                                    A1
+                                                </div>
+                                                <p>Choosed</p>
+                                            </div>
+                                        </div> */}
                                     </div>
                                     <div className={styles.choose__seat__header}>
-                                        <h1>Economy - 64 Seats Available</h1>
+                                        <h1>{detailFlight?.berangkat?.flight_class} - 37 Seats Available</h1>
                                     </div>
                                 </div>
                                 <div className={styles.choose__seat__body}>
@@ -623,10 +643,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -653,10 +673,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -682,10 +702,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -739,10 +759,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -768,10 +788,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -797,10 +817,10 @@ export default function Order() {
                                                                             onClick={() => handleSeat(data)}
                                                                             style={{
                                                                                 background: !data.available
-                                                                                    ? '#73CA5C'
+                                                                                    ? '#d0d0d0'
                                                                                     : seat.find((d) => d.code === data.code)
-                                                                                    ? '#7126B5'
-                                                                                    : '#d0d0d0',
+                                                                                    ? '#002714'
+                                                                                    : '#73CA5C',
                                                                             }}
                                                                             className={styles.choose__seat__btn}>
                                                                             {seat.find((d) => d.code === data.code)
@@ -828,11 +848,11 @@ export default function Order() {
                     </div>
                     <div className='relative col-span-5 font-poppins'>
                         <h1 className='text-title-3 font-bold'>Detail Penerbangan</h1>
-                        {detailFlight.berangkat && (
+                        {detailFlight?.pulang?.departure_date && (
                             <div className='mb-2 mt-1'>
-                                <h1 className='w-max rounded-rad-3 bg-alert-1 px-2 py-1 text-title-2 font-bold text-white'>
-                                    Keberangkatan
-                                </h1>
+                                <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                    Kepergian - Flight 1
+                                </p>
                             </div>
                         )}
                         {detailFlight.berangkat && (
@@ -888,9 +908,9 @@ export default function Order() {
 
                         {detailFlight?.pulang?.departure_date && (
                             <div className='mb-2 mt-4'>
-                                <h1 className='w-max rounded-rad-3 bg-alert-1 px-2 py-1 text-title-2 font-bold text-white'>
-                                    Kepulangan
-                                </h1>
+                                <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                    Kepulangan - Flight 2
+                                </p>
                             </div>
                         )}
 
@@ -939,43 +959,78 @@ export default function Order() {
                             </div>
                         )}
                         <div className='mb-2 mt-4 w-full border text-net-3'></div>
-                        <h1 className='text-body-6 font-bold'>Rincian Harga</h1>
-                        <div>
-                            {detailFlight.totalPrice && (
+                        <h1 className='mb-2 text-body-6 font-bold'>Rincian Harga</h1>
+                        <div className='flex flex-col gap-2'>
+                            {detailFlight?.berangkat?.departure_date && (
                                 <div className='flex flex-col gap-1'>
+                                    {detailFlight?.pulang?.departure_date && (
+                                        <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                            {detailFlight?.berangkat?.Airline?.airline_name} - Kepergian
+                                        </p>
+                                    )}
                                     {passengerType.dewasa > 0 && (
                                         <div className='flex justify-between text-body-6'>
                                             <h1>{passengerType.dewasa} Dewasa</h1>
-                                            <h1> {formatRupiah(detailFlight.totalAdults)}</h1>
+                                            <h1> {formatRupiah(detailFlight?.berangkat?.price)}</h1>
                                         </div>
                                     )}
                                     {passengerType.anak > 0 && (
                                         <div className='flex justify-between text-body-6'>
                                             <h1>{passengerType.anak} Anak</h1>
-                                            <h1> {formatRupiah(detailFlight.totalChild)}</h1>
+                                            <h1> {formatRupiah(detailFlight?.berangkat?.price)}</h1>
                                         </div>
                                     )}
                                     {passengerType.bayi > 0 && (
                                         <div className='flex justify-between text-body-6'>
                                             <h1>{passengerType.bayi} Bayi</h1>
-                                            <h1> {formatRupiah(detailFlight.totalBaby)}</h1>
+                                            <h1> {formatRupiah(0)}</h1>
                                         </div>
                                     )}
-                                    <div className='flex justify-between text-body-6'>
-                                        <h1>Tax</h1>
-                                        <h1>
-                                            <span>{formatRupiah(detailFlight.tax)}</span>
-                                        </h1>
-                                    </div>
-                                    <div className='mb-3 mt-2 w-full border text-net-3'></div>
-                                    <div className='flex justify-between text-title-2 font-bold'>
-                                        <h1>Total</h1>
-                                        <h1 className='text-pur-4'>
-                                            <span className='ml-1'>{formatRupiah(detailFlight.totalPrice)}</span>
-                                        </h1>
-                                    </div>
                                 </div>
                             )}
+                            {detailFlight?.pulang?.departure_date && <div className='  w-full border'></div>}
+                            {detailFlight?.pulang?.departure_date && (
+                                <div className='flex flex-col gap-1'>
+                                    {detailFlight?.pulang?.departure_date && (
+                                        <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                            {detailFlight?.pulang?.Airline?.airline_name} - Kepulangan
+                                        </p>
+                                    )}
+                                    {passengerType.dewasa > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.dewasa} Dewasa</h1>
+                                            <h1> {formatRupiah(detailFlight?.pulang?.price)}</h1>
+                                        </div>
+                                    )}
+                                    {passengerType.anak > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.anak} Anak</h1>
+                                            <h1> {formatRupiah(detailFlight?.pulang?.price)}</h1>
+                                        </div>
+                                    )}
+                                    {passengerType.bayi > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.bayi} Bayi</h1>
+                                            <h1> {formatRupiah(0)}</h1>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
+                            <div className='flex justify-between text-body-6'>
+                                <h1>Tax</h1>
+                                <h1>
+                                    <span>{formatRupiah(detailFlight.tax)}</span>
+                                </h1>
+                            </div>
+
+                            <div className='flex justify-between text-title-2 font-bold'>
+                                <h1>Total</h1>
+                                <h1 className='text-pur-4'>
+                                    <span className='ml-1'>{formatRupiah(detailFlight.totalPrice)}</span>
+                                </h1>
+                            </div>
+                            {/* {detailFlight?.pulang?.departure_date} */}
                         </div>
                         {formData && (
                             <Button
@@ -1578,5 +1633,3 @@ export default function Order() {
         </div>
     );
 }
-
-// my-1 w-full rounded-rad-3 py-2 text-white

@@ -149,7 +149,7 @@ export default function Home() {
             />
 
             {/* DESTINATION */}
-            {/* <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
+            <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                 <div className='col-span-12 grid grid-cols-12'>
                     <h1 className='col-span-12 mb-4 text-title-2 font-bold'>Destinasi Favorit</h1>
                     <div className='col-span-12 flex items-center gap-4'>
@@ -194,9 +194,9 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className='mx-auto hidden h-screen max-w-screen-lg lg:block'>
-                <h1 className='mt-5'>Content</h1>
-            </div> */}
+            <div className='mx-auto hidden h-[100px] max-w-screen-lg lg:block'>
+                <h1 className='invisible mt-5'>Content</h1>
+            </div>
             {/* DESTINATION */}
 
             {/* DEKSTOP MODE */}
