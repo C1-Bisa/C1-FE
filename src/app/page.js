@@ -140,7 +140,7 @@ export default function Home() {
                 </div>
             </div>
             <HomeSearch
-                className={'h-[298px] w-[968px]'}
+                className={'lg:h-[298px] lg:w-[968px]'}
                 handleActionHomeSearch={() => {
                     dispatch(setSearchPageIsSearchAgain(true));
                     // dispatch(setFetchFlightStatus(true));
@@ -148,7 +148,8 @@ export default function Home() {
                 }}
             />
 
-            <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
+            {/* DESTINATION */}
+            {/* <div className='mx-auto mt-8 hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                 <div className='col-span-12 grid grid-cols-12'>
                     <h1 className='col-span-12 mb-4 text-title-2 font-bold'>Destinasi Favorit</h1>
                     <div className='col-span-12 flex items-center gap-4'>
@@ -195,15 +196,59 @@ export default function Home() {
 
             <div className='mx-auto hidden h-screen max-w-screen-lg lg:block'>
                 <h1 className='mt-5'>Content</h1>
-            </div>
+            </div> */}
+            {/* DESTINATION */}
+
             {/* DEKSTOP MODE */}
 
             {/* RESPONSIVE MODE */}
             <div className='h-screen font-poppins lg:hidden '>
+                {/* <HomeSearch
+                    className={'lg:h-[298px] lg:w-[968px]'}
+                    handleActionHomeSearch={() => {
+                        dispatch(setSearchPageIsSearchAgain(true));
+                        // dispatch(setFetchFlightStatus(true));
+                        router.push('/search');
+                    }}
+                /> */}
+                <div className='mt-[120px] px-4 '>
+                    <h1 className='text-title-2 font-bold'>Destinasi Favorit</h1>
+                    <div className='mt-8 grid grid-cols-12 gap-3 '>
+                        {destinationDataShape &&
+                            destinationDataShape.map((destination, index) => {
+                                return (
+                                    <div key={index} className='col-span-6 rounded-rad-2 p-2 shadow-low'>
+                                        <div className='relative h-[140px] w-full'>
+                                            <Image alt='' src={destination.imgUrl} fill style={{ objectFit: 'cover' }} />
+                                        </div>
+                                        <div className='flex flex-col gap-1'>
+                                            <div className='flex items-center gap-2'>
+                                                <h1 className='text-body-4 font-medium'>{destination.from}</h1>
+                                                <p>{'->'}</p>
+                                                <h1 className='text-body-4 font-medium'>{destination.to}</h1>
+                                            </div>
+                                            <p className='text-body-4 font-bold text-pur-3'>AirAsia</p>
+                                            <p className='text-body-4 font-medium'>20 - 30 Maret 2023</p>
+                                            <p className='text-body-4 text-black'>
+                                                Mulai dari <span className='font-bold text-alert-3'>IDR 950.000</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </div>
+                </div>
+
+                <div className='mt-[50px] h-screen px-4'>
+                    <h1 className=''>Content</h1>
+                </div>
+
+                <BottomNavbar />
+            </div>
+            {/* <div className='h-screen font-poppins lg:hidden '>
                 <div style={{ height: 'calc(100vh - 40vh)' }} className='bg-pur-3 px-4 '>
                     <h1 className='pt-[32px] text-head-2 font-bold text-white'>Hei, Mau Kemana</h1>
                     <div className='mt-2 grid grid-cols-12 rounded-rad-2 bg-white shadow-low'>
-                        {/* form airport */}
                         <div className='col-span-12 m-5 border px-1'>
                             <div>
                                 <div className='grid grid-cols-12'>
@@ -243,21 +288,12 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        {/* form airport */}
 
-                        {/* toggle switch */}
                         <div className='col-span-12 flex items-center justify-between px-4'>
                             <h1 className='text-body-6 font-medium'>Pulang Pergi</h1>
-                            <ToggleSwitch
-                                // isToggle={isTwoWay}
-                                // handleToggleAction={handleCalendarToggleAction}
-                                id={'toggle_calendar'}
-                                // className={'absolute right-[-36px]'}
-                            />
+                            <ToggleSwitch id={'toggle_calendar'} />
                         </div>
-                        {/* toggle switch */}
 
-                        {/* choose airport */}
                         <div className='col-span-12 my-4 grid grid-cols-12 gap-2 px-4'>
                             <div className='col-span-6 flex items-center gap-3'>
                                 <MdDateRange className='h-[40px] w-[40px] text-net-4' />
@@ -269,8 +305,6 @@ export default function Home() {
                                     <Input
                                         id={'departure'}
                                         readOnly
-                                        // value={formatToLocale(homeSearch.departure_dateTime)}
-                                        // onClick={handleOpenCalendar}
                                         className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
                                     />
                                 </div>
@@ -285,8 +319,6 @@ export default function Home() {
                                     <Input
                                         id={'return'}
                                         readOnly
-                                        // value={formatToLocale(homeSearch.departure_dateTime)}
-                                        // onClick={handleOpenCalendar}
                                         className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
                                     />
                                 </div>
@@ -300,9 +332,7 @@ export default function Home() {
                                     <Input
                                         id={'passenger'}
                                         readOnly
-                                        // onClick={handleOpenPassengerModal}
                                         className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
-                                        // value={`${totalPassenger} penumpang`}
                                         placeholder={'10 penumpang'}
                                     />
                                 </div>
@@ -316,9 +346,7 @@ export default function Home() {
                                     <Input
                                         id={'seat'}
                                         readOnly
-                                        // onClick={handleOpenFlightClassModal}
                                         className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
-                                        // value={flightClass}
                                         placeholder={'Pilih kelas pesawat'}
                                     />
                                 </div>
@@ -330,7 +358,6 @@ export default function Home() {
                                 </Button>
                             </div>
                         </div>
-                        {/* choose airport */}
                     </div>
                 </div>
                 <div className='mt-[120px] px-4 '>
@@ -366,7 +393,7 @@ export default function Home() {
                 </div>
 
                 <BottomNavbar />
-            </div>
+            </div> */}
             {/* RESPONSIVE MODE*/}
         </div>
     );

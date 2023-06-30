@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 
 // Third Parties
-import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiChevronUp, FiChevronDown, FiArrowLeft } from 'react-icons/fi';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import axios from 'axios';
 
@@ -65,6 +65,8 @@ export default function Order() {
     const passengerForm = useSelector(getPassengerForm); // generated form based passenger type total
 
     //state
+    const [isSuccessForm, setIsSuccessForm] = useState(false);
+    const [isDekstop, setIsDesktop] = useState(true);
     const [formData, setFormData] = useState(null);
     const [formInputError, setFormInputError] = useState(false);
     const [formStatus, setFormStatus] = useState(false);
@@ -176,6 +178,88 @@ export default function Order() {
 
         handleVisibleAlert('Data Anda berhasil tersimpan!', 'success');
         setFormData(templateObj);
+    };
+
+    const handleMobileFormStatus = () => {
+        if (seat.length !== elements.length) {
+            handleVisibleAlert('Mohon untuk memilih kursi sesuai penumpang', 'failed');
+            return;
+        }
+
+        if (flights) {
+            if (flights.length === 2) {
+                if (flights[0].flight_type !== 'Departure' || !flights[0].flight_id) {
+                    handleVisibleAlert('Departure Flight are not complete yet!', 'failed');
+                    return;
+                }
+                if (flights[1].flight_type !== 'Arrival' || !flights[0].flight_id) {
+                    handleVisibleAlert('Arrival Flight are not complete yet!', 'failed');
+                    return;
+                }
+            }
+            if (flights[0].flight_type !== 'Departure' || !flights[0].flight_id) {
+                handleVisibleAlert('Departure Flight are not complete yet!', 'failed');
+                return;
+            }
+        }
+
+        if (!detailFlight.totalPrice) {
+            handleVisibleAlert('Amount is not set!', 'failed');
+            return;
+        }
+
+        const inputPassengerCheck = elements.every((elementForm) => {
+            return elementForm.fields.every((formInput, index) => {
+                if (
+                    (formInput['field_label'] === 'Nama Lengkap' && !formInput['field_value']) ||
+                    (formInput['field_label'] === 'Tanggal Lahir' && !formInput['field_value']) ||
+                    (formInput['field_label'] === 'Kewarganegaraan' && !formInput['field_value']) ||
+                    (formInput['field_label'] === 'KTP/Paspor' && !formInput['field_value']) ||
+                    (formInput['field_label'] === 'Negara Penerbit' && !formInput['field_value'])
+                ) {
+                    handleVisibleAlert('Data tidak boleh ada yang kosong!', 'failed');
+                    setFormInputError(true);
+                    return false;
+                }
+
+                setFormInputError(false);
+                return true;
+            });
+        });
+
+        if (!inputPassengerCheck) {
+            setFormStatus(false);
+            return;
+        }
+        setFormStatus(true);
+
+        const passengerDataShape = elements.map((element, indexForm) => {
+            let elementType = element.type;
+            let idx = indexForm;
+
+            return {
+                type: elementType,
+                title: element.fields.find((test) => test.field_category === `title`).field_value,
+                name: element.fields.find((test) => test.field_category === `name`).field_value,
+                family_name: element.fields.find((test) => test.field_category === `family_name`).field_value,
+                birthday: convertToDate(new Date(element.fields.find((test) => test.field_category === `birthday`).field_value)),
+                nationality: element.fields.find((test) => test.field_category === `kewarganegaraan`).field_value,
+                nik: element.fields.find((test) => test.field_category === `ktp_paspor`).field_value,
+                issued_country: element.fields.find((test) => test.field_category === `negara_penerbit`).field_value,
+                expired: convertToDate(new Date(element.fields.find((test) => test.field_category === `expired`).field_value)),
+                seat: seat[idx].code,
+            };
+        });
+
+        const templateObj = {
+            flights,
+            amount: detailFlight.totalPrice,
+            passenger: passengerDataShape,
+        };
+
+        handleVisibleAlert('Data Anda berhasil tersimpan!', 'success');
+        setFormData(templateObj);
+        setIsSuccessForm(true);
     };
 
     const handleVisibleAlert = (text, alertType) => {
@@ -465,9 +549,13 @@ export default function Order() {
                                                                             formElement.field_value &&
                                                                             formatToLocale(formElement.field_value)
                                                                         }
-                                                                        onClick={() =>
-                                                                            handleOpenCalendar(formElement.field_id, form.form_id)
-                                                                        }
+                                                                        onClick={() => {
+                                                                            handleOpenCalendar(
+                                                                                formElement.field_id,
+                                                                                form.form_id
+                                                                            );
+                                                                            setIsDesktop(true);
+                                                                        }}
                                                                     />
                                                                 </div>
                                                             )}
@@ -580,7 +668,7 @@ export default function Order() {
                                                         </div>
                                                     ))}
                                             </div>
-                                            {/* B */}
+                                            {/* C */}
                                             <div>
                                                 <h1 className={styles.choose__seat__title__code}>C</h1>
                                                 {flightSeat &&
@@ -900,10 +988,12 @@ export default function Order() {
                 </div>
             </div>
 
+            {/* POP UP */}
             <div>
                 {openCalendar && (
                     <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
                         <CalendarPicker
+                            isDesktop={isDekstop}
                             initialDate={pickedDate}
                             handlePickedDate={handlePickedDate}
                             open={openCalendar}
@@ -914,11 +1004,6 @@ export default function Order() {
                 )}
             </div>
 
-            {/* <div className='fixed  inset-0 top-0  z-10 bg-black bg-opacity-60 font-poppins'>
-                <div className=' mx-auto mt-[140px] max-w-screen-lg rounded-rad-3 bg-alert-3 py-3 text-center text-white'>
-                    <h1 className='text-title-3 font-medium'>Isi Form dengan Benar</h1>
-                </div>
-            </div> */}
             <AlertTop
                 visibleAlert={visibleAlert}
                 handleVisibleAlert={handleVisibleAlert}
@@ -934,6 +1019,564 @@ export default function Order() {
                 // bgType='none'
             />
             {/* DEKSTOP MODE */}
+
+            {/* MOBILE MODE */}
+            <div className='h-screen font-poppins lg:hidden'>
+                <div
+                    onClick={() => router.push('/')}
+                    className='fixed inset-x-0 top-0 z-10 flex items-center gap-6 bg-pur-5 px-[16px]  py-2  text-white'>
+                    <FiArrowLeft className='h-[28px] w-[28px]' /> <p>Halaman Booking</p>
+                </div>
+                <div className='mt-[64px]'>
+                    {/* INPUT USER */}
+                    <div className=' mx-4 rounded-t-rad-2 border border-pur-3 '>
+                        {/* <h1 className='text-head-1 font-bold'>Data Diri Pemesan</h1> */}
+                        <div className='rounded-t-rad-2 bg-pur-5 px-4 py-2 text-white'>
+                            <h2 className='text-title-2'>Data Diri Pemesan</h2>
+                        </div>
+                        <div className='flex  flex-col gap-4 p-4'>
+                            <div className=' flex flex-col gap-1'>
+                                <Label className='text-body-6 font-bold text-pur-5'>Nama Lengkap</Label>
+                                <Input
+                                    readOnly
+                                    disabled
+                                    value={userData.name}
+                                    className='w-full appearance-none border px-4 py-2 font-poppins outline-none'
+                                />
+                            </div>
+                            <div className='flex items-center justify-between'>
+                                <p>Punya Nama Keluarga?</p>
+                                <ToggleSwitch isToggle={toggleUser} handleToggleAction={handleToggleUser} />
+                            </div>
+                            <div className={`${toggleUser ? 'visible' : 'hidden'} flex flex-col gap-1 `}>
+                                <Label className='text-body-6 font-bold text-pur-5'>Nama Keluarga</Label>
+                                <Input className={` w-full appearance-none border px-4 py-2 font-poppins outline-none`} />
+                            </div>
+                            <div>
+                                <Label className='text-body-6 font-bold text-pur-5'>Nomor Telepon</Label>
+                                <Input
+                                    disabled
+                                    readOnly
+                                    value={userData.phone}
+                                    className='w-full appearance-none border px-4 py-2 font-poppins outline-none'
+                                />
+                            </div>
+                            <div>
+                                <Label className='text-body-6 font-bold text-pur-5'>Email</Label>
+                                <Input
+                                    disabled
+                                    readOnly
+                                    value={userData.email}
+                                    className='w-full appearance-none border px-4 py-2 font-poppins outline-none'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    {/* INPUT USER */}
+                </div>
+
+                <div className='mt-[32px] flex flex-col gap-4 '>
+                    {elements &&
+                        elements.map((form, index) => {
+                            return (
+                                <div key={index} className='mx-4 rounded-t-rad-2 border border-pur-3'>
+                                    <div className='rounded-t-rad-2 bg-pur-5 px-4 py-2 text-white'>
+                                        <h2 className='text-title-2'>
+                                            Data Diri Penumpang {index + 1} {' - '}
+                                            {form.type}
+                                        </h2>
+                                        {formStatus && <BsFillCheckCircleFill className='h-[24px] w-[24px] text-alert-1' />}
+                                    </div>
+                                    {form &&
+                                        form.fields.map((formElement, index) => {
+                                            //formInputError
+                                            // console.log('Form Element', formElement);
+                                            return (
+                                                <div key={index} className='mt-4 p-4'>
+                                                    {formElement.field_type === 'text' && (
+                                                        <div className='flex flex-col gap-1'>
+                                                            <Label
+                                                                className=' text-body-6 font-bold text-pur-5'
+                                                                htmlFor={formElement.field_id}>
+                                                                {formElement.field_label}
+                                                            </Label>
+                                                            <Input
+                                                                className={`${
+                                                                    formInputError ? 'border-red-500' : 'border'
+                                                                } w-full appearance-none  px-4 py-2 font-poppins outline-none`}
+                                                                id={formElement.field_id}
+                                                                onChange={(event) =>
+                                                                    handleChange(formElement.field_id, event, form.form_id)
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    {formElement.field_type === 'date' && (
+                                                        <div className='flex flex-col gap-1'>
+                                                            <Label
+                                                                className='text-body-6 font-bold text-pur-5'
+                                                                htmlFor={formElement.field_id}>
+                                                                {formElement.field_label}
+                                                            </Label>
+                                                            <Input
+                                                                className={`${
+                                                                    formInputError ? 'border-red-500' : 'border'
+                                                                } w-full appearance-none  px-4 py-2 font-poppins outline-none`}
+                                                                readOnly
+                                                                id={formElement.field_id}
+                                                                value={
+                                                                    formElement.field_value &&
+                                                                    formatToLocale(formElement.field_value)
+                                                                }
+                                                                onClick={() => {
+                                                                    setIsDesktop(false);
+                                                                    handleOpenCalendar(formElement.field_id, form.form_id);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    {formElement.field_type === 'select' && (
+                                                        <div className='flex flex-col gap-1 '>
+                                                            <Label className='text-body-6 font-bold text-pur-5'>
+                                                                {formElement.field_label}
+                                                            </Label>
+                                                            <select
+                                                                onChange={(event) =>
+                                                                    handleChange(formElement.field_id, event, form.form_id)
+                                                                }
+                                                                className={`${
+                                                                    formInputError ? 'border-red-500' : 'border'
+                                                                } w-full cursor-pointer appearance-none px-4 py-2 font-poppins outline-none`}
+                                                                aria-label='Default select example'>
+                                                                {formElement.field_options.length > 0 &&
+                                                                    formElement.field_options.map((option, i) => (
+                                                                        <option value={option.option_label} key={i}>
+                                                                            {option.option_label}
+                                                                        </option>
+                                                                    ))}
+                                                            </select>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            );
+                        })}
+                </div>
+
+                <div className='mx-4 mt-[32px] rounded-t-rad-2 border border-pur-3 font-poppins'>
+                    <div className='rounded-t-rad-2 bg-pur-5 px-4 py-2 text-white'>
+                        <h2 className='text-title-2'>Economy - 64 Seats Available</h2>
+                    </div>
+                    <div className=' p-4'>
+                        <div className='flex items-center gap-2'>
+                            {/* Grouping for A  B  C */}
+                            <div className='flex gap-3'>
+                                {/* A */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        A
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'A' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+
+                                {/* B */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        B
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'B' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+                                {/* C */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        C
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'C' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                            {/* Divider */}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                                <h1 style={{ visibility: 'hidden' }} className={styles.choose__seat__title__code}>
+                                    .
+                                </h1>
+                                {flightSeat && (
+                                    <div className={styles.choose__seat__divider__box}>
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <div className={styles.choose__divider__btn}>
+                                                        <p>{i + 1}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                            {/* Grouping for D  E  F */}
+                            <div className='flex gap-3'>
+                                {/* D */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        D
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'D' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+                                {/* E */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        E
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'E' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+                                {/* F */}
+                                <div>
+                                    <h1 className='flex items-center px-[13px] py-[8px] text-body-6 font-medium text-[#8a8a8a]'>
+                                        F
+                                    </h1>
+                                    {flightSeat &&
+                                        flightSeat.map((seats, index) => (
+                                            <div key={index} className='flex flex-col gap-[10px]'>
+                                                {seats.type === 'F' &&
+                                                    seats.seat.map((data, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                disabled={!data.available}
+                                                                onClick={() => handleSeat(data)}
+                                                                style={{
+                                                                    background: !data.available
+                                                                        ? '#d0d0d0'
+                                                                        : seat.find((d) => d.code === data.code)
+                                                                        ? '#002714'
+                                                                        : '#73CA5C',
+                                                                }}
+                                                                className='flex h-[36px] w-[36px] items-center justify-center rounded-[6px] border-none bg-[#d0d0d0] text-white'>
+                                                                {seat.find((d) => d.code === data.code)
+                                                                    ? `P${seat.indexOf(data) + 1}`
+                                                                    : data.code}
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className='invisible h-[110px] '></div>
+
+                <div className='fixed inset-x-0 bottom-0  flex  h-[100px] flex-col items-center justify-center gap-3  bg-white  px-5 shadow-low'>
+                    <Button
+                        onClick={() => handleMobileFormStatus()}
+                        className={` ${formData ? 'bg-pur-2' : 'bg-pur-5'}  my-1 w-full rounded-rad-3 py-2 text-white`}>
+                        Simpan
+                    </Button>
+                </div>
+            </div>
+            {/* MOBILE MODE*/}
+
+            {isSuccessForm && (
+                <div className='fixed inset-0 top-0 z-20 h-screen overflow-y-scroll bg-white font-poppins'>
+                    <div className='px-4'>
+                        <div
+                            onClick={() => setIsSuccessForm(!isSuccessForm)}
+                            className='fixed inset-x-0 top-0 z-20 flex items-center gap-6 bg-pur-5 px-[16px]  py-2  text-white'>
+                            <FiArrowLeft className='h-[28px] w-[28px]' /> <p>Detail Penerbangan</p>
+                        </div>
+                        <h1 className='mt-[64px] text-title-3 font-bold'>Detail Penerbangan</h1>
+                        {detailFlight.berangkat && (
+                            <div className='mb-2 mt-1'>
+                                <h1 className='w-max rounded-rad-3 bg-alert-1 px-2 py-1 text-title-2 font-bold text-white'>
+                                    Keberangkatan
+                                </h1>
+                            </div>
+                        )}
+                        {detailFlight.berangkat && (
+                            <div>
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <h1 className='text-title-2 font-bold'>
+                                            {fixedHour(detailFlight.berangkat.departure_time)}
+                                        </h1>
+                                        <h1 className='text-body-6'>{reformatDate(detailFlight.berangkat.departure_date)}</h1>
+                                        <h1 className='text-body-6 font-medium'>
+                                            {detailFlight.berangkat.Airport_from.airport_name}
+                                        </h1>
+                                    </div>
+                                    <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
+                                </div>
+                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                <div className='flex items-center gap-2'>
+                                    <div className='relative h-[24px] w-[24px] '>
+                                        <Image src={'./images/flight_badge.svg'} fill alt='' />
+                                    </div>
+                                    <div className='flex flex-col gap-4'>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>
+                                                {detailFlight.berangkat.Airline.airline_name} -{' '}
+                                                {detailFlight.berangkat.flight_class}
+                                            </h3>
+                                            <h3 className='text-body-5 font-bold'>
+                                                {detailFlight.berangkat.Airline.airline_code}
+                                            </h3>
+                                        </div>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                            <h4 className='text-body-6'>{extractWord(detailFlight.berangkat.description)} </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='mb-4 mt-2 w-full border text-net-3'></div>
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <h1 className='text-title-2 font-bold'>
+                                            {fixedHour(detailFlight.berangkat.arrival_time)}
+                                        </h1>
+                                        <h1 className='text-body-6'>{reformatDate(detailFlight.berangkat.arrival_date)}</h1>
+                                        <h1 className='text-body-6 font-medium'>
+                                            {detailFlight.berangkat.Airport_to.airport_name}
+                                        </h1>
+                                    </div>
+                                    <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
+                                </div>
+                            </div>
+                        )}
+
+                        {detailFlight?.pulang?.departure_date && (
+                            <div className='mb-2 mt-4'>
+                                <h1 className='w-max rounded-rad-3 bg-alert-1 px-2 py-1 text-title-2 font-bold text-white'>
+                                    Kepulangan
+                                </h1>
+                            </div>
+                        )}
+
+                        {detailFlight?.pulang?.departure_date && (
+                            <div>
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <h1 className='text-title-2 font-bold'>
+                                            {fixedHour(detailFlight.pulang.departure_time)}
+                                        </h1>
+                                        <h1 className='text-body-6'>{reformatDate(detailFlight.pulang.departure_date)}</h1>
+                                        <h1 className='text-body-6 font-medium'>
+                                            {detailFlight.pulang.Airport_from.airport_name}
+                                        </h1>
+                                    </div>
+                                    <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
+                                </div>
+                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                <div className='flex items-center gap-2'>
+                                    <div className='relative h-[24px] w-[24px] '>
+                                        <Image src={'./images/flight_badge.svg'} fill alt='' />
+                                    </div>
+                                    <div className='flex flex-col gap-4'>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>
+                                                {detailFlight.pulang.Airline.airline_name} - {detailFlight.pulang.flight_class}
+                                            </h3>
+                                            <h3 className='text-body-5 font-bold'>{detailFlight.pulang.Airline.airline_code}</h3>
+                                        </div>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                            <h4 className='text-body-6'>{extractWord(detailFlight.pulang.description)} </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='mb-4 mt-2 w-full border text-net-3'></div>
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <h1 className='text-title-2 font-bold'>{fixedHour(detailFlight.pulang.arrival_time)}</h1>
+
+                                        <h1 className='text-body-6'>{reformatDate(detailFlight.pulang.arrival_date)}</h1>
+                                        <h1 className='text-body-6 font-medium'>{detailFlight.pulang.Airport_to.airport_name}</h1>
+                                    </div>
+                                    <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
+                                </div>
+                            </div>
+                        )}
+                        <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                        <h1 className='text-body-6 font-bold'>Rincian Harga</h1>
+                        <div>
+                            {detailFlight.totalPrice && (
+                                <div className='flex flex-col gap-1'>
+                                    {passengerType.dewasa > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.dewasa} Dewasa</h1>
+                                            <h1> {formatRupiah(detailFlight.totalAdults)}</h1>
+                                        </div>
+                                    )}
+                                    {passengerType.anak > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.anak} Anak</h1>
+                                            <h1> {formatRupiah(detailFlight.totalChild)}</h1>
+                                        </div>
+                                    )}
+                                    {passengerType.bayi > 0 && (
+                                        <div className='flex justify-between text-body-6'>
+                                            <h1>{passengerType.bayi} Bayi</h1>
+                                            <h1> {formatRupiah(detailFlight.totalBaby)}</h1>
+                                        </div>
+                                    )}
+                                    <div className='flex justify-between text-body-6'>
+                                        <h1>Tax</h1>
+                                        <h1>
+                                            <span>{formatRupiah(detailFlight.tax)}</span>
+                                        </h1>
+                                    </div>
+                                    <div className='mb-3 mt-2 w-full border text-net-3'></div>
+                                    <div className='flex justify-between text-title-2 font-bold'>
+                                        <h1>Total</h1>
+                                        <h1 className='text-pur-4'>
+                                            <span className='ml-1'>{formatRupiah(detailFlight.totalPrice)}</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className='invisible h-[110px] '></div>
+                        {formData && (
+                            <div className='fixed inset-x-0 bottom-0  flex  h-[100px] flex-col items-center justify-center gap-3  bg-white  px-5 shadow-low'>
+                                <Button
+                                    onClick={() => handleSubmit()}
+                                    className='my-1 w-full rounded-rad-3 bg-alert-3 py-2  text-white'>
+                                    Lanjut Bayar
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+// my-1 w-full rounded-rad-3 py-2 text-white

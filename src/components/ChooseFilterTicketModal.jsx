@@ -3,41 +3,54 @@ import Card from './Card';
 import { FaCheckCircle } from 'react-icons/fa';
 import { useState } from 'react';
 
-export default function ChooseFilterTicketModal({ open, handleOpen }) {
-    const [chooseFilterTicket, setChooseFilterTicket] = useState(0);
+export default function ChooseFilterTicketModal({ open, handleOpen, handleChooseFilter }) {
+    const [chooseFilterTicket, setChooseFilterTicket] = useState({
+        id: 0,
+        query: '',
+    });
 
-    const handleChosenFilterTicket = (id) => setChooseFilterTicket(id);
+    const handleChosenFilterTicket = (id, query) => {
+        setChooseFilterTicket({
+            id,
+            query,
+        });
+    };
+
+    const handleFilter = () => {
+        handleChooseFilter(chooseFilterTicket.query);
+        handleOpen();
+    };
 
     const filterTicket = [
         {
             id: 1,
             name: 'Harga',
             type: 'Termurah',
+            query: 'tolower',
         },
         {
             id: 2,
-            name: 'Durasi',
-            type: 'Terpendek',
+            name: 'Keberangkatan',
+            type: 'Paling Awal',
+            query: 'earlydeparture',
         },
         {
             id: 3,
             name: 'Keberangkatan',
-            type: 'Paling Awal',
+            type: 'Paling Akhir',
+            query: 'lastdeparture',
         },
         {
             id: 4,
-            name: 'Keberangkatan',
-            type: 'Paling Akhir',
+            name: 'Kedatangan',
+            type: 'Paling Awal',
+            query: 'earlyarrive',
         },
         {
             id: 5,
             name: 'Kedatangan',
-            type: 'Paling Awal',
-        },
-        {
-            id: 6,
-            name: 'Kedatangan',
             type: 'Paling Akhir',
+            query: 'lastarrive',
         },
     ];
 
@@ -55,23 +68,23 @@ export default function ChooseFilterTicketModal({ open, handleOpen }) {
                                     {filterTicket &&
                                         filterTicket.map((ticket) => (
                                             <div
-                                                onClick={() => handleChosenFilterTicket(ticket.id)}
+                                                onClick={() => handleChosenFilterTicket(ticket.id, ticket.query)}
                                                 key={ticket.id}
                                                 className={`${
-                                                    chooseFilterTicket === ticket.id ? 'bg-pur-5 text-white' : 'bg-white'
+                                                    chooseFilterTicket.id === ticket.id ? 'bg-pur-5 text-white' : 'bg-white'
                                                 }`}>
                                                 <div
                                                     className={`mx-5 flex cursor-pointer items-center  justify-between border-b-[1px] border-b-net-2 py-[10px] font-normal`}>
                                                     <div>
                                                         <h1
                                                             className={`${
-                                                                chooseFilterTicket === ticket.id ? ' text-white' : 'text-black'
+                                                                chooseFilterTicket.id === ticket.id ? ' text-white' : 'text-black'
                                                             } font-poppins text-body-6 font-semibold`}>
                                                             {ticket.name} -{' '}
                                                             <span className='font-poppins font-normal'>{ticket.type}</span>
                                                         </h1>
                                                     </div>
-                                                    {chooseFilterTicket === ticket.id && (
+                                                    {chooseFilterTicket.id === ticket.id && (
                                                         <FaCheckCircle className='h-4 w-4 text-alert-1' />
                                                     )}
                                                 </div>
@@ -79,7 +92,7 @@ export default function ChooseFilterTicketModal({ open, handleOpen }) {
                                         ))}
                                 </div>
                             </Card.Body>
-                            <Card.Footer handleCardAction={() => console.log('Simpan Data')}>Simpan</Card.Footer>
+                            <Card.Footer handleCardAction={() => handleFilter()}>Simpan</Card.Footer>
                         </Card>
                     </div>
                 </div>

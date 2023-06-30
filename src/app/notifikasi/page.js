@@ -273,49 +273,95 @@ export default function Notifikasi() {
             <div className='mx-[24px] mt-[64px] font-poppins lg:hidden'>
                 <h1 className='text-head-2 font-bold text-black'>Notifikasi</h1>
                 {/* notif container */}
-                <div className='mt-[30px]'>
-                    <div>
-                        <div className='flex items-start gap-3 border-b border-net-3 py-4'>
-                            <Image alt='' src={'/images/bell_notif.svg'} height={24} width={24} />
-                            <div className='w-full '>
-                                <div className='flex justify-between'>
-                                    <p className='text-body-1 text-net-3'>Promosi</p>
-                                    <div className='flex items-start gap-3'>
-                                        <p className='text-body-1 text-net-3'>20 Maret, 14:04</p>
-                                        <Image
-                                            alt=''
-                                            src={'/images/notif_notread.svg'}
-                                            width={12}
-                                            height={12}
-                                            className='mt-1 block'
-                                        />
-                                    </div>
-                                </div>
-                                <p className='text-body-2'>Dapatkan Potongan 50% Tiket!</p>
-                                <p className='text-body-1 text-net-3'>Syarat dan Ketentuan berlaku!</p>
-                            </div>
-                        </div>
-                        <div className='flex items-start gap-3 border-b border-net-3 py-4'>
-                            <Image alt='' src={'/images/bell_notif.svg'} height={24} width={24} />
-                            <div className='w-full '>
-                                <div className='flex justify-between'>
-                                    <p className='text-body-1 text-net-3'>Promosi</p>
-                                    <div className='flex items-start gap-3'>
-                                        <p className='text-body-1 text-net-3'>20 Maret, 14:04</p>
-                                        <Image
-                                            alt=''
-                                            src={'/images/notif_notread.svg'}
-                                            width={12}
-                                            height={12}
-                                            className='mt-1 block'
-                                        />
-                                    </div>
-                                </div>
-                                <p className='text-body-2'>Dapatkan Potongan 50% Tiket!</p>
-                                <p className='text-body-1 text-net-3'>Syarat dan Ketentuan berlaku!</p>
-                            </div>
-                        </div>
+                <div className='mt-[30px] grid grid-cols-12'>
+                    <div className='col-span-12 mb-2 flex items-center justify-end'>
+                        <Button
+                            onClick={() => handleReadNotif()}
+                            className='rounded-rad-3 border border-pur-5 bg-white px-3 py-2 text-body-3 text-pur-5 hover:border-white hover:bg-purple-400 hover:text-white'>
+                            Sudah Dibaca
+                        </Button>
                     </div>
+                    {notifications.length ? (
+                        notifications.map((notif, index) => {
+                            const optionDate = {
+                                day: 'numeric',
+                                month: '2-digit',
+                                year: 'numeric',
+                                minute: '2-digit',
+                                hour: '2-digit',
+                            };
+
+                            return (
+                                <div key={index} className='col-span-12  border-b border-net-3 py-4'>
+                                    <div className=' grid grid-cols-12 gap-2 '>
+                                        <div className='relative col-span-1 h-[24px] w-[24px]'>
+                                            <Image alt='' src={'/new_images/notif.svg'} fill />
+                                        </div>
+                                        <div className='col-span-11'>
+                                            <div className='flex items-center justify-between'>
+                                                <p className='text-body-3 text-net-3'>
+                                                    {reformatDateWithHour(notif.createdAt, optionDate)}
+                                                </p>
+                                                {notif?.isRead ? (
+                                                    <Image
+                                                        alt=''
+                                                        src={'/images/notif_notread.svg'}
+                                                        width={12}
+                                                        height={12}
+                                                        // className='mt-1 '
+                                                    />
+                                                ) : (
+                                                    <Image
+                                                        alt=''
+                                                        src={'/images/notif_read.svg'}
+                                                        width={12}
+                                                        height={12}
+                                                        // className='mt-1 '
+                                                    />
+                                                )}
+                                            </div>
+                                            <p className='mb-1 text-body-6 font-bold text-pur-5 '>{notif.headNotif}</p>
+                                            <p className=' text-body-4'>{notif.message}</p>
+                                        </div>
+                                    </div>
+                                    {/* <div className='flex items-start gap-3'>
+                                        <p className='text-body-3 text-net-3'>
+                                            {reformatDateWithHour(notif.createdAt, optionDate)}
+                                        </p>
+                                        {notif?.isRead ? (
+                                            <Image
+                                                alt=''
+                                                src={'/images/notif_notread.svg'}
+                                                width={12}
+                                                height={12}
+                                                className='mt-1 block'
+                                            />
+                                        ) : (
+                                            <Image
+                                                alt=''
+                                                src={'/images/notif_read.svg'}
+                                                width={12}
+                                                height={12}
+                                                className='mt-1 block'
+                                            />
+                                        )}
+                                    </div> */}
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div
+                            style={{ height: 'calc(100vh - 270px)' }}
+                            className='col-span-12 flex h-[500px] items-center justify-center '>
+                            <div className='flex flex-col justify-center gap-8'>
+                                <div className='flex flex-col items-center justify-center text-center'>
+                                    <Image alt='' src={'/new_images/empty_list.svg'} width={200} height={200} />
+                                    <h1 className='mt-4 text-body-6 font-bold text-pur-3'>Oops! Notifikasi Anda Kosong!</h1>
+                                    <h3 className='text-body-6'>Anda belum melakukan penerbangan</h3>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 {/* notif container */}
                 <BottomNavbar />

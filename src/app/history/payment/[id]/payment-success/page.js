@@ -18,12 +18,14 @@ export default function PaymentSuccess() {
             <Navbar className={'hidden lg:block'} />
             <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
-                    <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
-                        <h1 className='cursor-pointer text-black'>Isi Data Diri</h1>
+                    <div className=' col-span-12 flex flex-col gap-1 text-head-1'>
+                        <h1 className=' text-body-6  text-pur-3'>Terimakasih</h1>
+                        <p className='  font-medium text-pur-5'>Selamat Menikmati Penerbanganmu!</p>
+                        {/* <h1 className='cursor-pointer text-black'>Isi Data Diri</h1>
                         <p>{'>'}</p>
                         <h1 className='text-black'>Bayar</h1>
                         <p>{'>'}</p>
-                        <h1 className='text-black'>Selesai</h1>
+                        <h1 className='text-black'>Selesai</h1> */}
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import { convertToDate, convertToTime } from '@/utils/converDateTime';
 import axios from 'axios';
 
 const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/airport';
-const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
+// const SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
 const DETAIL_FLIGHT = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/getDetail';
 
 function genId() {
@@ -23,8 +23,24 @@ export const fetchAirport = createAsyncThunk('flight/fetchAirport', async () => 
 
 export const fetchFlight = createAsyncThunk(
     'flight/fetchFlight',
-    async ({ from, to, departure_date, departure_time, returnDate, flight_class }) => {
+    async ({ from, to, departure_date, departure_time, returnDate, flight_class, query = null }) => {
         try {
+            let SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
+
+            if (query.toLowerCase() === 'tolower') {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight?toLower=true';
+            } else if (query.toLowerCase() === 'earlydeparture') {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight?earlyDeparture=true';
+            } else if (query.toLowerCase() === 'lastdeparture') {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight?lastDeparture=true';
+            } else if (query.toLowerCase() === 'earlyarrive') {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight?earlyArrive=true';
+            } else if (query.toLowerCase() === 'lastarrive') {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight?lastArrive=true';
+            } else {
+                SEARCH_URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/flight/searchflight';
+            }
+
             const objectTemplate = {
                 from,
                 to,
@@ -839,7 +855,7 @@ export const flightSlice = createSlice({
                 state.choosedFlight.flight_2.arrival_date = '';
                 state.choosedFlight.flight_2.arrival_time = '';
                 state.choosedFlight.flight_2.duration = '';
-                state.searchPage.from = state.homeSearch.from;
+                state.searchPage.from = state.homeSearch.from; //initial state
                 state.searchPage.to = state.homeSearch.to;
                 state.searchPage.search_date = state.homeSearch.departure_dateTime;
                 state.searchPage.search_date_return = state.homeSearch.return_dateTime;

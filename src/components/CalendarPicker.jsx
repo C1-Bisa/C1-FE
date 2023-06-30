@@ -3,7 +3,7 @@
 import Calendar from 'react-calendar';
 import { FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 
-export default function CalendarPicker({ open, handleOpen, initialDate, handlePickedDate, minDate = true }) {
+export default function CalendarPicker({ isDesktop = true, open, handleOpen, initialDate, handlePickedDate, minDate = true }) {
     return (
         <>
             {open && (
@@ -18,7 +18,7 @@ export default function CalendarPicker({ open, handleOpen, initialDate, handlePi
                     minDate={minDate && new Date()}
                     prevLabel={<FiChevronLeft style={{ color: '#7126b5' }} />}
                     nextLabel={<FiChevronRight style={{ color: '#7126b5' }} />}
-                    showDoubleView
+                    showDoubleView={isDesktop}
                     prev2Label={null}
                     next2Label={null}
                     clearIcon={null}

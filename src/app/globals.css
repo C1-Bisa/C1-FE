@@ -18,20 +18,20 @@ input[type='password']::-ms-clear {
 }
 
 /* Scroll bar nav */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
     width: auto;
-}
+} */
 
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
     -webkit-box-shadow: auto;
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
     -webkit-border-radius: auto;
     border-radius: auto;
     background: auto;
@@ -39,7 +39,7 @@ input[type='password']::-ms-clear {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
     background: auto;
-}
+} */
 
 /* Date Range Picker start */
 .react-daterange-picker__calendar,
@@ -202,4 +202,12 @@ abbr[title] {
 
 .react-daterange-picker__wrapper {
     display: none;
+}
+
+/* `sm` applies to x-small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+}
+
+/* `md` applies to small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) {
 }

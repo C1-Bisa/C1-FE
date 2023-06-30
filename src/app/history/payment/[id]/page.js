@@ -101,122 +101,146 @@ export default function HistoryPaymentId() {
 
     const paymentMenu = {
         1: (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', margin: '24px 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <h1>First Name</h1>
-                        <Input />
+            <div className='mx-16 flex flex-col gap-5 font-poppins'>
+                <div className='mt-5 flex gap-8'>
+                    <div>
+                        <Label className='text-body-6 font-medium'>First Name</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='Arief Rachman'
+                            type='text'
+                            // name={`cvv`}
+                            // value={creditCardInput.cvv}
+                            // onChange={handleChangeCreditCard}
+                        />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <h1>Last Name</h1>
-                        <Input />
+                    <div>
+                        <Label className='text-body-6 font-medium'>Last Name</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='Hakim'
+                            type='text'
+                            // name={`expiry_date`}
+                            // value={creditCardInput.expiry_date}
+                            // onChange={handleChangeCreditCard}
+                        />
                     </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <h1>Number</h1>
-                    <Input type='number' style={{ width: '100%' }} />
+                <div className='mb-5'>
+                    <Label className='text-body-6 font-medium'>Gopay Number</Label>
+                    <Input
+                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                        placeholder='+62'
+                        type='number'
+                        // value={creditCardInput.card_number}
+                        // name={'card_number'}
+                        // onChange={handleChangeCreditCard}
+                    />
                 </div>
             </div>
         ),
         2: (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', margin: '24px 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <h1>First Name</h1>
-                        <Input />
+            <div className='mx-16 flex flex-col gap-5 font-poppins'>
+                <div className='mt-5 flex gap-8'>
+                    <div>
+                        <Label className='text-body-6 font-medium'>First Name</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='Arief Rachman'
+                            type='text'
+                            // name={`cvv`}
+                            // value={creditCardInput.cvv}
+                            // onChange={handleChangeCreditCard}
+                        />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <h1>Last Name</h1>
-                        <Input />
+                    <div>
+                        <Label className='text-body-6 font-medium'>Last Name</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='Hakim'
+                            type='text'
+                            // name={`expiry_date`}
+                            // value={creditCardInput.expiry_date}
+                            // onChange={handleChangeCreditCard}
+                        />
                     </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <h1>Email Address</h1>
-                    <Input style={{ width: '100%' }} />
+                <div className='mb-5'>
+                    <Label className='text-body-6 font-medium'>Email Address</Label>
+                    <Input
+                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                        placeholder='your@gmail.com'
+                        type='text'
+                        // value={creditCardInput.card_number}
+                        // name={'card_number'}
+                        // onChange={handleChangeCreditCard}
+                    />
                 </div>
             </div>
         ),
         3: (
-            <form>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                    <div
-                        style={{
-                            margin: '24px 0',
-                            display: 'flex',
-                            gap: '16px',
-                            justifyContent: 'center',
-                        }}>
-                        <div className='relative h-[30px] w-[30px]'>
-                            <Image src={'/images/mastercard_logo.svg'} fill alt='' />
-                        </div>
-                        <div className='relative h-[30px] w-[30px]'>
-                            <Image src={'/images/visa_logo.svg'} fill alt='' />
-                        </div>
-                        <div className='relative h-[30px] w-[30px]'>
-                            <Image src={'/images/amex_logo.svg'} fill alt='' />
-                        </div>
-                        <div className='relative h-[30px] w-[30px]'>
-                            <Image src={'/images/paypal_logo.svg'} fill alt='' />
-                        </div>
+            <div className='mx-16 flex flex-col gap-5 font-poppins'>
+                <div className='mt-5 flex justify-center gap-4'>
+                    <div className='relative h-[30px] w-[30px]'>
+                        <Image src={'/images/mastercard_logo.svg'} fill alt='' />
                     </div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '18px',
-                        }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <Label>Card number</Label>
-                            <Input
-                                placeholder='4480 0000 0000 0000'
-                                type='number'
-                                style={{ width: '100%' }}
-                                value={creditCardInput.card_number}
-                                name={'card_number'}
-                                onChange={handleChangeCreditCard}
-                            />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <Label>Card holder name</Label>
-                            <Input
-                                placeholder='John Doe'
-                                style={{ width: '100%' }}
-                                name={`card_holder_name`}
-                                value={creditCardInput.card_holder_name}
-                                onChange={handleChangeCreditCard}
-                            />
-                        </div>
-                        <div style={{ display: 'flex', gap: '32px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                <Label>CVV</Label>
-                                <Input
-                                    placeholder='000'
-                                    type='number'
-                                    name={`cvv`}
-                                    value={creditCardInput.cvv}
-                                    onChange={handleChangeCreditCard}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                <Label>Expiry date</Label>
-                                <Input
-                                    placeholder='07/24'
-                                    type='text'
-                                    name={`expiry_date`}
-                                    value={creditCardInput.expiry_date}
-                                    onChange={handleChangeCreditCard}
-                                />
-                            </div>
-                        </div>
+                    <div className='relative h-[30px] w-[30px]'>
+                        <Image src={'/images/visa_logo.svg'} fill alt='' />
+                    </div>
+                    <div className='relative h-[30px] w-[30px]'>
+                        <Image src={'/images/amex_logo.svg'} fill alt='' />
+                    </div>
+                    <div className='relative h-[30px] w-[30px]'>
+                        <Image src={'/images/paypal_logo.svg'} fill alt='' />
                     </div>
                 </div>
-            </form>
+                <div>
+                    <Label className='text-body-6 font-medium'>Card number</Label>
+                    <Input
+                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                        placeholder='4480 0000 0000 0000'
+                        type='number'
+                        value={creditCardInput.card_number}
+                        name={'card_number'}
+                        onChange={handleChangeCreditCard}
+                    />
+                </div>
+                <div>
+                    <Label className='text-body-6 font-medium'>Card holder name</Label>
+                    <Input
+                        placeholder='John Doe'
+                        className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                        name={`card_holder_name`}
+                        value={creditCardInput.card_holder_name}
+                        onChange={handleChangeCreditCard}
+                    />
+                </div>
+
+                <div className='mb-5 flex gap-8'>
+                    <div>
+                        <Label className='text-body-6 font-medium'>CVV</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='000'
+                            type='number'
+                            name={`cvv`}
+                            value={creditCardInput.cvv}
+                            onChange={handleChangeCreditCard}
+                        />
+                    </div>
+                    <div>
+                        <Label className='text-body-6 font-medium'>Expiry date</Label>
+                        <Input
+                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-1 font-poppins text-body-6 font-medium'
+                            placeholder='07/24'
+                            type='text'
+                            name={`expiry_date`}
+                            value={creditCardInput.expiry_date}
+                            onChange={handleChangeCreditCard}
+                        />
+                    </div>
+                </div>
+            </div>
         ),
     };
 
@@ -266,7 +290,7 @@ export default function HistoryPaymentId() {
             );
             console.log('PESAN UPDATE_PAYMENT:', res);
 
-            router.replace(`/order/payment/${id}/payment-success`);
+            router.replace(`/history/payment/${id}/payment-success`);
         } catch (error) {
             console.log(error.message);
         }
@@ -367,8 +391,9 @@ export default function HistoryPaymentId() {
                                 datas.map((data, index) => (
                                     <div key={index}>
                                         <div
-                                            style={{ background: open.id === data.id ? '#7126B5' : '#3c3c3c' }}
-                                            className='flex h-[50px] w-full cursor-pointer items-center justify-between rounded-rad-1 bg-[#3c3c3c] px-[16px]'
+                                            className={`${
+                                                open.id === data.id ? 'bg-pur-3' : 'bg-net-5'
+                                            } flex w-full cursor-pointer items-center justify-between rounded-rad-1  px-4 py-[14px] text-title-1`}
                                             onClick={() => handleOpen(data)}>
                                             <p className='text-white'>{data.name}</p>
                                             {open.id === data.id ? (
@@ -377,126 +402,10 @@ export default function HistoryPaymentId() {
                                                 <FiChevronDown style={{ color: 'white', width: '20px', height: '20px' }} />
                                             )}
                                         </div>
-                                        {/* {open.id === data.id && (
-                                            <div>
-                                                {data.id === 3 && (
-                                                    <div>
-                                                        <Label>Card number</Label>
-                                                        <Input
-                                                            placeholder='4480 0000 0000 0000'
-                                                            type='number'
-                                                            style={{ width: '100%' }}
-                                                            name={'card_number'}
-                                                            onChange={handleChangeCreditCard}
-                                                            value={creditCardInput.card_number}
-                                                        />
-                                                    </div>
 
-                                                    // <div
-                                                    //     style={{
-                                                    //         display: 'flex',
-                                                    //         flexDirection: 'column',
-                                                    //         justifyContent: 'center',
-                                                    //         alignItems: 'center',
-                                                    //     }}>
-                                                    //     <div
-                                                    //         style={{
-                                                    //             margin: '24px 0',
-                                                    //             display: 'flex',
-                                                    //             gap: '16px',
-                                                    //             justifyContent: 'center',
-                                                    //         }}>
-                                                    //         <div className='relative h-[30px] w-[30px]'>
-                                                    //             <Image src={'/images/mastercard_logo.svg'} fill alt='' />
-                                                    //         </div>
-                                                    //         <div className='relative h-[30px] w-[30px]'>
-                                                    //             <Image src={'/images/visa_logo.svg'} fill alt='' />
-                                                    //         </div>
-                                                    //         <div className='relative h-[30px] w-[30px]'>
-                                                    //             <Image src={'/images/amex_logo.svg'} fill alt='' />
-                                                    //         </div>
-                                                    //         <div className='relative h-[30px] w-[30px]'>
-                                                    //             <Image src={'/images/paypal_logo.svg'} fill alt='' />
-                                                    //         </div>
-                                                    //     </div>
-                                                    //     <div
-                                                    //         style={{
-                                                    //             display: 'flex',
-                                                    //             flexDirection: 'column',
-                                                    //             gap: '18px',
-                                                    //         }}>
-                                                    //         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                    //             <Label>Card number</Label>
-                                                    //             <Input
-                                                    //                 placeholder='4480 0000 0000 0000'
-                                                    //                 type='number'
-                                                    //                 style={{ width: '100%' }}
-                                                    //                 name={'card_number'}
-                                                    //                 onChange={handleChangeCreditCard}
-                                                    //                 value={creditCardInput.card_number}
-                                                    //             />
-                                                    //         </div>
-                                                    //         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                    //             <Label>Card holder name</Label>
-                                                    //             <Input
-                                                    //                 placeholder='John Doe'
-                                                    //                 style={{ width: '100%' }}
-                                                    //                 // name={`card_holder_name`}
-                                                    //                 // value={creditCardInput.card_holder_name}
-                                                    //                 // onChange={handleChangeCreditCard}
-                                                    //             />
-                                                    //         </div>
-                                                    //         <div style={{ display: 'flex', gap: '32px' }}>
-                                                    //             <div
-                                                    //                 style={{
-                                                    //                     display: 'flex',
-                                                    //                     flexDirection: 'column',
-                                                    //                     gap: '6px',
-                                                    //                 }}>
-                                                    //                 <Label>CVV</Label>
-                                                    //                 <Input
-                                                    //                     placeholder='000'
-                                                    //                     type='number'
-                                                    //                     // name={`cvv`}
-                                                    //                     // value={creditCardInput.cvv}
-                                                    //                     // onChange={handleChangeCreditCard}
-                                                    //                 />
-                                                    //             </div>
-                                                    //             <div
-                                                    //                 style={{
-                                                    //                     display: 'flex',
-                                                    //                     flexDirection: 'column',
-                                                    //                     gap: '6px',
-                                                    //                 }}>
-                                                    //                 <Label>Expiry date</Label>
-                                                    //                 <Input
-                                                    //                     placeholder='07/24'
-                                                    //                     type='number'
-                                                    //                     // name={`expiry_date`}
-                                                    //                     // value={creditCardInput.expiry_date}
-                                                    //                     // onChange={handleChangeCreditCard}
-                                                    //                 />
-                                                    //             </div>
-                                                    //         </div>
-                                                    //     </div>
-                                                    // </div>
-                                                )}
-                                            </div>
-                                        )} */}
                                         {open.id === data.id && paymentMenu[data.id]}
                                     </div>
                                 ))}
-                            {/* <div>
-                                <div>
-                                    <Label>Test</Label>
-                                    <Input
-                                        placeholder={'Test'}
-                                        name={'card_number'}
-                                        onChange={handleChangeCreditCard}
-                                        value={creditCardInput.card_number}
-                                    />
-                                </div>
-                            </div> */}
 
                             <Button
                                 disabled={transactionHistory?.transaction?.transaction_status === 'Issued'}
@@ -505,14 +414,241 @@ export default function HistoryPaymentId() {
                                     transactionHistory?.transaction?.transaction_status === 'Unpaid' ? 'Bayar' : 'Sudah Di Bayar'
                                 } `}
                                 className={`${
-                                    formCreditCardStatus ? 'bg-[#7126b5]' : 'bg-purple-300'
-                                } rounded-rad-3  px-[12px] py-[16px] text-head-1 font-medium text-white `}
+                                    formCreditCardStatus ? 'bg-pur-3' : 'bg-pur-3 opacity-60'
+                                } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
                             />
                         </div>
                     </div>
 
-                    <div className='col-span-5'>
+                    <div className='col-span-5 flex flex-col gap-3'>
                         <div className='flex justify-between'>
+                            <h1 className='text-title-3'>
+                                Booking Code :
+                                <span className='font-bold text-pur-5'>{transactionHistory?.transaction?.transaction_code}</span>
+                            </h1>
+                            <h1
+                                className={`${historyStatusStyling(
+                                    transactionHistory?.transaction?.transaction_status
+                                )} w-max rounded-rad-4 px-3 py-1 text-body-6`}>
+                                {transactionHistory?.transaction?.transaction_status}
+                            </h1>
+                        </div>
+
+                        {/* depar */}
+                        {transactionHistory?.departure && (
+                            <div className='flex flex-col gap-4'>
+                                {transactionHistory?.arrival?.transaction_type && (
+                                    <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                        Kepergian - Flight 1
+                                    </p>
+                                )}
+
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <p className='text-title-1 font-bold'>
+                                            {fixedHour(transactionHistory?.departure?.Flight?.departure_time)}
+                                        </p>
+                                        <p className='text-body-5'>
+                                            {reformatDate(transactionHistory?.departure?.Flight?.departure_date)}
+                                        </p>
+                                        <p className='text-body-5 font-medium'>
+                                            {transactionHistory?.departure?.Flight?.Airport_from?.airport_name}
+                                        </p>
+                                    </div>
+                                    <p className='text-body-5 font-bold text-pur-3'>Keberangkatan</p>
+                                </div>
+
+                                <div className='w-full border'></div>
+
+                                <div className='flex items-center gap-4 '>
+                                    <Image src={'/images/flight_badge.svg'} alt='' width={24} height={24} />
+
+                                    <div className='flex flex-col gap-4'>
+                                        <div>
+                                            <h1 className='text-body-6 font-bold'>
+                                                {transactionHistory?.departure.Flight.Airline.airline_name} -{' '}
+                                                {transactionHistory?.departure.Flight.flight_class}
+                                            </h1>
+                                            <h2 className='text-body-5 font-bold'>
+                                                {transactionHistory?.departure.Flight.Airline.airline_code}
+                                            </h2>
+                                        </div>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>Informasi :</h3>
+                                            <p className='text-body-5 font-normal'>
+                                                {extractWord(transactionHistory?.departure.Flight.description)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='w-full border'></div>
+
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <p className='text-title-1 font-bold'>
+                                            {fixedHour(transactionHistory?.departure?.Flight?.arrival_time)}
+                                        </p>
+                                        <p className='text-body-5'>
+                                            {reformatDate(transactionHistory?.departure?.Flight?.arrival_date)}
+                                        </p>
+                                        <p className='text-body-5 font-medium'>
+                                            {transactionHistory?.departure?.Flight?.Airport_to?.airport_name}
+                                        </p>
+                                    </div>
+                                    <p className='text-body-5 font-bold text-pur-3'>Kedatangan</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* divider */}
+                        {transactionHistory?.arrival?.transaction_type && <div className=' w-full border'></div>}
+                        {/* divider */}
+
+                        {/* return */}
+                        {transactionHistory?.arrival?.transaction_type && (
+                            <div className='flex flex-col gap-4'>
+                                {transactionHistory?.arrival?.transaction_type && (
+                                    <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                        Kepulangan - Flight 2
+                                    </p>
+                                )}
+
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <p className='text-title-1 font-bold'>
+                                            {fixedHour(transactionHistory?.arrival?.Flight?.departure_time)}
+                                        </p>
+                                        <p className='text-body-5'>
+                                            {reformatDate(transactionHistory?.arrival?.Flight?.departure_date)}
+                                        </p>
+                                        <p className='text-body-5 font-medium'>
+                                            {transactionHistory?.arrival?.Flight?.Airport_from?.airport_name}
+                                        </p>
+                                    </div>
+                                    <p className='text-body-5 font-bold text-pur-3'>Keberangkatan</p>
+                                </div>
+
+                                <div className='w-full border'></div>
+
+                                <div className='flex items-center gap-4 '>
+                                    <Image src={'/images/flight_badge.svg'} alt='' width={24} height={24} />
+
+                                    <div className='flex flex-col gap-4'>
+                                        <div>
+                                            <h1 className='text-body-6 font-bold'>
+                                                {transactionHistory?.arrival.Flight.Airline.airline_name} -{' '}
+                                                {transactionHistory?.arrival.Flight.flight_class}
+                                            </h1>
+                                            <h2 className='text-body-5 font-bold'>
+                                                {transactionHistory?.arrival.Flight.Airline.airline_code}
+                                            </h2>
+                                        </div>
+                                        <div>
+                                            <h3 className='text-body-5 font-bold'>Informasi :</h3>
+                                            <p className='text-body-5 font-normal'>
+                                                {extractWord(transactionHistory?.arrival.Flight.description)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='w-full border'></div>
+
+                                <div className='flex justify-between'>
+                                    <div>
+                                        <p className='text-title-1 font-bold'>
+                                            {fixedHour(transactionHistory?.arrival?.Flight?.arrival_time)}
+                                        </p>
+                                        <p className='text-body-5'>
+                                            {reformatDate(transactionHistory?.arrival.Flight?.arrival_date)}
+                                        </p>
+                                        <p className='text-body-5 font-medium'>
+                                            {transactionHistory?.arrival?.Flight?.Airport_to?.airport_name}
+                                        </p>
+                                    </div>
+                                    <p className='text-body-5 font-bold text-pur-3'>Kedatangan</p>
+                                </div>
+                            </div>
+                        )}
+                        {/* return */}
+
+                        {/* price */}
+                        <div className='my-3 flex flex-col gap-2 '>
+                            <h3 className='text-title-1 font-bold'>Rincian Harga</h3>
+                            {transactionHistory?.price?.departure && (
+                                <div>
+                                    {transactionHistory?.price?.arrival && (
+                                        <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                            {transactionHistory?.departure?.Flight?.Airline?.airline_name} - Kepergian
+                                        </p>
+                                    )}
+                                    {transactionHistory?.passenger?.adult > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger.adult} Dewasa</p>
+                                            <p>{formatRupiah(transactionHistory?.price.departure)}</p>
+                                        </div>
+                                    )}
+
+                                    {transactionHistory?.passenger?.adult > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger?.adult} Anak</p>
+                                            <p>{formatRupiah(transactionHistory?.price?.departure)}</p>
+                                        </div>
+                                    )}
+                                    {transactionHistory?.passenger?.baby > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger?.baby} Bayi</p>
+                                            <p>{formatRupiah(0)}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {transactionHistory?.price?.arrival && <div className=' w-full border'></div>}
+                            {transactionHistory?.price?.arrival && (
+                                <div>
+                                    <p className='w-max rounded-rad-4 bg-pur-5 px-2 py-1 text-body-6 text-white'>
+                                        {transactionHistory?.arrival?.Flight?.Airline?.airline_name} - Kepulangan
+                                    </p>
+                                    {transactionHistory?.passenger?.adult > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger?.adult} Dewasa</p>
+                                            <p>{formatRupiah(transactionHistory?.price?.arrival)}</p>
+                                        </div>
+                                    )}
+
+                                    {transactionHistory?.passenger?.adult > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger?.adult} Anak</p>
+                                            <p>{formatRupiah(transactionHistory?.price?.arrival)}</p>
+                                        </div>
+                                    )}
+                                    {transactionHistory?.passenger?.baby > 0 && (
+                                        <div className='flex items-center justify-between'>
+                                            <p>{transactionHistory?.passenger?.baby} Bayi</p>
+                                            <p>{formatRupiah(0)}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className='my-1 w-full border'></div>
+                            <div className='flex flex-col gap-1 '>
+                                <div className='flex items-center justify-between'>
+                                    <p className='font-bold'>Tax</p>
+                                    <p className='font-bold'>{formatRupiah(transactionHistory?.price?.tax)}</p>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <h1 className='text-title-1 font-bold'>Total</h1>
+                                    <h1 className='text-head-1 font-bold text-alert-3'>
+                                        {formatRupiah(transactionHistory?.price?.totalPrice)}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        {/* price */}
+                        {/* trick */}
+                        {/* <div className='flex justify-between'>
                             <h2 className='text-title-3'>
                                 Booking Code :
                                 <span className='font-bold text-pur-5'>{transactionHistory?.transaction?.transaction_code}</span>
@@ -587,7 +723,7 @@ export default function HistoryPaymentId() {
                                     <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
                                 </div>
                             </div>
-                        )}
+                        )} */}
 
                         {/* {transactionHistory?.arrival?.departure_date && (
                                 <div className='mt-4 mb-2'>
@@ -648,7 +784,7 @@ export default function HistoryPaymentId() {
                                     </div>
                                 </div>
                             )} */}
-                        <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                        {/* <div className='mb-2 mt-4 w-full border text-net-3'></div>
                         <h1 className='text-body-6 font-bold'>Rincian Harga</h1>
                         <div>
                             {transactionHistory?.price && (
@@ -696,7 +832,9 @@ export default function HistoryPaymentId() {
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </div> */}
+                        {/* trick */}
+                        <div className='invisible h-[100px]'></div>
                     </div>
                 </div>
             </div>

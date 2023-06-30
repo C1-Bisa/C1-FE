@@ -3,7 +3,7 @@
 import DateRangePicker from '@wojtekmaj/react-daterange-picker';
 import { FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 
-export default function CalendarRangePicker({ open, handleOpen, initialRangeDate, handlePickedRangeDate }) {
+export default function CalendarRangePicker({ isDesktop = true, open, handleOpen, initialRangeDate, handlePickedRangeDate }) {
     return (
         <>
             {open && (
@@ -41,7 +41,7 @@ export default function CalendarRangePicker({ open, handleOpen, initialRangeDate
                     minDate={Array.isArray(initialRangeDate) ? initialRangeDate[0] : initialRangeDate}
                     prevLabel={<FiChevronLeft style={{ color: '#7126b5' }} />}
                     nextLabel={<FiChevronRight style={{ color: '#7126b5' }} />}
-                    showDoubleView
+                    showDoubleView={isDesktop}
                     prev2Label={null}
                     next2Label={null}
                     clearIcon={null}
