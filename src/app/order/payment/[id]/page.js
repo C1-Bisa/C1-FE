@@ -666,7 +666,9 @@ export default function OrderPaymentId() {
                                     transactionHistory?.transaction?.transaction_status === 'Unpaid' ? 'Bayar' : 'Sudah Di Bayar'
                                 } `}
                                 className={`${
-                                    formCreditCardStatus ? 'bg-pur-3' : 'bg-pur-3 opacity-60'
+                                    !formCreditCardStatus || transactionHistory?.transaction?.transaction_status === 'Issued'
+                                        ? 'bg-pur-3 opacity-60'
+                                        : 'bg-pur-3 '
                                 } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
                             />
                         </div>

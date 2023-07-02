@@ -170,6 +170,10 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     const handleOpenFlightClassModal = () => setOpenFlightClassModal(!openFlightClassModal);
     const handleOpenCalendar = () => setOpenCalendar(!openCalendar);
     const handleOpenCalendarRange = () => setOpenCalendarRange(!openCalendarRange);
+    const handleCloseAllCalendar = () => {
+        setOpenCalendar(false);
+        setOpenCalendarRange(false);
+    };
 
     //AIRPORT HANDLER
     const handleChosenFromAirport = (chosenFromAirport) => setChosenFromAirport(chosenFromAirport);
@@ -259,12 +263,29 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     return (
         <>
             {/* DEKSTOP MODE */}
+            {openCalendar && (
+                <div
+                    onClick={() => setOpenCalendar(!openCalendar)}
+                    className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'></div>
+            )}
+            {openCalendarRange && (
+                <div
+                    onClick={() => setOpenCalendarRange(!openCalendarRange)}
+                    className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'></div>
+            )}
+            {focusFromInput && (
+                <div
+                    onClick={() => setFocusFromInput(!focusFromInput)}
+                    className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'></div>
+            )}
             <div className='container  mx-auto mt-[-50px] hidden  h-[292px]  max-w-screen-lg lg:block'>
-                <div className={` relative h-full w-full overflow-hidden rounded-rad-3 bg-white shadow-high`}>
+                <div
+                    // onClick={() => handleCloseAllCalendar()}
+                    className={` relative h-full w-full rounded-rad-3 bg-white shadow-high `}>
                     {buttonAction || null}
                     <div className='mx-8 my-6'>
                         {/* home search title start */}
-                        <h1 className='font-poppins text-head-1 font-bold'>
+                        <h1 className='pt-5 font-poppins text-head-1 font-bold'>
                             Pilih Jadwal Penerbangan spesial di <span className='text-pur-3'>FLYid!</span>
                         </h1>
                         {/* home search title end */}
@@ -273,22 +294,43 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                         <div className='mt-5 grid grid-cols-12'>
                             {/* menu left start */}
                             <div className='col-span-5 flex flex-col gap-7'>
-                                <div className='flex gap-8'>
-                                    {/* from start */}
-                                    <div className='flex items-center gap-2'>
-                                        <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>From</p>
-                                    </div>
-                                    <div className='relative'>
+                                {/* from start */}
+                                <div>
+                                    <div className='flex gap-8'>
+                                        <div className=' flex items-center gap-2'>
+                                            <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
+                                            <p className='font-poppins text-body-6 font-normal text-net-3'>From</p>
+                                        </div>
                                         <Input
                                             className='border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins text-title-3 font-medium'
                                             placeholder={'Silahkan pilih lokasi...'}
                                             value={chosenFromAirport}
-                                            onFocus={() => setFocusFromInput(true)}
-                                            onChange={handleFromInputChange}
+                                            readOnly
+                                            onFocus={() => {
+                                                setFocusFromInput(true);
+                                                setFocusToInput(false);
+                                                setOpenCalendar(false);
+                                                setOpenCalendarRange(false);
+                                            }}
                                         />
-                                        {focusFromInput && (
-                                            <div className='absolute z-10 flex h-[100px] w-full flex-col  gap-2 overflow-y-scroll bg-white'>
+                                    </div>
+                                    {focusFromInput && (
+                                        <div className='relative bottom-0 z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
+                                            <div className='flex items-center gap-2 pt-3'>
+                                                <Input
+                                                    className='w-full appearance-none  px-4 py-2 font-poppins outline-none'
+                                                    onChange={handleFromInputChange}
+                                                    value={chosenFromAirport}
+                                                />
+                                                <div>
+                                                    <Button
+                                                        className='bg-white'
+                                                        onClick={() => setFocusFromInput(!focusFromInput)}>
+                                                        <FiX className='h-[32px] w-[32px]' />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div style={{ height: 'calc(300px - 62px)' }} className='overflow-y-scroll pt-3'>
                                                 {fromAirports.length ? (
                                                     fromAirports.map((data, index) => (
                                                         <div
@@ -299,21 +341,26 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                                 );
                                                             }}
                                                             key={index}
-                                                            className='cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
+                                                            className={`${
+                                                                chosenFromAirport.toLowerCase() ===
+                                                                `${data.airport_location} (${data.airport_code})`.toLowerCase()
+                                                                    ? 'bg-pur-3 text-white'
+                                                                    : ''
+                                                            } cursor-pointer border-b p-3 font-poppins hover:bg-pur-3 hover:text-white`}>
                                                             {data.airport_location} ({data.airport_code})
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className='text-head-1-5 pt-2 font-poppins font-semibold'>
-                                                        <h1>Inputkan Lokasi...</h1>
+                                                    <div className='text-head-1-5 mb-2 pt-2 font-poppins font-semibold'>
+                                                        <h1>Lokasi tidak Ditemukan...</h1>
                                                     </div>
                                                 )}
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* from end*/}
+                                        </div>
+                                    )}
                                 </div>
+                                {/* from end*/}
+
                                 <div className='flex gap-8'>
                                     <div className='flex items-center gap-2'>
                                         <MdDateRange className='h-[24px] w-[24px] text-net-3' />
@@ -327,16 +374,33 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                 Departure
                                             </Label>
 
-                                            <Input
-                                                id={'departure'}
-                                                readOnly
-                                                value={formatToLocale(homeSearch.departure_dateTime)}
-                                                onClick={() => {
-                                                    handleOpenCalendar();
-                                                    setIsDesktop(true);
-                                                }}
-                                                className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
-                                            />
+                                            <div className='relative'>
+                                                <Input
+                                                    id={'departure'}
+                                                    readOnly
+                                                    value={formatToLocale(homeSearch.departure_dateTime)}
+                                                    onClick={() => {
+                                                        handleOpenCalendar();
+                                                        setIsDesktop(true);
+                                                        setFocusToInput(false);
+                                                        setFocusFromInput(false);
+                                                    }}
+                                                    className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
+                                                />
+                                                {openCalendar && (
+                                                    <div
+                                                        onClick={() => setOpenCalendar(!openCalendar)}
+                                                        className='absolute top-0 z-10'>
+                                                        <CalendarPicker
+                                                            isDesktop={isDekstop}
+                                                            initialDate={pickedDate}
+                                                            handlePickedDate={handlePickedDate}
+                                                            open={openCalendar}
+                                                            handleOpen={handleOpenCalendar}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         <div>
                                             <div className='relative flex items-center justify-between'>
@@ -352,26 +416,45 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                     className={'absolute right-[-36px]'}
                                                 />
                                             </div>
-                                            <Input
-                                                id={'return'}
-                                                readOnly
-                                                value={
-                                                    !homeSearch.return_dateTime
-                                                        ? 'Pilih Tanggal'
-                                                        : formatToLocale(homeSearch.return_dateTime)
-                                                }
-                                                onClick={() => {
-                                                    handleOpenCalendarRange();
-                                                    setIsDesktop(true);
-                                                }}
-                                                className={`${isTwoWay ? 'visible' : 'invisible'} 
+                                            <div className='relative'>
+                                                <Input
+                                                    id={'return'}
+                                                    readOnly
+                                                    value={
+                                                        !homeSearch.return_dateTime
+                                                            ? 'Pilih Tanggal'
+                                                            : formatToLocale(homeSearch.return_dateTime)
+                                                    }
+                                                    onClick={() => {
+                                                        handleOpenCalendarRange();
+                                                        setIsDesktop(true);
+                                                        setFocusToInput(false);
+                                                        setFocusFromInput(false);
+                                                    }}
+                                                    className={`${isTwoWay ? 'visible' : 'invisible'} 
                         ${
                             !homeSearch.return_dateTime
-                                ? 'text-[14px] font-normal text-pur-3'
-                                : 'text-body-6 font-medium text-black'
-                        } cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins  font-medium`}
-                                                // value={'Pilih Tanggal'}
-                                            />
+                                ? 'py-2 text-title-3 font-medium text-pur-3'
+                                : 'py-2 text-title-3 font-medium text-black'
+                        } cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2   font-poppins  font-medium`}
+                                                    // value={'Pilih Tanggal'}
+                                                />
+                                                {openCalendarRange && (
+                                                    <div
+                                                        onClick={() => setOpenCalendarRange(!openCalendarRange)}
+                                                        className='absolute top-0 z-10'>
+                                                        <div className='relative '>
+                                                            <CalendarRangePicker
+                                                                isDesktop={isDekstop}
+                                                                initialRangeDate={pickedRangeDate}
+                                                                handlePickedRangeDate={handlePickedRangeDate}
+                                                                open={openCalendarRange}
+                                                                handleOpen={handleOpenCalendarRange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -386,24 +469,40 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
                             {/* menu right start */}
                             <div className='col-span-5 flex flex-col gap-7'>
-                                <div className='flex gap-8'>
-                                    {/* to start */}
-                                    <div className='flex items-center gap-3'>
-                                        <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>To</p>
-                                    </div>
-
-                                    <div className='relative'>
+                                <div>
+                                    <div className='flex gap-8'>
+                                        <div className=' flex items-center gap-2'>
+                                            <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
+                                            <p className='font-poppins text-body-6 font-normal text-net-3'>From</p>
+                                        </div>
                                         <Input
-                                            className='border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2 px-2 py-3 font-poppins text-title-3 font-medium text-black'
-                                            // value={'Melbourne (MLB)'}
+                                            className='border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins text-title-3 font-medium'
                                             placeholder={'Silahkan pilih lokasi...'}
-                                            onFocus={() => setFocusToInput(true)}
                                             value={chosenToAirport}
-                                            onChange={handleToInputChange}
+                                            readOnly
+                                            onFocus={() => {
+                                                setFocusToInput(true);
+                                                setFocusFromInput(false);
+                                                setOpenCalendar(false);
+                                                setOpenCalendarRange(false);
+                                            }}
                                         />
-                                        {focusToInput && (
-                                            <div className='absolute z-10 flex h-[100px] w-full flex-col  gap-2 overflow-y-scroll bg-white'>
+                                    </div>
+                                    {focusToInput && (
+                                        <div className='relative bottom-0 right-[100px] z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
+                                            <div className='flex items-center gap-2 pt-3'>
+                                                <Input
+                                                    className='w-full appearance-none  px-4 py-2 font-poppins outline-none'
+                                                    onChange={handleToInputChange}
+                                                    value={chosenToAirport}
+                                                />
+                                                <div>
+                                                    <Button className='bg-white' onClick={() => setFocusToInput(!focusToInput)}>
+                                                        <FiX className='h-[32px] w-[32px]' />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div style={{ height: 'calc(300px - 62px)' }} className='overflow-y-scroll pt-3'>
                                                 {toAirports.length ? (
                                                     toAirports.map((data, index) => (
                                                         <div
@@ -414,21 +513,25 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                                 );
                                                             }}
                                                             key={index}
-                                                            className='cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
+                                                            className={`${
+                                                                chosenToAirport.toLowerCase() ===
+                                                                `${data.airport_location} (${data.airport_code})`.toLowerCase()
+                                                                    ? 'bg-pur-3 text-white'
+                                                                    : ''
+                                                            } cursor-pointer border-b p-3 font-poppins hover:bg-pur-3 hover:text-white`}>
                                                             {data.airport_location} ({data.airport_code})
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className='text-head-1-5 pt-2 font-poppins font-semibold'>
-                                                        <h1>Inputkan Lokasi...</h1>
+                                                    <div className='text-head-1-5 mb-2 pt-2 font-poppins font-semibold'>
+                                                        <h1>Lokasi tidak Ditemukan...</h1>
                                                     </div>
                                                 )}
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* to end */}
+                                        </div>
+                                    )}
                                 </div>
+
                                 <div className='flex gap-8'>
                                     <div className='flex items-center gap-3'>
                                         <MdAirlineSeatReclineNormal className='h-[24px] w-[24px] text-net-3' />
@@ -467,7 +570,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                         {/* home search menu end */}
                     </div>
                     <Button
-                        className='absolute bottom-0 w-full bg-pur-3 py-3 text-title-2 font-bold text-white hover:bg-pur-4'
+                        className='absolute bottom-0 w-full rounded-b-rad-3 bg-pur-3 py-3 text-title-2 font-bold text-white hover:bg-pur-4'
                         onClick={handleActionHomeSearch}>
                         Cari Penerbangan
                     </Button>
@@ -507,7 +610,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                                 );
                                                             }}
                                                             key={index}
-                                                            className='cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
+                                                            className=' cursor-pointer bg-pur-3 p-3 font-poppins text-white'>
                                                             {data.airport_location} ({data.airport_code})
                                                         </div>
                                                     ))
@@ -719,36 +822,6 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
             {/* handling open flight class modal end */}
 
-            {/* handling open calendar start */}
-            <div>
-                {openCalendar && (
-                    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
-                        <CalendarPicker
-                            isDesktop={isDekstop}
-                            initialDate={pickedDate}
-                            handlePickedDate={handlePickedDate}
-                            open={openCalendar}
-                            handleOpen={handleOpenCalendar}
-                        />
-                    </div>
-                )}
-            </div>
-
-            <div>
-                {openCalendarRange && (
-                    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
-                        <div className='relative h-screen w-screen'>
-                            <CalendarRangePicker
-                                isDesktop={isDekstop}
-                                initialRangeDate={pickedRangeDate}
-                                handlePickedRangeDate={handlePickedRangeDate}
-                                open={openCalendarRange}
-                                handleOpen={handleOpenCalendarRange}
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
             {/* ======= Modal and Pop Up DEKSTOP end ====== */}
         </>
     );

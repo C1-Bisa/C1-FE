@@ -2,54 +2,70 @@
 import Card from './Card';
 import { FaCheckCircle } from 'react-icons/fa';
 import { useState } from 'react';
+import { getFilterTicket, flightSlice } from '@/store/flight';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function ChooseFilterTicketModal({ open, handleOpen, handleChooseFilter }) {
+    const dispatch = useDispatch();
+
+    const filterTicketName = useSelector(getFilterTicket);
+    const { setFilterTicket } = flightSlice.actions;
+
     const [chooseFilterTicket, setChooseFilterTicket] = useState({
-        id: 0,
-        query: '',
+        id: filterTicketName.id,
+        type: filterTicketName.type,
+        query: filterTicketName.query,
     });
 
-    const handleChosenFilterTicket = (id, query) => {
+    const handleChosenFilterTicket = (id, type, query) => {
+        dispatch(
+            setFilterTicket({
+                id,
+                type,
+                query,
+            })
+        );
         setChooseFilterTicket({
             id,
+            type,
             query,
         });
     };
 
     const handleFilter = () => {
-        handleChooseFilter(chooseFilterTicket.query);
+        handleChooseFilter(chooseFilterTicket.query, chooseFilterTicket.type);
         handleOpen();
     };
 
     const filterTicket = [
         {
             id: 1,
-            name: 'Harga',
+
             type: 'Termurah',
             query: 'tolower',
         },
         {
             id: 2,
-            name: 'Keberangkatan',
-            type: 'Paling Awal',
+
+            type: 'Keberangkatan Paling Awal',
             query: 'earlydeparture',
         },
         {
             id: 3,
-            name: 'Keberangkatan',
-            type: 'Paling Akhir',
+
+            type: 'Keberangkatan Paling Akhir',
             query: 'lastdeparture',
         },
         {
             id: 4,
-            name: 'Kedatangan',
-            type: 'Paling Awal',
+
+            type: 'Kedatangan Paling Awal',
             query: 'earlyarrive',
         },
         {
             id: 5,
-            name: 'Kedatangan',
-            type: 'Paling Akhir',
+
+            type: 'Kedatangan Paling Akhir',
             query: 'lastarrive',
         },
     ];
@@ -68,7 +84,7 @@ export default function ChooseFilterTicketModal({ open, handleOpen, handleChoose
                                     {filterTicket &&
                                         filterTicket.map((ticket) => (
                                             <div
-                                                onClick={() => handleChosenFilterTicket(ticket.id, ticket.query)}
+                                                onClick={() => handleChosenFilterTicket(ticket.id, ticket.type, ticket.query)}
                                                 key={ticket.id}
                                                 className={`${
                                                     chooseFilterTicket.id === ticket.id ? 'bg-pur-5 text-white' : 'bg-white'
@@ -80,7 +96,6 @@ export default function ChooseFilterTicketModal({ open, handleOpen, handleChoose
                                                             className={`${
                                                                 chooseFilterTicket.id === ticket.id ? ' text-white' : 'text-black'
                                                             } font-poppins text-body-6 font-semibold`}>
-                                                            {ticket.name} -{' '}
                                                             <span className='font-poppins font-normal'>{ticket.type}</span>
                                                         </h1>
                                                     </div>

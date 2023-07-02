@@ -1,13 +1,15 @@
 'use client';
 
 //core
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 //third parties
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 
 //component
+import AlertTop from '@/components/AlertTop';
 import Navbar from '@/components/Navbar';
 import Label from '@/components/Label';
 import Input from '@/components/Input';
@@ -16,10 +18,31 @@ import Image from 'next/image';
 
 export default function PaymentSuccess() {
     const router = useRouter();
+    const { id } = useParams();
+
+    // state
+    const [visibleAlert, setVisibleAlert] = useState(false);
+    const [alertText, setAlertText] = useState('');
+    const [alertType, setAlertType] = useState('');
+    const [visibleAlertError, setVisibleAlertError] = useState(false);
+    const [alertTextError, setAlertTextError] = useState('');
+    const [alertTypeError, setAlertTypeError] = useState('');
 
     //nextauth
     const { data: session, status } = useSession();
     let token = session?.user?.token;
+
+    const handleVisibleAlert = (text, alertType) => {
+        setAlertText(text);
+        setAlertType(alertType);
+        setVisibleAlert(!visibleAlert);
+    };
+
+    const handleVisibleAlertError = (text, alertType) => {
+        setAlertTextError(text);
+        setAlertTypeError(alertType);
+        setVisibleAlertError(!visibleAlertError);
+    };
 
     const handleSendTicket = async () => {
         if (token) {
@@ -28,7 +51,7 @@ export default function PaymentSuccess() {
                 const res = await axios.post(
                     URL,
                     {
-                        transaction_id: '2',
+                        transaction_id: id,
                     },
                     {
                         headers: {
@@ -37,9 +60,16 @@ export default function PaymentSuccess() {
                     }
                 );
 
-                console.log('PESANN', res);
+                if (res.status === 201 || res.data.status === 'Ok') {
+                    // console.log('SUCCESS');
+                    handleVisibleAlert('Tiket sudah dikirim, harap check email Anda');
+                    setTimeout(() => {
+                        // handleVisibleAlert();
+                        router.push('/history');
+                    }, 1800);
+                }
             } catch (error) {
-                console.log('ERROR SEND EMAIL TICKET', error);
+                handleVisibleAlertError('Kami tidak bisa memproses tiketmu, mohon untuk mencoba dilain waktu', 'failed');
             }
         }
     };
@@ -50,7 +80,7 @@ export default function PaymentSuccess() {
             <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
-                        <h1 className='cursor-pointer text-black'>Isi Data Diri</h1>
+                        <h1 className=' text-black'>Isi Data Diri</h1>
                         <p>{'>'}</p>
                         <h1 className='text-black'>Bayar</h1>
                         <p>{'>'}</p>
@@ -60,7 +90,7 @@ export default function PaymentSuccess() {
             </div>
 
             <div
-                style={{ height: 'calc(100vh - 242px)' }}
+                style={{ height: 'calc(100vh - 100px)' }}
                 className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid '>
                 <div className='col-span-12 flex items-center justify-center '>
                     <div className='flex flex-col justify-center gap-8'>
@@ -78,6 +108,21 @@ export default function PaymentSuccess() {
                     </div>
                 </div>
             </div>
+
+            <AlertTop
+                visibleAlert={visibleAlert}
+                handleVisibleAlert={handleVisibleAlert}
+                text={alertText}
+                type={alertType}
+                bgType='none'
+            />
+            <AlertTop
+                visibleAlert={visibleAlertError}
+                handleVisibleAlert={handleVisibleAlertError}
+                text={alertTextError}
+                type={alertTypeError}
+                bgType='none'
+            />
         </div>
     );
 }

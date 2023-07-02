@@ -9,7 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 // import dayjs from 'dayjs';
 import { useSession, signOut } from 'next-auth/react';
-import { FiArrowLeft, FiFilter, FiHome } from 'react-icons/fi';
+import { FiArrowLeft, FiFilter, FiHome, FiX } from 'react-icons/fi';
 import { IoSearchSharp, IoLocationSharp } from 'react-icons/io5';
 import { MdNotifications, MdSearch, MdOutlineAccountCircle } from 'react-icons/md';
 
@@ -32,6 +32,7 @@ import { fixedHour } from '@/utils/fixedHour';
 import { formatRupiah } from '@/utils/formatRupiah';
 import { extractWord } from '@/utils/extractWord';
 import { SlNotebook } from 'react-icons/sl';
+import Input from '@/components/Input';
 
 export default function History() {
     //core
@@ -47,6 +48,9 @@ export default function History() {
     const { setHistoryDetail } = historySlice.actions;
 
     //state
+    const [openFilterHistoryByCode, setOpenFilterHistoryByCode] = useState(false);
+    const [filterInput, setFilterInput] = useState('');
+    const [historyFilter, setHistoryFilter] = useState([]);
     const [openMobileHistoryDetail, setOpenMobileHistoryDetail] = useState(false);
     const [mobileHistoryDetailData, setMobileHistoryDetailData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +60,9 @@ export default function History() {
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
+    const [visibleAlertError, setVisibleAlertError] = useState(false);
+    const [alertTextError, setAlertTextError] = useState('');
+    const [alertTypeError, setAlertTypeError] = useState('');
     const [fetchData, setFetchData] = useState(true);
     const [userData, setUserData] = useState({
         name: '',
@@ -64,6 +71,46 @@ export default function History() {
     });
 
     /*=== function === */
+
+    const handleOpenFilterHistoryByCode = () => {
+        setOpenFilterHistoryByCode(!openFilterHistoryByCode);
+    };
+
+    const handleOnChangeFilterByCode = (event) => {
+        console.log('e', event.target.value);
+        setFilterInput(event.target.value);
+
+        const searchHistory = historyData.map((historyItem) =>
+            historyItem.data.filter((item) =>
+                item.transaction?.transaction_code.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+        );
+
+        const results = searchHistory[0].reduce((acc, current) => {
+            acc[String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))] =
+                acc[
+                    String(
+                        reformatDate(current?.transaction?.transaction_date, {
+                            month: 'long',
+                            year: 'numeric',
+                        })
+                    )
+                ] || [];
+            acc[String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))].push(current);
+            return acc;
+        }, {});
+
+        let result = Object.keys(results).map((key, index) => {
+            return {
+                id: index + 1,
+                month: key,
+                data: results[key],
+            };
+        });
+
+        setHistoryFilter(result);
+    };
+
     const historyStatusStyling = (historyStatus) => {
         if (historyStatus?.toLowerCase() === 'issued') {
             return 'bg-alert-1 text-white';
@@ -94,6 +141,11 @@ export default function History() {
         setAlertType(alertType);
         setVisibleAlert(!visibleAlert);
     };
+    const handleVisibleAlertError = (text, alertType) => {
+        setAlertTextError(text);
+        setAlertTypeError(alertType);
+        setVisibleAlertError(!visibleAlertError);
+    };
 
     const handleHistoryDetail = (history) => {
         setHistoryItem(history);
@@ -102,6 +154,38 @@ export default function History() {
 
     const handleUpdatePayment = async (transaction) => {
         router.push(`/history/payment/${transaction?.Flights[0]?.Transaction_Flight?.transaction_id}`);
+    };
+
+    const handleSendTicket = async (id) => {
+        if (token) {
+            try {
+                const URL = 'https://kel1airplaneapi-production.up.railway.app/api/v1/transaction/printticket';
+                const res = await axios.post(
+                    URL,
+                    {
+                        transaction_id: id,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                // console.log('PESANN', res);
+
+                if (res.status === 201 || res.data.status === 'Ok') {
+                    // console.log('SUCCESS');
+                    handleVisibleAlert('Tiket sudah dikirim, harap check email Anda');
+                    router.refresh();
+                }
+
+                // console.log('ID TICKET', id);
+            } catch (error) {
+                // console.log('ERROR SEND EMAIL TICKET', error);
+                handleVisibleAlertError('Kami tidak bisa memproses tiketmu, mohon untuk mencoba dilain waktu', 'failed');
+            }
+        }
     };
     /*=== effects ===*/
     useEffect(() => {
@@ -154,9 +238,9 @@ export default function History() {
                             (a, b) => new Date(b?.transaction?.transaction_date) - new Date(a?.transaction?.transaction_date)
                         );
 
-                        // console.log('====================================');
-                        // console.log('DATAAAA', response.data.data);
-                        // console.log('====================================');
+                        console.log('====================================');
+                        console.log('DATASSSS', response.data.data);
+                        console.log('====================================');
 
                         const results = response.data.data.reduce((acc, current) => {
                             acc[
@@ -184,7 +268,8 @@ export default function History() {
                             };
                         });
                         setHistoryData(result);
-                        setHistoryItem(result[0]?.data[0]);
+                        setHistoryFilter(result);
+                        // setHistoryItem(result[0]?.data[0]);
                         // console.log('RESPOND DATA', response.data);
                     } catch (error) {
                         console.log(error);
@@ -212,22 +297,25 @@ export default function History() {
                         <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
                         <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                             <div
-                                className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                                className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
                                 onClick={() => router.push('/')}>
                                 <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                                 <p>Beranda</p>
                             </div>
-                            <div className='col-span-2 flex items-center gap-4'>
-                                <Button className='flex items-center gap-2 rounded-rad-4 border-[1px] border-pur-4 px-2 py-[4px] text-title-2'>
-                                    <FiFilter className='h-5 w-5 text-net-3 ' /> Filter
-                                </Button>
-                                <IoSearchSharp className='h-6 w-6 text-pur-4' />
+                            <div className='col-span-4 flex items-center gap-4'>
+                                <Input
+                                    onChange={handleOnChangeFilterByCode}
+                                    value={filterInput}
+                                    onClick={() => setHistoryItem('')}
+                                    placeholder={'Masukan kode transaksi Anda'}
+                                    className='rounded-rad-4 border-net-2 px-6 py-[14px] text-title-1 focus:border-pur-4'
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div
-                    // style={{ height: 'calc(100vh - 270px)' }}
+                    style={{ height: 'calc(100vh - 270px)' }}
                     className='container mx-auto hidden max-w-screen-lg flex-col items-center justify-center gap-3 font-poppins lg:flex'>
                     <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>
                     <Image alt='' src={'/new_images/loading.svg'} width={200} height={200} priority style={{ width: 'auto' }} />
@@ -245,16 +333,19 @@ export default function History() {
                     <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
                     <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                         <div
-                            className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                            className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
                             onClick={() => router.push('/')}>
                             <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                             <p>Beranda</p>
                         </div>
-                        <div className='col-span-2 flex items-center gap-4'>
-                            <Button className='flex items-center gap-2 rounded-rad-4 border-[1px] border-pur-4 px-2 py-[4px] text-title-2'>
-                                <FiFilter className='h-5 w-5 text-net-3 ' /> Filter
-                            </Button>
-                            <IoSearchSharp className='h-6 w-6 text-pur-4' />
+                        <div className='col-span-4 flex items-center gap-4'>
+                            <Input
+                                onChange={handleOnChangeFilterByCode}
+                                value={filterInput}
+                                onClick={() => setHistoryItem('')}
+                                placeholder={'Masukan kode transaksi Anda'}
+                                className='rounded-rad-4 border-net-2 px-6 py-[14px] text-title-1 focus:border-pur-4'
+                            />
                         </div>
                     </div>
                 </div>
@@ -264,29 +355,37 @@ export default function History() {
                 // style={{ height: 'calc(100vh - 270px)' }}
                 className='container mx-auto mt-4 hidden max-w-screen-lg font-poppins lg:block'>
                 <div className='grid grid-cols-12 '>
-                    {historyData.length > 0 ? (
+                    {historyFilter.length > 0 ? (
                         <div className='col-span-12 grid grid-cols-12 gap-10'>
                             <div className='col-span-7'>
-                                {historyData.length > 0 &&
-                                    historyData?.map((history, index) => {
+                                {historyFilter.length > 0 &&
+                                    historyFilter?.map((history, index) => {
                                         return (
                                             <div key={index} className='grid grid-cols-12'>
                                                 <h1 className='col-span-12 text-title-2 font-bold'>{history.month}</h1>
                                                 <div className='col-span-12 mt-3 flex flex-col gap-4'>
-                                                    {history?.data?.map((historyItem, index) => {
+                                                    {history?.data?.map((historyItems, index) => {
+                                                        console.log('====================================');
+                                                        console.log('HISTORY ITEM', historyItems);
+                                                        console.log('====================================');
                                                         return (
                                                             <div
-                                                                onClick={() => handleHistoryDetail(historyItem)}
+                                                                onClick={() => handleHistoryDetail(historyItems)}
                                                                 key={index}
-                                                                className='flex cursor-pointer flex-col gap-4 rounded-rad-3 p-4 shadow-low'>
+                                                                className={`${
+                                                                    historyItems?.transaction?.transaction_code ===
+                                                                    historyItem?.transaction?.transaction_code
+                                                                        ? 'border-pur-2'
+                                                                        : 'border-white'
+                                                                } flex cursor-pointer flex-col gap-4 rounded-rad-3 border   p-4 shadow-low`}>
                                                                 <h1
                                                                     className={`${historyStatusStyling(
-                                                                        historyItem?.transaction?.transaction_status
+                                                                        historyItems?.transaction?.transaction_status
                                                                     )} w-max rounded-rad-4 px-3 py-1 text-body-6`}>
-                                                                    {historyItem?.transaction?.transaction_status}
+                                                                    {historyItems?.transaction?.transaction_status}
                                                                 </h1>
-                                                                {historyItem?.transaction?.Flights &&
-                                                                    historyItem?.transaction?.Flights?.map((flight, index) => {
+                                                                {historyItems?.transaction?.Flights &&
+                                                                    historyItems?.transaction?.Flights?.map((flight, index) => {
                                                                         return (
                                                                             <div
                                                                                 className='flex items-center justify-between gap-4 '
@@ -342,18 +441,18 @@ export default function History() {
                                                                     <div>
                                                                         <h3 className='text-body-5 font-bold'>Booking Code:</h3>
                                                                         <p className='text-body-5 font-normal'>
-                                                                            {historyItem?.transaction?.transaction_code}
+                                                                            {historyItems?.transaction?.transaction_code}
                                                                         </p>
                                                                     </div>
                                                                     <div>
                                                                         <h3 className='text-body-5 font-bold'>Class:</h3>
                                                                         <p className='text-body-5 font-normal'>
-                                                                            {historyItem?.transaction?.Flights[0]?.flight_class}
+                                                                            {historyItems?.transaction?.Flights[0]?.flight_class}
                                                                         </p>
                                                                     </div>
                                                                     <div>
                                                                         <h3 className='text-body-5 font-bold text-pur-5'>
-                                                                            {formatRupiah(historyItem?.price?.total)}
+                                                                            {formatRupiah(historyItems?.price?.total)}
                                                                         </h3>
                                                                     </div>
                                                                 </div>
@@ -365,313 +464,392 @@ export default function History() {
                                         );
                                     })}
                             </div>
+
                             <div className='col-span-5'>
-                                {historyItem && (
+                                {historyItem ? (
                                     <div>
-                                        <div className='flex justify-between'>
-                                            <h1 className='text-title-2 font-bold'>Detail History</h1>
-                                            <h1
-                                                className={`${historyStatusStyling(
-                                                    historyItem?.transaction?.transaction_status
-                                                )} w-max rounded-rad-4 px-3 py-1 text-body-6`}>
-                                                {historyItem?.transaction?.transaction_status}
-                                            </h1>
-                                        </div>
-                                        <h2 className='text-title-3'>
-                                            Booking Code :{' '}
-                                            <span className='font-bold text-pur-5'>
-                                                {' '}
-                                                {historyItem?.transaction?.transaction_code}
-                                            </span>
-                                        </h2>
-                                        {historyItem?.transaction?.Flights[0] && (
-                                            <div className={`${historyItem?.transaction?.Flights[1] && 'mt-3'} `}>
-                                                {historyItem?.transaction?.Flights[1] && (
-                                                    <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
-                                                        Keberangkatan
+                                        {historyItem && (
+                                            <div>
+                                                <div className='flex justify-between'>
+                                                    <h1 className='text-title-2 font-bold'>Detail Transaksi</h1>
+                                                    <h1
+                                                        className={`${historyStatusStyling(
+                                                            historyItem?.transaction?.transaction_status
+                                                        )} w-max rounded-rad-4 px-3 py-1 text-body-6`}>
+                                                        {historyItem?.transaction?.transaction_status}
                                                     </h1>
+                                                </div>
+                                                <h2 className='text-title-3'>
+                                                    Booking Code :{' '}
+                                                    <span className='font-bold text-pur-5'>
+                                                        {' '}
+                                                        {historyItem?.transaction?.transaction_code}
+                                                    </span>
+                                                </h2>
+                                                {historyItem?.transaction?.Flights[0] && (
+                                                    <div className={`${historyItem?.transaction?.Flights[1] && 'mt-3'} `}>
+                                                        {historyItem?.transaction?.Flights[1] && (
+                                                            <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
+                                                                Keberangkatan
+                                                            </h1>
+                                                        )}
+                                                        <div className='flex justify-between'>
+                                                            <div>
+                                                                <h1 className='text-title-2 font-bold'>
+                                                                    {fixedHour(
+                                                                        historyItem?.transaction?.Flights[0]?.departure_time
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6'>
+                                                                    {reformatDate(
+                                                                        historyItem?.transaction?.Flights[0]?.departure_date
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6 font-medium'>
+                                                                    {
+                                                                        historyItem?.transaction?.Flights[0]?.Airport_from
+                                                                            ?.airport_name
+                                                                    }
+                                                                </h1>
+                                                            </div>
+                                                            <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
+                                                        </div>
+                                                        <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                                        <div className='flex items-center gap-2'>
+                                                            <div className='relative h-[24px] w-[24px] '>
+                                                                <Image
+                                                                    src={historyItem?.transaction?.Flights[0]?.Airline?.image}
+                                                                    fill
+                                                                    alt=''
+                                                                />
+                                                            </div>
+                                                            <div className='flex flex-col gap-4'>
+                                                                <div>
+                                                                    <h3 className='text-body-5 font-bold'>
+                                                                        {
+                                                                            historyItem?.transaction?.Flights[0]?.Airline
+                                                                                .airline_name
+                                                                        }{' '}
+                                                                        - {historyItem?.transaction?.Flights[0]?.flight_class}
+                                                                    </h3>
+                                                                    <h3 className='text-body-5 font-bold'>
+                                                                        {
+                                                                            historyItem?.transaction?.Flights[0]?.Airline
+                                                                                .airline_code
+                                                                        }
+                                                                    </h3>
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                                                    <div>
+                                                                        {historyItem?.transaction?.Passengers &&
+                                                                            historyItem?.transaction?.Passengers?.map(
+                                                                                (passenger, index) => {
+                                                                                    return (
+                                                                                        <div key={index} className=''>
+                                                                                            <h1 className='text-body-5 font-medium text-pur-5'>
+                                                                                                Penumpang {index + 1}:{' '}
+                                                                                                <span className='ml-1'>
+                                                                                                    {passenger.title}
+                                                                                                    {passenger.name}
+                                                                                                </span>
+                                                                                            </h1>
+                                                                                            <h2>
+                                                                                                ID:{' '}
+                                                                                                <span className='ml-1'>
+                                                                                                    {passenger.nik_paspor}
+                                                                                                </span>
+                                                                                            </h2>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mb-4 mt-2 w-full border text-net-3'></div>
+                                                        <div className='flex justify-between'>
+                                                            <div>
+                                                                <h1 className='text-title-2 font-bold'>
+                                                                    {fixedHour(
+                                                                        historyItem?.transaction?.Flights[0]?.arrival_time
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6'>
+                                                                    {reformatDate(
+                                                                        historyItem?.transaction?.Flights[0]?.arrival_date
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6 font-medium'>
+                                                                    {
+                                                                        historyItem?.transaction?.Flights[0]?.Airport_to
+                                                                            .airport_name
+                                                                    }
+                                                                </h1>
+                                                            </div>
+                                                            <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
+                                                        </div>
+                                                    </div>
                                                 )}
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.departure_time)}
+                                                <div
+                                                    className={`${
+                                                        historyItem?.transaction?.Flights[1] ? 'block' : 'hidden'
+                                                    } mb-2 mt-4 w-full border text-net-3`}></div>
+                                                {historyItem?.transaction?.Flights[1] && (
+                                                    <div className='mt-3'>
+                                                        <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
+                                                            Kepulangan
                                                         </h1>
-                                                        <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.departure_date)}
-                                                        </h1>
-                                                        <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[0]?.Airport_from?.airport_name}
-                                                        </h1>
-                                                    </div>
-                                                    <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
-                                                </div>
-                                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
-                                                <div className='flex items-center gap-2'>
-                                                    <div className='relative h-[24px] w-[24px] '>
-                                                        <Image src={'/images/flight_badge.svg'} fill alt='' />
-                                                    </div>
-                                                    <div className='flex flex-col gap-4'>
-                                                        <div>
-                                                            <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_name} -{' '}
-                                                                {historyItem?.transaction?.Flights[0]?.flight_class}
-                                                            </h3>
-                                                            <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[0]?.Airline.airline_code}
-                                                            </h3>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                                        <div className='flex justify-between'>
                                                             <div>
-                                                                {historyItem?.transaction?.Passengers &&
-                                                                    historyItem?.transaction?.Passengers?.map(
-                                                                        (passenger, index) => {
-                                                                            return (
-                                                                                <div key={index} className=''>
-                                                                                    <h1 className='text-body-5 font-medium text-pur-5'>
-                                                                                        Penumpang {index + 1}:{' '}
-                                                                                        <span className='ml-1'>
-                                                                                            {passenger.title}
-                                                                                            {passenger.name}
-                                                                                        </span>
-                                                                                    </h1>
-                                                                                    <h2>
-                                                                                        ID:{' '}
-                                                                                        <span className='ml-1'>
-                                                                                            {passenger.nik_paspor}
-                                                                                        </span>
-                                                                                    </h2>
-                                                                                </div>
-                                                                            );
-                                                                        }
+                                                                <h1 className='text-title-2 font-bold'>
+                                                                    {fixedHour(
+                                                                        historyItem?.transaction?.Flights[1]?.departure_time
                                                                     )}
+                                                                </h1>
+                                                                <h1 className='text-body-6'>
+                                                                    {reformatDate(
+                                                                        historyItem?.transaction?.Flights[1]?.departure_date
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6 font-medium'>
+                                                                    {
+                                                                        historyItem?.transaction?.Flights[1]?.Airport_from
+                                                                            ?.airport_name
+                                                                    }
+                                                                </h1>
+                                                            </div>
+                                                            <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
+                                                        </div>
+                                                        <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                                        <div className='flex items-center gap-2'>
+                                                            <div className='relative h-[24px] w-[24px] '>
+                                                                <Image
+                                                                    src={historyItem?.transaction?.Flights[1]?.Airline?.image}
+                                                                    fill
+                                                                    alt=''
+                                                                />
+                                                            </div>
+                                                            <div className='flex flex-col gap-4'>
+                                                                <div>
+                                                                    <h3 className='text-body-5 font-bold'>
+                                                                        {
+                                                                            historyItem?.transaction?.Flights[1]?.Airline
+                                                                                .airline_name
+                                                                        }{' '}
+                                                                        - {historyItem?.transaction?.Flights[1]?.flight_class}
+                                                                    </h3>
+                                                                    <h3 className='text-body-5 font-bold'>
+                                                                        {
+                                                                            historyItem?.transaction?.Flights[1]?.Airline
+                                                                                .airline_code
+                                                                        }
+                                                                    </h3>
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                                                    <div>
+                                                                        {historyItem?.transaction?.Passengers &&
+                                                                            historyItem?.transaction?.Passengers?.map(
+                                                                                (passenger, index) => {
+                                                                                    return (
+                                                                                        <div key={index} className=''>
+                                                                                            <h1 className='text-body-5 font-medium text-pur-5'>
+                                                                                                Penumpang {index + 1}:{' '}
+                                                                                                <span className='ml-1'>
+                                                                                                    {passenger.name}
+                                                                                                </span>
+                                                                                            </h1>
+                                                                                            <h2>
+                                                                                                ID:{' '}
+                                                                                                <span className='ml-1'>
+                                                                                                    {passenger.nik_paspor}
+                                                                                                </span>
+                                                                                            </h2>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div className='mb-4 mt-2 w-full border text-net-3'></div>
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[0]?.arrival_time)}
-                                                        </h1>
-                                                        <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[0]?.arrival_date)}
-                                                        </h1>
-                                                        <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[0]?.Airport_to.airport_name}
-                                                        </h1>
-                                                    </div>
-                                                    <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div
-                                            className={`${
-                                                historyItem?.transaction?.Flights[1] ? 'block' : 'hidden'
-                                            } mb-2 mt-4 w-full border text-net-3`}></div>
-                                        {historyItem?.transaction?.Flights[1] && (
-                                            <div className='mt-3'>
-                                                <h1 className='mb-2 w-max rounded-rad-2 bg-pur-4 px-4 py-2 text-body-6 text-white'>
-                                                    Kepulangan
-                                                </h1>
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[1]?.departure_time)}
-                                                        </h1>
-                                                        <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[1]?.departure_date)}
-                                                        </h1>
-                                                        <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[1]?.Airport_from?.airport_name}
-                                                        </h1>
-                                                    </div>
-                                                    <h1 className='text-body-3 font-bold text-pur-3'>Keberangkatan</h1>
-                                                </div>
-                                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
-                                                <div className='flex items-center gap-2'>
-                                                    <div className='relative h-[24px] w-[24px] '>
-                                                        <Image src={'/images/flight_badge.svg'} fill alt='' />
-                                                    </div>
-                                                    <div className='flex flex-col gap-4'>
-                                                        <div>
-                                                            <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[1]?.Airline.airline_name} -{' '}
-                                                                {historyItem?.transaction?.Flights[1]?.flight_class}
-                                                            </h3>
-                                                            <h3 className='text-body-5 font-bold'>
-                                                                {historyItem?.transaction?.Flights[1]?.Airline.airline_code}
-                                                            </h3>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className='text-body-5 font-bold'>Informasi : </h3>
+                                                        <div className='mb-4 mt-2 w-full border text-net-3'></div>
+                                                        <div className='flex justify-between'>
                                                             <div>
-                                                                {historyItem?.transaction?.Passengers &&
-                                                                    historyItem?.transaction?.Passengers?.map(
-                                                                        (passenger, index) => {
-                                                                            return (
-                                                                                <div key={index} className=''>
-                                                                                    <h1 className='text-body-5 font-medium text-pur-5'>
-                                                                                        Penumpang {index + 1}:{' '}
-                                                                                        <span className='ml-1'>
-                                                                                            {passenger.name}
-                                                                                        </span>
-                                                                                    </h1>
-                                                                                    <h2>
-                                                                                        ID:{' '}
-                                                                                        <span className='ml-1'>
-                                                                                            {passenger.nik_paspor}
-                                                                                        </span>
-                                                                                    </h2>
-                                                                                </div>
-                                                                            );
-                                                                        }
+                                                                <h1 className='text-title-2 font-bold'>
+                                                                    {fixedHour(
+                                                                        historyItem?.transaction?.Flights[1]?.arrival_time
                                                                     )}
+                                                                </h1>
+                                                                <h1 className='text-body-6'>
+                                                                    {reformatDate(
+                                                                        historyItem?.transaction?.Flights[1]?.arrival_date
+                                                                    )}
+                                                                </h1>
+                                                                <h1 className='text-body-6 font-medium'>
+                                                                    {
+                                                                        historyItem?.transaction?.Flights[1]?.Airport_to
+                                                                            .airport_name
+                                                                    }
+                                                                </h1>
                                                             </div>
+                                                            <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className='mb-4 mt-2 w-full border text-net-3'></div>
-                                                <div className='flex justify-between'>
-                                                    <div>
-                                                        <h1 className='text-title-2 font-bold'>
-                                                            {fixedHour(historyItem?.transaction?.Flights[1]?.arrival_time)}
-                                                        </h1>
-                                                        <h1 className='text-body-6'>
-                                                            {reformatDate(historyItem?.transaction?.Flights[1]?.arrival_date)}
-                                                        </h1>
-                                                        <h1 className='text-body-6 font-medium'>
-                                                            {historyItem?.transaction?.Flights[1]?.Airport_to.airport_name}
-                                                        </h1>
-                                                    </div>
-                                                    <h1 className='text-body-3 font-bold text-pur-3'>Kedatangan</h1>
-                                                </div>
+                                                )}
                                             </div>
                                         )}
+                                        <div className='mb-2 mt-4 w-full border text-net-3'></div>
+                                        <h1 className='mb-2 text-body-6 font-bold'>Rincian Harga</h1>
+                                        <div>
+                                            {historyItem?.transaction?.Flights[0] && (
+                                                <div className='flex flex-col gap-1'>
+                                                    <h1 className='font-bold'>
+                                                        {historyItem?.transaction?.Flights[0].Airline.airline_name}
+                                                    </h1>
+                                                    {historyItem?.type_passenger?.adult > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
+                                                            <h1>
+                                                                {' '}
+                                                                {formatRupiah(
+                                                                    historyItem?.type_passenger?.adult *
+                                                                        historyItem?.price?.departure
+                                                                )}
+                                                            </h1>
+                                                        </div>
+                                                    )}
+                                                    {historyItem?.type_passenger?.child > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.child} Anak</h1>
+                                                            <h1>
+                                                                {' '}
+                                                                {formatRupiah(
+                                                                    historyItem?.type_passenger?.child *
+                                                                        historyItem?.price?.departure
+                                                                )}
+                                                            </h1>
+                                                        </div>
+                                                    )}
+                                                    {historyItem?.type_passenger?.baby > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.baby} Bayi</h1>
+                                                            <h1> RP 0</h1>
+                                                        </div>
+                                                    )}
+
+                                                    <div className='mb-3 mt-2 w-full border text-net-3'></div>
+                                                    <div
+                                                        className={`${
+                                                            historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
+                                                        } flex justify-between text-body-6`}>
+                                                        <h1>Tax</h1>
+                                                        <h1>
+                                                            <span>{formatRupiah(historyItem?.price?.tax)}</span>
+                                                        </h1>
+                                                    </div>
+                                                    <div
+                                                        className={`${
+                                                            historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
+                                                        } flex justify-between text-title-2 font-bold`}>
+                                                        <h1>Total</h1>
+                                                        <h1 className='text-pur-4'>
+                                                            <span className='ml-1'>
+                                                                {formatRupiah(historyItem?.price?.total)}
+                                                            </span>
+                                                        </h1>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {historyItem?.transaction?.Flights[1] && (
+                                                <div className='flex flex-col gap-1'>
+                                                    <h1 className='font-bold'>
+                                                        {historyItem?.transaction?.Flights[1].Airline.airline_name}
+                                                    </h1>
+                                                    {historyItem?.type_passenger?.adult > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
+                                                            <h1>
+                                                                {' '}
+                                                                {formatRupiah(
+                                                                    historyItem?.type_passenger?.adult *
+                                                                        historyItem?.price?.arrival
+                                                                )}
+                                                            </h1>
+                                                        </div>
+                                                    )}
+                                                    {historyItem?.type_passenger?.child > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.child} Anak</h1>
+                                                            <h1>
+                                                                {' '}
+                                                                {formatRupiah(
+                                                                    historyItem?.type_passenger?.child *
+                                                                        historyItem?.price?.arrival
+                                                                )}
+                                                            </h1>
+                                                        </div>
+                                                    )}
+                                                    {historyItem?.type_passenger?.baby > 0 && (
+                                                        <div className='flex justify-between text-body-6'>
+                                                            <h1>{historyItem?.type_passenger?.baby} Bayi</h1>
+                                                            <h1> RP 0</h1>
+                                                        </div>
+                                                    )}
+
+                                                    <div className='mb-3 mt-2 w-full border text-net-3'></div>
+                                                    <div className='flex justify-between text-body-6'>
+                                                        <h1>Tax</h1>
+                                                        <h1>
+                                                            <span>{formatRupiah(historyItem?.price?.tax)}</span>
+                                                        </h1>
+                                                    </div>
+                                                    <div className='flex justify-between text-title-2 font-bold'>
+                                                        <h1>Total</h1>
+                                                        <h1 className='text-pur-4'>
+                                                            <span className='ml-1'>
+                                                                {formatRupiah(historyItem?.price?.total)}
+                                                            </span>
+                                                        </h1>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {historyItem?.transaction?.transaction_status.toLowerCase() === 'unpaid' ? (
+                                                <Button
+                                                    onClick={() => handleUpdatePayment(historyItem?.transaction)}
+                                                    className='mt-8 w-full rounded-rad-4 bg-alert-3 py-4 text-head-1 font-medium text-white hover:bg-red-500 '>
+                                                    Lanjut Bayar
+                                                </Button>
+                                            ) : (
+                                                // BUTOON
+                                                <Button
+                                                    onClick={() =>
+                                                        handleSendTicket(
+                                                            historyItem?.transaction?.Flights[0]?.Transaction_Flight
+                                                                ?.transaction_id
+                                                        )
+                                                    }
+                                                    className='mt-8 w-full rounded-rad-4 bg-pur-5 py-4 text-head-1 font-medium text-white hover:bg-pur-3 '>
+                                                    Cetak Tiket
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <h1 className='text-title-2 font-bold'>Detail Transaksi</h1>
+                                        <div className='flex h-[500px] items-center justify-center'>
+                                            <div className='text-center text-body-6'>
+                                                <p>Silahkan pilih transaksi di sebelah kiri</p>
+                                                <p>untuk melihat detailnya</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
-                                <div className='mb-2 mt-4 w-full border text-net-3'></div>
-                                <h1 className='mb-2 text-body-6 font-bold'>Rincian Harga</h1>
-                                <div>
-                                    {historyItem?.transaction?.Flights[0] && (
-                                        <div className='flex flex-col gap-1'>
-                                            <h1 className='font-bold'>
-                                                {historyItem?.transaction?.Flights[0].Airline.airline_name}
-                                            </h1>
-                                            {historyItem?.type_passenger?.adult > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
-                                                    <h1>
-                                                        {' '}
-                                                        {formatRupiah(
-                                                            historyItem?.type_passenger?.adult * historyItem?.price?.departure
-                                                        )}
-                                                    </h1>
-                                                </div>
-                                            )}
-                                            {historyItem?.type_passenger?.child > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.child} Anak</h1>
-                                                    <h1>
-                                                        {' '}
-                                                        {formatRupiah(
-                                                            historyItem?.type_passenger?.child * historyItem?.price?.departure
-                                                        )}
-                                                    </h1>
-                                                </div>
-                                            )}
-                                            {historyItem?.type_passenger?.baby > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.baby} Bayi</h1>
-                                                    <h1> RP 0</h1>
-                                                </div>
-                                            )}
-
-                                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
-                                            <div
-                                                className={`${
-                                                    historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
-                                                } flex justify-between text-body-6`}>
-                                                <h1>Tax</h1>
-                                                <h1>
-                                                    <span>{formatRupiah(historyItem?.price?.tax)}</span>
-                                                </h1>
-                                            </div>
-                                            <div
-                                                className={`${
-                                                    historyItem?.transaction?.Flights[1] ? 'hidden' : 'block'
-                                                } flex justify-between text-title-2 font-bold`}>
-                                                <h1>Total</h1>
-                                                <h1 className='text-pur-4'>
-                                                    <span className='ml-1'>{formatRupiah(historyItem?.price?.total)}</span>
-                                                </h1>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {historyItem?.transaction?.Flights[1] && (
-                                        <div className='flex flex-col gap-1'>
-                                            <h1 className='font-bold'>
-                                                {historyItem?.transaction?.Flights[1].Airline.airline_name}
-                                            </h1>
-                                            {historyItem?.type_passenger?.adult > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.adult} Dewasa</h1>
-                                                    <h1>
-                                                        {' '}
-                                                        {formatRupiah(
-                                                            historyItem?.type_passenger?.adult * historyItem?.price?.arrival
-                                                        )}
-                                                    </h1>
-                                                </div>
-                                            )}
-                                            {historyItem?.type_passenger?.child > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.child} Anak</h1>
-                                                    <h1>
-                                                        {' '}
-                                                        {formatRupiah(
-                                                            historyItem?.type_passenger?.child * historyItem?.price?.arrival
-                                                        )}
-                                                    </h1>
-                                                </div>
-                                            )}
-                                            {historyItem?.type_passenger?.baby > 0 && (
-                                                <div className='flex justify-between text-body-6'>
-                                                    <h1>{historyItem?.type_passenger?.baby} Bayi</h1>
-                                                    <h1> RP 0</h1>
-                                                </div>
-                                            )}
-
-                                            <div className='mb-3 mt-2 w-full border text-net-3'></div>
-                                            <div className='flex justify-between text-body-6'>
-                                                <h1>Tax</h1>
-                                                <h1>
-                                                    <span>{formatRupiah(historyItem?.price?.tax)}</span>
-                                                </h1>
-                                            </div>
-                                            <div className='flex justify-between text-title-2 font-bold'>
-                                                <h1>Total</h1>
-                                                <h1 className='text-pur-4'>
-                                                    <span className='ml-1'>{formatRupiah(historyItem?.price?.total)}</span>
-                                                </h1>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {historyItem?.transaction?.transaction_status.toLowerCase() === 'unpaid' ? (
-                                        <Button
-                                            onClick={() => handleUpdatePayment(historyItem?.transaction)}
-                                            className='mt-8 w-full rounded-rad-4 bg-alert-3 py-4 text-head-1 font-medium text-white hover:bg-red-500 '>
-                                            Lanjut Bayar
-                                        </Button>
-                                    ) : (
-                                        <Button className='mt-8 w-full rounded-rad-4 bg-pur-5 py-4 text-head-1 font-medium text-white hover:bg-purple-400 '>
-                                            Cetak Tiket
-                                        </Button>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     ) : (
@@ -1146,6 +1324,35 @@ export default function History() {
                 type={alertType}
                 bgType='none'
             />
+            <AlertTop
+                visibleAlert={visibleAlertError}
+                handleVisibleAlert={handleVisibleAlertError}
+                text={alertTextError}
+                type={alertTypeError}
+                bgType='none'
+            />
+
+            {openFilterHistoryByCode && (
+                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
+                    <div className='h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
+                        <div className='flex items-center gap-2 pt-3'>
+                            <Input
+                                className='w-full appearance-none  px-4 py-2 font-poppins outline-none'
+                                // onChange={handleFromInputChange}
+                                onChange={handleOnChangeFilterByCode}
+                                value={filterInput}
+                            />
+                            <div>
+                                <Button className='bg-white' onClick={() => setOpenFilterHistoryByCode(!openFilterHistoryByCode)}>
+                                    <FiX className='h-[32px] w-[32px]' />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div style={{ height: 'calc(300px - 62px)' }} className='overflow-y-scroll pt-3'></div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
