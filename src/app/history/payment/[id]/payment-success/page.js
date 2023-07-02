@@ -3,6 +3,8 @@
 //core
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
 
 //third parties
 import axios from 'axios';
@@ -12,18 +14,20 @@ import { useSession } from 'next-auth/react';
 import AlertTop from '@/components/AlertTop';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
-import Image from 'next/image';
-import { useParams } from 'next/navigation';
 
 export default function PaymentSuccess() {
+    /*=== core ===*/
     const router = useRouter();
     const { id } = useParams();
 
-    //nextauth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     let token = session?.user?.token;
 
-    // state
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -31,6 +35,7 @@ export default function PaymentSuccess() {
     const [alertTextError, setAlertTextError] = useState('');
     const [alertTypeError, setAlertTypeError] = useState('');
 
+    /*=== function ===*/
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
@@ -76,10 +81,13 @@ export default function PaymentSuccess() {
         }
     };
 
+    /*=== effects ===*/
+    //----
+
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+            <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-[78px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     <div className=' col-span-12 flex flex-col gap-1 text-head-1'>
                         <h1 className=' text-body-6  text-pur-3'>Terimakasih</h1>

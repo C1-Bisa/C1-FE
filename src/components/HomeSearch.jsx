@@ -1,9 +1,10 @@
 'use client';
 
-//Core
+//core
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
-//Third Parties
+//third parties
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -11,8 +12,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 import { MdFlightTakeoff, MdDateRange, MdAirlineSeatReclineNormal } from 'react-icons/md';
 import { FiX } from 'react-icons/fi';
+import { FaUser } from 'react-icons/fa';
 
-//Redux
+//redux
 import { useDispatch, useSelector } from 'react-redux';
 import {
     flightSlice,
@@ -26,7 +28,7 @@ import {
     getHomeSearch,
 } from '@/store/flight';
 
-//Components
+//components
 import CalendarPicker from './CalendarPicker';
 import CalendarRangePicker from './CalendarRangePicker';
 import Label from './Label';
@@ -36,18 +38,17 @@ import ToggleRotate from './ToggleRotate';
 import ToggleSwitch from './ToggleSwitch';
 import ChoosePassengerTypeModal from './ChoosePassengerModal';
 import ChooseFlightClassModal from './ChooseFlightClassModal';
-
-//Utils
-import { formatToLocale } from '@/utils/formatToLocale';
 import BottomNavbar from './BottomNavbar';
-import Image from 'next/image';
-import { FaUser } from 'react-icons/fa';
+
+//utils
+import { formatToLocale } from '@/utils/formatToLocale';
+import { menuDataShape, destinationDataShape } from '@/utils/dummyData';
 
 export default function HomeSearch({ className, buttonAction, handleActionHomeSearch }) {
     /*=== core ===*/
     //----
 
-    /*=== third parties ===*/
+    /*=== next auth ===*/
     //----
 
     /*=== redux ===*/
@@ -72,7 +73,6 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     const isTwoWay = useSelector(getIsTwoWay); // state two way
 
     /*=== state ===*/
-
     // MOBILE VERSION
     const [isDekstop, setIsDesktop] = useState(true);
     const [mobileFocusFromInput, setMobileFocusFromInput] = useState(false);
@@ -96,73 +96,6 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
         (homeSearch.return_dateTime && [new Date(homeSearch.departure_dateTime), new Date(homeSearch.return_dateTime)]) ||
             new Date(homeSearch.departure_dateTime)
     );
-
-    /*=== data dummy */
-    const menuDataShape = [
-        {
-            id: 1,
-            destination: 'Semua',
-        },
-        {
-            id: 2,
-            destination: 'Asia',
-        },
-        {
-            id: 3,
-            destination: 'Amerika',
-        },
-        {
-            id: 4,
-            destination: 'Australia',
-        },
-        {
-            id: 5,
-            destination: 'Eropa',
-        },
-        {
-            id: 6,
-            destination: 'Afrika',
-        },
-    ];
-
-    const destinationDataShape = [
-        {
-            id: 1,
-            imgUrl: '/new_images/bangkok.png',
-            from: 'Jakarta',
-            to: 'Bangkok',
-            departure_dateTime_first: '2023-06-20',
-            departure_dateTime_last: '2023-06-30',
-            priceMinimum: 950000,
-        },
-        {
-            id: 2,
-            imgUrl: '/new_images/bangkok.png',
-            from: 'Jakarta',
-            to: 'Bangkok',
-            departure_dateTime_first: '2023-06-20',
-            departure_dateTime_last: '2023-06-30',
-            priceMinimum: 950000,
-        },
-        {
-            id: 3,
-            imgUrl: '/new_images/sidney.png',
-            from: 'Jakarta',
-            to: 'Sidney',
-            departure_dateTime_first: '2023-06-05',
-            departure_dateTime_last: '2023-06-25',
-            priceMinimum: 3650000,
-        },
-        {
-            id: 4,
-            imgUrl: '/new_images/sidney.png',
-            from: 'Jakarta',
-            to: 'Sidney',
-            departure_dateTime_first: '2023-06-05',
-            departure_dateTime_last: '2023-06-25',
-            priceMinimum: 3650000,
-        },
-    ];
 
     /*=== function ===*/
     //MODAL HANDLER
@@ -263,7 +196,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
     return (
         <>
             {/* DEKSTOP MODE */}
-            {openCalendar && (
+            {/* {openCalendar && (
                 <div
                     onClick={() => setOpenCalendar(!openCalendar)}
                     className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'></div>
@@ -277,7 +210,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                 <div
                     onClick={() => setFocusFromInput(!focusFromInput)}
                     className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'></div>
-            )}
+            )} */}
             <div className='container  mx-auto mt-[-50px] hidden  h-[292px]  max-w-screen-lg lg:block'>
                 <div
                     // onClick={() => handleCloseAllCalendar()}
@@ -286,7 +219,10 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                     <div className='mx-8 my-6'>
                         {/* home search title start */}
                         <h1 className='pt-5 font-poppins text-head-1 font-bold'>
-                            Pilih Jadwal Penerbangan spesial di <span className='text-pur-3'>FLYid!</span>
+                            Pilih Jadwal Penerbangan spesial di{' '}
+                            <span className='text-pur-5'>
+                                FLY<span className='text-[14px]'>ID</span>!
+                            </span>
                         </h1>
                         {/* home search title end */}
 
@@ -295,7 +231,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                             {/* menu left start */}
                             <div className='col-span-5 flex flex-col gap-7'>
                                 {/* from start */}
-                                <div>
+                                <div className='relative'>
                                     <div className='flex gap-8'>
                                         <div className=' flex items-center gap-2'>
                                             <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
@@ -315,7 +251,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                         />
                                     </div>
                                     {focusFromInput && (
-                                        <div className='relative bottom-0 z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
+                                        <div className='absolute left-0 top-12 z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
                                             <div className='flex items-center gap-2 pt-3'>
                                                 <Input
                                                     className='w-full appearance-none  px-4 py-2 font-poppins outline-none'
@@ -374,7 +310,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                                 Departure
                                             </Label>
 
-                                            <div className='relative'>
+                                            <div className='relative '>
                                                 <Input
                                                     id={'departure'}
                                                     readOnly
@@ -469,11 +405,11 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
                             {/* menu right start */}
                             <div className='col-span-5 flex flex-col gap-7'>
-                                <div>
+                                <div className='relative'>
                                     <div className='flex gap-8'>
                                         <div className=' flex items-center gap-2'>
                                             <MdFlightTakeoff className='h-[24px] w-[24px] text-net-3' />
-                                            <p className='font-poppins text-body-6 font-normal text-net-3'>From</p>
+                                            <p className='font-poppins text-body-6 font-normal text-net-3'>Dari</p>
                                         </div>
                                         <Input
                                             className='border-[1px] border-l-0 border-r-0 border-t-0 border-b-net-2  py-3 font-poppins text-title-3 font-medium'
@@ -489,7 +425,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                         />
                                     </div>
                                     {focusToInput && (
-                                        <div className='relative bottom-0 right-[100px] z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
+                                        <div className='absolute right-0 top-12 z-10 mt-3 h-[300px] w-[668px] rounded-rad-3 bg-white px-4 shadow-low'>
                                             <div className='flex items-center gap-2 pt-3'>
                                                 <Input
                                                     className='w-full appearance-none  px-4 py-2 font-poppins outline-none'
@@ -533,35 +469,58 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                                 </div>
 
                                 <div className='flex gap-8'>
-                                    <div className='flex items-center gap-3'>
-                                        <MdAirlineSeatReclineNormal className='h-[24px] w-[24px] text-net-3' />
-                                        <p className='font-poppins text-body-6 font-normal text-net-3'>To</p>
+                                    <div className='relative'>
+                                        <div className='flex gap-10'>
+                                            <div className='flex items-center gap-3'>
+                                                <MdAirlineSeatReclineNormal className='h-[24px] w-[24px] text-net-3' />
+                                                <p className='font-poppins text-body-6 font-normal text-net-3'>To</p>
+                                            </div>
+
+                                            <div className=''>
+                                                <Label
+                                                    className='font-poppins text-title-2 font-medium text-net-3'
+                                                    htmlFor={'passenger'}>
+                                                    Passengers
+                                                </Label>
+                                                <Input
+                                                    id={'passenger'}
+                                                    readOnly
+                                                    onClick={handleOpenPassengerModal}
+                                                    className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
+                                                    value={`${totalPassenger} penumpang`}
+                                                />
+                                            </div>
+                                        </div>
+                                        {openPassengerModal && (
+                                            <div className='top-18 absolute right-0 z-10'>
+                                                <ChoosePassengerTypeModal handleOpenPassengerModal={handleOpenPassengerModal} />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className=''>
-                                        <Label className='font-poppins text-title-2 font-medium text-net-3' htmlFor={'passenger'}>
-                                            Passengers
-                                        </Label>
-                                        <Input
-                                            id={'passenger'}
-                                            readOnly
-                                            onClick={handleOpenPassengerModal}
-                                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
-                                            value={`${totalPassenger} penumpang`}
-                                        />
-                                    </div>
-                                    <div className=''>
-                                        <Label className='font-poppins text-title-2 font-medium text-net-3' htmlFor={'seat'}>
-                                            Seat Class
-                                        </Label>
-                                        <Input
-                                            id={'seat'}
-                                            readOnly
-                                            onClick={handleOpenFlightClassModal}
-                                            className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
-                                            value={flightClass}
-                                            placeholder={'Pilih kelas pesawat'}
-                                        />
+                                    <div className='relative'>
+                                        <div>
+                                            <div className=''>
+                                                <Label
+                                                    className='font-poppins text-title-2 font-medium text-net-3'
+                                                    htmlFor={'seat'}>
+                                                    Seat Class
+                                                </Label>
+                                                <Input
+                                                    id={'seat'}
+                                                    readOnly
+                                                    onClick={handleOpenFlightClassModal}
+                                                    className='cursor-pointer border-[1px] border-l-0 border-r-0 border-t-0  border-b-net-2 py-2 font-poppins text-title-3 font-medium'
+                                                    value={flightClass}
+                                                    placeholder={'Pilih kelas pesawat'}
+                                                />
+                                            </div>
+                                        </div>
+                                        {openFlightClassModal && (
+                                            <div className='top-18 absolute right-0 z-10'>
+                                                <ChooseFlightClassModal handleOpenFlightClassModal={handleOpenFlightClassModal} />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -570,7 +529,7 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
                         {/* home search menu end */}
                     </div>
                     <Button
-                        className='absolute bottom-0 w-full rounded-b-rad-3 bg-pur-3 py-3 text-title-2 font-bold text-white hover:bg-pur-4'
+                        className='absolute bottom-0 w-full rounded-b-rad-3 bg-pur-4 py-3 text-title-2 font-bold text-white hover:bg-pur-3'
                         onClick={handleActionHomeSearch}>
                         Cari Penerbangan
                     </Button>
@@ -802,23 +761,23 @@ export default function HomeSearch({ className, buttonAction, handleActionHomeSe
 
             {/* ======= Modal and Pop Up DEKSTOP start ====== */}
             {/* handling open passenger modal start */}
-            <div>
+            {/* <div>
                 {openPassengerModal && (
-                    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
+                    <div className='fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-60'>
                         <ChoosePassengerTypeModal handleOpenPassengerModal={handleOpenPassengerModal} />
                     </div>
                 )}
-            </div>
+            </div> */}
             {/* handling open passenger modal end */}
 
             {/* handling open flight class modal start */}
-            <div>
+            {/* <div>
                 {openFlightClassModal && (
-                    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
+                    <div className='fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-60'>
                         <ChooseFlightClassModal handleOpenFlightClassModal={handleOpenFlightClassModal} />
                     </div>
                 )}
-            </div>
+            </div> */}
 
             {/* handling open flight class modal end */}
 

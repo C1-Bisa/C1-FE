@@ -1,33 +1,54 @@
 'use client';
 
+//core
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+//third parties
+import axios from 'axios';
+
+//redux
+//----
+
+//components
 import Input from '@/components/Input';
 import Label from '@/components/Label';
-import Image from 'next/image';
 import PasswordInput from '@/components/PasswordInput';
 import AskAccountButton from '@/components/AskAccountButton';
 import Button from '@/components/Button';
 import AlertBottom from '@/components/AlertBottom';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+
+//utils
+//----
 
 export default function Register() {
+    /*=== core ===*/
     const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
-    const handleVisibleAlert = (text, alertType) => {
-        setAlertText(text);
-        setAlertType(alertType);
-        setVisibleAlert(!visibleAlert);
-    };
-
     const [regisData, setRegisData] = useState({
         name: '',
         email: '',
         phone: '',
         password: '',
     });
+
+    /*=== function ===*/
+    const handleVisibleAlert = (text, alertType) => {
+        setAlertText(text);
+        setAlertType(alertType);
+        setVisibleAlert(!visibleAlert);
+    };
 
     const handleRegisData = (event) => {
         setRegisData({ ...regisData, [event.target.name]: event.target.value });
@@ -71,12 +92,15 @@ export default function Register() {
                 let emails = res.data.user.email;
                 // emails: res.data.user.email,
 
-                router.push(`otp/${id}/${emails}`);
+                router.push(`otp?user=${id}&email=${emails}`);
             }
         } catch (error) {
             console.log(error.message);
         }
     };
+
+    /*=== effects ===*/
+    //----
 
     return (
         <>

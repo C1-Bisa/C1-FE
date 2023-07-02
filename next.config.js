@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['res.cloudinary.com', 'placehold.jp', 'i.imgur.com'],
+        domains: ['res.cloudinary.com', 'placehold.jp', 'i.imgur.com', 'imgur.com'],
     },
     env: {
         // NEXTAUTH_URL: process.env.NEXTAUTH_URL,

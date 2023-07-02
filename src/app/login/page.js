@@ -1,32 +1,53 @@
 'use client';
 
+//core
+import { useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+//third parties
+import axios from 'axios';
+
+//redux
+//----
+
+//components
 import Input from '@/components/Input';
 import Label from '@/components/Label';
-import Image from 'next/image';
 import PasswordInput from '@/components/PasswordInput';
 import AskAccountButton from '@/components/AskAccountButton';
 import Button from '@/components/Button';
 import AlertBottom from '@/components/AlertBottom';
-import { useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+
+//utils
+//----
 
 export default function Login() {
+    /*=== core ===*/
     const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
+    const [loginData, setLoginData] = useState({
+        email: '',
+        password: '',
+    });
+
+    /*=== function ===*/
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
         setVisibleAlert(!visibleAlert);
     };
-
-    const [loginData, setLoginData] = useState({
-        email: '',
-        password: '',
-    });
 
     const handleLoginData = (event) => {
         setLoginData({ ...loginData, [event.target.name]: event.target.value });
@@ -65,6 +86,9 @@ export default function Login() {
             }
         });
     };
+
+    /*=== effects ===*/
+    //----
 
     return (
         <>

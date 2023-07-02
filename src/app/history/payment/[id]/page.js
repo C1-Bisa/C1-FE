@@ -35,18 +35,19 @@ import { formatRupiah } from '@/utils/formatRupiah';
 // import { reformatDate } from '@/utils/reformatDate';
 
 export default function HistoryPaymentId() {
-    //core
+    /*=== core ===*/
     const { id } = useParams();
     const router = useRouter();
 
-    //next auth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     const token = session?.user?.token;
 
-    // redux
+    /*=== redux ===*/
     const passengerType = useSelector(getPassengerTypeTotal); // Get passenger type total
 
-    //state
+    /*=== state ===*/
+    const [isLoading, setIsLoading] = useState(true);
     const [fetchDataUser, setFetchDataUser] = useState(true);
     const [transactionHistory, setTransactionHistory] = useState(null);
     const [fetchDataHistory, setFetchDataHistory] = useState(true);
@@ -256,7 +257,7 @@ export default function HistoryPaymentId() {
         }
     };
 
-    //function
+    /*=== function ===*/
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
@@ -296,7 +297,7 @@ export default function HistoryPaymentId() {
         }
     };
 
-    /*Effect */
+    /*=== effects ===*/
     useEffect(() => {
         if (token) {
             if (fetchDataUser) {
@@ -358,6 +359,8 @@ export default function HistoryPaymentId() {
                         }
                     } catch (error) {
                         console.log('ERROR detail transasction', error);
+                    } finally {
+                        setIsLoading(false);
                     }
                 }
                 fetchUserData();
@@ -367,18 +370,91 @@ export default function HistoryPaymentId() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchDataHistory, session, token, id]);
 
+    if (isLoading) {
+        return (
+            <div className='overflow-x-hidden'>
+                <Navbar className={'hidden lg:block'} />
+                <div className='mt-[80px] hidden  w-screen border border-b-net-2 pb-[78px] pt-[47px] lg:block'>
+                    <div className=' mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
+                        <div className='col-span-12 flex flex-col gap-1 text-head-1'>
+                            <h1 className=' text-body-6  text-pur-3'>Tinggal satu langkah lagi</h1>
+                            <p className='  font-medium text-pur-5'>Untuk menikmati penerbanganmu!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className='mx-auto mt-[19px] hidden   max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
+                    <div className='col-span-12 grid grid-cols-12'>
+                        <div className='col-span-7'>
+                            <div className='flex w-[486px] flex-col gap-[10px]'>
+                                {datas &&
+                                    datas.map((data, index) => (
+                                        <div key={index}>
+                                            <div
+                                                className={`${
+                                                    open.id === data.id ? 'bg-pur-3' : 'bg-net-5'
+                                                } flex w-full cursor-pointer items-center justify-between rounded-rad-1  px-4 py-[14px] text-title-1`}
+                                                onClick={() => handleOpen(data)}>
+                                                <p className='text-white'>{data.name}</p>
+                                                {open.id === data.id ? (
+                                                    <FiChevronUp style={{ color: 'white', width: '20px', height: '20px' }} />
+                                                ) : (
+                                                    <FiChevronDown style={{ color: 'white', width: '20px', height: '20px' }} />
+                                                )}
+                                            </div>
+
+                                            {open.id === data.id && paymentMenu[data.id]}
+                                        </div>
+                                    ))}
+
+                                <Button
+                                    disabled={transactionHistory?.transaction?.transaction_status === 'Issued'}
+                                    onClick={() => handleUpdatePayment(transactionHistory?.transaction?.transaction_code)}
+                                    text={`${
+                                        transactionHistory?.transaction?.transaction_status === 'Unpaid'
+                                            ? 'Bayar'
+                                            : 'Sudah Di Bayar'
+                                    } `}
+                                    className={`${
+                                        formCreditCardStatus ? 'bg-pur-4' : 'bg-pur-4 opacity-60'
+                                    } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
+                                />
+                            </div>
+                        </div>
+
+                        <div className='col-span-5 flex flex-col items-center justify-center gap-3'>
+                            <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>
+                            <Image
+                                alt=''
+                                src={'/new_images/loading.svg'}
+                                width={160}
+                                height={160}
+                                priority
+                                style={{ width: 'auto' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <AlertTop
+                    visibleAlert={visibleAlert}
+                    handleVisibleAlert={handleVisibleAlert}
+                    text={alertText}
+                    type={alertType}
+                    bgType='none'
+                />
+            </div>
+        );
+    }
+
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+            <div className='mt-[80px] hidden  w-screen border border-b-net-2 pb-[78px] pt-[47px] lg:block'>
                 <div className=' mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     <div className='col-span-12 flex flex-col gap-1 text-head-1'>
                         <h1 className=' text-body-6  text-pur-3'>Tinggal satu langkah lagi</h1>
                         <p className='  font-medium text-pur-5'>Untuk menikmati penerbanganmu!</p>
-                        {/* <p>{'>'}</p>
-                        <h1 className='text-black'>Bayar</h1>
-                        <p>{'>'}</p>
-                        <h1 className='text-net-3'>Selesai</h1> */}
                     </div>
                 </div>
             </div>
@@ -414,7 +490,7 @@ export default function HistoryPaymentId() {
                                     transactionHistory?.transaction?.transaction_status === 'Unpaid' ? 'Bayar' : 'Sudah Di Bayar'
                                 } `}
                                 className={`${
-                                    formCreditCardStatus ? 'bg-pur-3' : 'bg-pur-3 opacity-60'
+                                    formCreditCardStatus ? 'bg-pur-4' : 'bg-pur-4 opacity-60'
                                 } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
                             />
                         </div>

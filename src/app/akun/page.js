@@ -1,15 +1,18 @@
 'use client';
 
-//Core
+//core
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Third Parties
+// third Parties
 import { useSession, signOut } from 'next-auth/react';
 import { FiArrowLeft, FiEdit3, FiSettings, FiLogOut } from 'react-icons/fi';
 import axios from 'axios';
 
-//Components
+//redux
+//----
+
+//components
 import Navbar from '@/components/Navbar';
 import Label from '@/components/Label';
 import Input from '@/components/Input';
@@ -18,15 +21,24 @@ import BottomNavbar from '@/components/BottomNavbar';
 import AlertBottom from '@/components/AlertBottom';
 import AlertTop from '@/components/AlertTop';
 
+//utils
+//----
+
 export default function Akun() {
-    //router
+    /*=== core ===*/
     const router = useRouter();
 
-    //nextauth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     let token = session?.user?.token;
 
-    // state
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorInput, setErrorInput] = useState(false);
+    const [changeData, setChangeData] = useState(false);
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -42,11 +54,6 @@ export default function Akun() {
     const option = [
         {
             id: 1,
-            menu: 'Ubah Profile',
-            icons: <FiEdit3 className='h-[18px] w-[18px]   group-hover:text-white' />,
-        },
-        {
-            id: 2,
             menu: 'Pengaturan Akun',
             icons: <FiSettings className='h-[18px] w-[18px]  group-hover:text-white' />,
         },
@@ -58,6 +65,44 @@ export default function Akun() {
     ];
 
     /*=== function === */
+
+    const handleOnChangeProfil = (event) => {
+        setUserData({ ...userData, [event.target.name]: event.target.value });
+    };
+
+    const updateProfile = async () => {
+        try {
+            const URL_UPDATE = 'https://kel1airplaneapi-production.up.railway.app/api/v1/user/update';
+
+            if (!userData.name || !userData.phone) {
+                setErrorInput(true);
+                handleVisibleAlert('Harap isi semua data!', 'failed');
+                return;
+            }
+
+            const res = await axios.put(
+                URL_UPDATE,
+                {
+                    nama: userData.name,
+                    phone: userData.phone,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (res.status == 200 || res.data.status == 'OK') {
+                handleVisibleAlert('Berhasil mengubah profil!', 'success');
+                setIsLoading(true);
+                setFetchData(true);
+                setChangeData(false);
+            }
+        } catch (error) {
+            console.log('ERR PROFILE', error);
+        }
+    };
+
     const handleSelectedMenu = (id) => setSelectedMenu(id);
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
@@ -65,7 +110,7 @@ export default function Akun() {
         setVisibleAlert(!visibleAlert);
     };
 
-    /*Effect */
+    /*=== effects ===*/
     useEffect(() => {
         if (token) {
             if (fetchData) {
@@ -90,6 +135,8 @@ export default function Akun() {
                         setTimeout(() => {
                             signOut();
                         }, 2500);
+                    } finally {
+                        setIsLoading(false);
                     }
                 }
                 fetchUserData();
@@ -101,21 +148,28 @@ export default function Akun() {
 
     return (
         <div className='overflow-x-hidden'>
-            <Navbar className={'hidden lg:block'} />
+            {/* DEKSTOP MODE */}
 
-            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+            {/* navbar */}
+            <Navbar className={'hidden lg:block'} />
+            {/* navbar */}
+
+            {/* header */}
+            <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-4 lg:block'>
                 <div className='container mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                     <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Akun</h1>
                     <div
-                        className='col-span-12 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                        className='col-span-12 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 py-[13px] font-poppins text-title-2 font-medium text-white'
                         onClick={() => router.push('/')}>
                         <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                         <p>Beranda</p>
                     </div>
                 </div>
             </div>
+            {/* header */}
 
-            <div className='container mx-auto mt-[27px] hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
+            {/* content */}
+            <div className='container mx-auto  mt-[27px] hidden h-screen max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                 <div className='col-span-12 grid grid-cols-12 gap-[56px]'>
                     <div className='col-span-4'>
                         {option &&
@@ -125,7 +179,7 @@ export default function Akun() {
                                     //handleSelectedMenu(opt.id);
                                     onClick={() => (opt.id === 3 ? signOut() : handleSelectedMenu(opt.id))}
                                     className={`${
-                                        selectedMenu === opt.id ? 'group bg-pur-3 text-white' : 'group bg-white text-black'
+                                        selectedMenu === opt.id ? 'group bg-pur-4 text-white' : 'group bg-white text-black'
                                     }  flex cursor-pointer items-center gap-4 rounded-rad-2 border-b-[1px] px-3 py-4 hover:bg-pur-3 `}>
                                     {opt.icons}
                                     <p
@@ -142,13 +196,17 @@ export default function Akun() {
                                 </div>
                             ))}
                     </div>
-                    <div className='relative col-span-8 rounded-rad-2 px-6 shadow-low'>
+                    <div className=' col-span-8 h-max rounded-rad-2 px-6 shadow-low'>
                         {selectedMenu === 1 && (
                             <div>
-                                <h1 className='mb-5 mt-[40px] text-head-1 font-bold'>Ubah Data Profil </h1>
-
-                                <form className='flex flex-col gap-4'>
-                                    <div className='rounded-t-rad-2 bg-pur-3 px-4 py-2 text-title-2 text-white'>
+                                <div className='mb-5 mt-[40px] flex gap-2'>
+                                    <h1 className=' text-head-1 font-bold'>Ubah Data Profil </h1>
+                                    <p className=' text-start text-body-3 font-normal text-alert-3'>
+                                        *Anda tidak dapat mengubah email!
+                                    </p>
+                                </div>
+                                <div className='flex flex-col gap-4'>
+                                    <div className='rounded-t-rad-2 bg-pur-4 px-4 py-2 text-title-2 text-white'>
                                         <h1>Data Diri</h1>
                                     </div>
 
@@ -159,9 +217,14 @@ export default function Akun() {
                                             </Label>
                                             <Input
                                                 id={'name'}
-                                                readOnly
-                                                value={userData.name || 'Sedang menload data...'}
-                                                className='rounded-rad-1 px-4 py-2'
+                                                onChange={handleOnChangeProfil}
+                                                name={'name'}
+                                                // readOnly
+                                                disabled={!changeData}
+                                                value={isLoading ? 'Sedang menload data...' : userData.name}
+                                                className={`${
+                                                    errorInput && !userData.name ? 'border-alert-3' : 'border'
+                                                } rounded-rad-1   px-4 py-2`}
                                             />
                                         </div>
                                         <div className='flex flex-col gap-2'>
@@ -170,9 +233,14 @@ export default function Akun() {
                                             </Label>
                                             <Input
                                                 id={'phone'}
-                                                readOnly
-                                                value={userData.phone || 'Sedang menload data...'}
-                                                className='rounded-rad-1 px-4 py-2'
+                                                onChange={handleOnChangeProfil}
+                                                name={'phone'}
+                                                // readOnly
+                                                disabled={!changeData}
+                                                value={isLoading ? 'Sedang menload data...' : userData.phone}
+                                                className={`${
+                                                    errorInput && !userData.phone ? 'border-alert-3' : 'border'
+                                                } rounded-rad-1 px-4 py-2`}
                                             />
                                         </div>
                                         <div className='flex flex-col gap-2'>
@@ -182,15 +250,43 @@ export default function Akun() {
                                             <Input
                                                 id={'email'}
                                                 readOnly
-                                                value={userData.email || 'Sedang menload data...'}
-                                                className='rounded-rad-1 px-4 py-2'
+                                                disabled
+                                                value={isLoading ? 'Sedang menload data...' : userData.email}
+                                                className='cursor-not-allowed rounded-rad-1 px-4 py-2'
                                             />
                                         </div>
                                         <div className='mb-6 mt-5 flex justify-center'>
-                                            <Button className='rounded-rad-3 bg-pur-5 px-11 py-3 text-white'>Simpan</Button>
+                                            <div className='flex gap-2'>
+                                                {!changeData ? (
+                                                    <Button
+                                                        onClick={() => setChangeData(true)}
+                                                        className='rounded-rad-3 bg-pur-5 px-11 py-3 text-white'>
+                                                        Ubah Data
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() => updateProfile()}
+                                                        className='rounded-rad-3 bg-pur-3 px-11 py-3 text-white'>
+                                                        Simpan
+                                                    </Button>
+                                                )}
+
+                                                {changeData && (
+                                                    <Button
+                                                        onClick={() => {
+                                                            setErrorInput(false);
+                                                            setChangeData(false);
+                                                            setIsLoading(true);
+                                                            setFetchData(true);
+                                                        }}
+                                                        className='rounded-rad-3 bg-alert-3 px-11 py-3 text-white'>
+                                                        Cancel
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         )}
 
@@ -203,6 +299,9 @@ export default function Akun() {
                     </div>
                 </div>
             </div>
+            {/* content */}
+
+            {/* DEKSTOP MODE */}
 
             {/* RESPONSIVE MODE */}
             <div className='mx-[24px] mt-[64px]  font-poppins lg:hidden'>

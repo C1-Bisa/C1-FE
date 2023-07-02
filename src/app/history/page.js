@@ -7,11 +7,11 @@ import { useRouter, usePathname } from 'next/navigation';
 
 // //Third Parties
 import axios from 'axios';
-// import dayjs from 'dayjs';
 import { useSession, signOut } from 'next-auth/react';
 import { FiArrowLeft, FiFilter, FiHome, FiX } from 'react-icons/fi';
 import { IoSearchSharp, IoLocationSharp } from 'react-icons/io5';
 import { MdNotifications, MdSearch, MdOutlineAccountCircle } from 'react-icons/md';
+import { SlNotebook } from 'react-icons/sl';
 
 // //Redux
 import { useDispatch } from 'react-redux';
@@ -22,8 +22,9 @@ import AlertBottom from '@/components/AlertBottom';
 import Button from '@/components/Button';
 import Navbar from '@/components/Navbar';
 import BottomNavbar from '@/components/BottomNavbar';
-import RiwayatPesananKanan from '@/components/RiwayatPesananKanan';
+// import RiwayatPesananKanan from '@/components/RiwayatPesananKanan';
 import AlertTop from '@/components/AlertTop';
+import Input from '@/components/Input';
 
 // //Utils
 import { reformatDate } from '@/utils/reformatDate';
@@ -31,23 +32,22 @@ import { reformatDuration } from '@/utils/reformatDuration';
 import { fixedHour } from '@/utils/fixedHour';
 import { formatRupiah } from '@/utils/formatRupiah';
 import { extractWord } from '@/utils/extractWord';
-import { SlNotebook } from 'react-icons/sl';
-import Input from '@/components/Input';
+import { groupingByTransactionDates } from '@/utils/reShapeData';
 
 export default function History() {
-    //core
+    /*=== core ===*/
     const pathname = usePathname();
     const router = useRouter();
 
-    //next auth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     const token = session?.user?.token; //becarefull it has lifecycle too, prevent with checking it first
 
-    //redux
+    /*=== redux ===*/
     const dispatch = useDispatch();
     const { setHistoryDetail } = historySlice.actions;
 
-    //state
+    /*=== state ===*/
     const [openFilterHistoryByCode, setOpenFilterHistoryByCode] = useState(false);
     const [filterInput, setFilterInput] = useState('');
     const [historyFilter, setHistoryFilter] = useState([]);
@@ -71,13 +71,11 @@ export default function History() {
     });
 
     /*=== function === */
-
     const handleOpenFilterHistoryByCode = () => {
         setOpenFilterHistoryByCode(!openFilterHistoryByCode);
     };
 
     const handleOnChangeFilterByCode = (event) => {
-        console.log('e', event.target.value);
         setFilterInput(event.target.value);
 
         const searchHistory = historyData.map((historyItem) =>
@@ -86,29 +84,9 @@ export default function History() {
             )
         );
 
-        const results = searchHistory[0].reduce((acc, current) => {
-            acc[String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))] =
-                acc[
-                    String(
-                        reformatDate(current?.transaction?.transaction_date, {
-                            month: 'long',
-                            year: 'numeric',
-                        })
-                    )
-                ] || [];
-            acc[String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))].push(current);
-            return acc;
-        }, {});
+        const filteredHistory = groupingByTransactionDates(searchHistory[0]);
 
-        let result = Object.keys(results).map((key, index) => {
-            return {
-                id: index + 1,
-                month: key,
-                data: results[key],
-            };
-        });
-
-        setHistoryFilter(result);
+        setHistoryFilter(filteredHistory);
     };
 
     const historyStatusStyling = (historyStatus) => {
@@ -124,9 +102,6 @@ export default function History() {
     };
 
     const handleOpenMobileHistoryDetail = (data) => {
-        // console.log('====================================');
-        // console.log('POP UP DATAS,', data);
-        // console.log('====================================');
         setMobileHistoryDetailData(data);
         setOpenMobileHistoryDetail(!openMobileHistoryDetail);
     };
@@ -234,43 +209,15 @@ export default function History() {
                             },
                         });
 
+                        //sorting data
                         response.data.data.sort(
                             (a, b) => new Date(b?.transaction?.transaction_date) - new Date(a?.transaction?.transaction_date)
                         );
 
-                        console.log('====================================');
-                        console.log('DATASSSS', response.data.data);
-                        console.log('====================================');
+                        const groupingByDatesDatas = groupingByTransactionDates(response?.data?.data);
 
-                        const results = response.data.data.reduce((acc, current) => {
-                            acc[
-                                String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
-                            ] =
-                                acc[
-                                    String(
-                                        reformatDate(current?.transaction?.transaction_date, {
-                                            month: 'long',
-                                            year: 'numeric',
-                                        })
-                                    )
-                                ] || [];
-                            acc[
-                                String(reformatDate(current?.transaction?.transaction_date, { month: 'long', year: 'numeric' }))
-                            ].push(current);
-                            return acc;
-                        }, {});
-
-                        let result = Object.keys(results).map((key, index) => {
-                            return {
-                                id: index + 1,
-                                month: key,
-                                data: results[key],
-                            };
-                        });
-                        setHistoryData(result);
-                        setHistoryFilter(result);
-                        // setHistoryItem(result[0]?.data[0]);
-                        // console.log('RESPOND DATA', response.data);
+                        setHistoryData(groupingByDatesDatas);
+                        setHistoryFilter(groupingByDatesDatas);
                     } catch (error) {
                         console.log(error);
                     } finally {
@@ -292,12 +239,12 @@ export default function History() {
                 <Navbar className={'hidden lg:block'} />
                 {/* DESKTOP MODE */}
 
-                <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-4 lg:block'>
                     <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                         <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
                         <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                             <div
-                                className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                                className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 py-[13px] font-poppins text-title-2 font-medium text-white'
                                 onClick={() => router.push('/')}>
                                 <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                                 <p>Beranda</p>
@@ -328,12 +275,12 @@ export default function History() {
             <Navbar className={'hidden lg:block'} />
             {/* DESKTOP MODE */}
 
-            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+            <div className='mt-[80px]  hidden w-screen border border-b-net-2 pb-4 lg:block'>
                 <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                     <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Riwayat Pemesanan</h1>
                     <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                         <div
-                            className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                            className='col-span-8 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 py-[13px] font-poppins text-title-2 font-medium text-white'
                             onClick={() => router.push('/')}>
                             <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                             <p>Beranda</p>
@@ -833,7 +780,7 @@ export default function History() {
                                                                 ?.transaction_id
                                                         )
                                                     }
-                                                    className='mt-8 w-full rounded-rad-4 bg-pur-5 py-4 text-head-1 font-medium text-white hover:bg-pur-3 '>
+                                                    className='mt-8 w-full rounded-rad-4 bg-pur-4 py-4 text-head-1 font-medium text-white hover:bg-pur-3 '>
                                                     Cetak Tiket
                                                 </Button>
                                             )}

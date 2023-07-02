@@ -1,18 +1,39 @@
 'use client';
-import { useSelector } from 'react-redux';
-import BottomNavbar from '@/components/BottomNavbar';
-import { getHistoryDetail } from '@/store/history';
-import { FiArrowLeft } from 'react-icons/fi';
+
+//core
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+
+//third parties
+import { FiArrowLeft } from 'react-icons/fi';
+
+//redux
+import { useSelector } from 'react-redux';
+import { getHistoryDetail } from '@/store/history';
+
+//components
+import BottomNavbar from '@/components/BottomNavbar';
 import Button from '@/components/Button';
 
+//utils
+import { fixedHour } from '@/utils/fixedHour';
+import { reformatDate } from '@/utils/reformatDate';
+import { reformatDuration } from '@/utils/reformatDuration';
+
 export default function HistoryDetail() {
+    /*=== core ===*/
+    const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
     const historyDetail = useSelector(getHistoryDetail);
 
-    const router = useRouter();
-    console.log('History Detail', historyDetail);
+    /*=== state ===*/
+    //----
 
+    /*=== function ===*/
     const historyStatusStyling = (historyStatus) => {
         if (historyStatus.toLowerCase() === 'issued') {
             return 'bg-alert-1 text-white';
@@ -25,25 +46,8 @@ export default function HistoryDetail() {
         }
     };
 
-    const fixedHour = (hours) => {
-        let arrOfHours = hours.split(':');
-        let arr = [];
-        while (arr.length < 2) {
-            arr.push(arrOfHours[arr.length]);
-        }
-        return arr.join(':');
-    };
-
-    const reformatDuration = (duration) => {
-        let text = String(duration)
-            .split('')
-            .filter((txt) => txt !== '9');
-
-        return `${text[0]}h ${text[1]}m`;
-    };
-
-    const reformatDate = (date, option = { day: 'numeric', month: 'long', year: 'numeric' }) =>
-        new Date(date).toLocaleString('id', option);
+    /*=== effects ===*/
+    //----
 
     return (
         <>

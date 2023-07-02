@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-export default function LoadingOrderPayment() {
+export default function LoadingHistoryPaymentSuccess() {
     return (
         <div className='flex h-screen flex-col items-center justify-center gap-3 font-poppins'>
             <h1 className='text-title-2 font-bold text-net-3'>Harap menunggu...</h1>

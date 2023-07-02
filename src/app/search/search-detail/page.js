@@ -1,17 +1,39 @@
 'use client';
 
-//Core
+//core
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-//Third Parties
+//third parties
 import { FiArrowLeft } from 'react-icons/fi';
 
-//Components
+//redux
+//----
+
+//components
 import Button from '@/components/Button';
 
+//utils
+//----
+
 export default function SearchDetail() {
+    /*=== core ===*/
     const router = useRouter();
+
+    /*=== next auth ===*/
+    //----
+
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
+    //----
+
+    /*=== function ===*/
+    //----
+
+    /*=== effects ===*/
+    //----
 
     return (
         <div className='h-screen font-poppins lg:hidden'>

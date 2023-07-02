@@ -3,6 +3,7 @@
 //core
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 //third parties
 import { useSession } from 'next-auth/react';
@@ -11,16 +12,23 @@ import axios from 'axios';
 //component
 import AlertTop from '@/components/AlertTop';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
 import Label from '@/components/Label';
 import Input from '@/components/Input';
-import Button from '@/components/Button';
-import Image from 'next/image';
 
 export default function PaymentSuccess() {
-    const router = useRouter();
+    /*=== core ===*/
     const { id } = useParams();
+    const router = useRouter();
 
-    // state
+    /*=== next auth ===*/
+    const { data: session, status } = useSession();
+    let token = session?.user?.token;
+
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -28,10 +36,7 @@ export default function PaymentSuccess() {
     const [alertTextError, setAlertTextError] = useState('');
     const [alertTypeError, setAlertTypeError] = useState('');
 
-    //nextauth
-    const { data: session, status } = useSession();
-    let token = session?.user?.token;
-
+    /*=== function ===*/
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
@@ -74,10 +79,13 @@ export default function PaymentSuccess() {
         }
     };
 
+    /*=== effects ===*/
+    //----
+
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+            <div className='mt-[108px] hidden w-screen border-b border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
                         <h1 className=' text-black'>Isi Data Diri</h1>
@@ -100,10 +108,14 @@ export default function PaymentSuccess() {
                             <h3 className='text-body-6'>Transaksi Pembayaran Tiket success</h3>
                         </div>
                         <div className='flex w-full flex-col gap-3'>
-                            <Button onClick={() => handleSendTicket()} className='rounded-rad-3 bg-pur-5 py-3 text-white'>
+                            <Button
+                                onClick={() => handleSendTicket()}
+                                className='rounded-rad-3 bg-pur-4 py-3 text-white hover:bg-pur-3'>
                                 Terbitkan Tiket
                             </Button>
-                            <Button className='rounded-rad-3 bg-pur-2 py-3 text-white'>Cari Penerbangan Lain</Button>
+                            <Button className='rounded-rad-3 bg-pur-2 py-3 text-white hover:bg-pur-3'>
+                                Cari Penerbangan Lain
+                            </Button>
                         </div>
                     </div>
                 </div>

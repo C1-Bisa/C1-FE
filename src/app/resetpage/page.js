@@ -1,57 +1,62 @@
 'use client';
 
+//core
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import AlertBottom from '@/components/AlertBottom';
-import Label from '@/components/Label';
-// import Input from '@/components/Input';
-import Button from '@/components/Button';
-// import AskAccountButton from '@/components/AskAccountButton';
-import PasswordInput from '@/components/PasswordInput';
+
+//third parties
 import axios from 'axios';
 
+//redux
+//----
+
+//components
+import AlertBottom from '@/components/AlertBottom';
+import Label from '@/components/Label';
+import Button from '@/components/Button';
+import PasswordInput from '@/components/PasswordInput';
+
+//utils
+//----
+
 export default function ResepPassword() {
+    /*=== core ===*/
+    const router = useRouter();
     const searchParams = useSearchParams();
     const tokenParams = searchParams.get('token');
 
-    // console.log(token);
-    const [token, setToken] = useState('');
+    /*=== next auth ===*/
+    //----
 
-    useEffect(() => {
-        if (tokenParams) {
-            setToken(tokenParams);
-        }
-    }, [tokenParams]);
-    // const token = tokenParams.split('');
-    // console.log('tokenn: ', tokenParams);
-    const router = useRouter();
+    /*=== redux ===*/
+    //----
+
+    /*=== state ===*/
+    const [token, setToken] = useState('');
     const [visibleAlert, setVisibleAlert] = useState(false);
     const [alertText, setAlertText] = useState('');
     const [alertType, setAlertType] = useState('');
+    const [resetPasswordData, setResetPasswordData] = useState({
+        new_password: '',
+        rep_password: '',
+    });
+
+    /*=== function ===*/
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
         setVisibleAlert(!visibleAlert);
     };
 
-    const [resetPasswordData, setResetPasswordData] = useState({
-        new_password: '',
-        rep_password: '',
-    });
-
     const handleResetPasswordData = (event) => {
         setResetPasswordData({ ...resetPasswordData, [event.target.name]: event.target.value });
     };
-
-    // console.log('userId', params.id);
-    // console.log('token', params.token);
 
     const resetPassword = async ({ newPassword }) => {
         try {
             const URL = `https://kel1airplaneapi-production.up.railway.app/api/v1/user/createnewpassword`;
 
-            // console.log('ini url', URL);
             const res = await axios.put(
                 URL,
                 {
@@ -64,18 +69,11 @@ export default function ResepPassword() {
                 }
             );
 
-            // if (res.data) {
-            // }
-            // console.log(token);
             handleVisibleAlert(res.data.message, 'success');
-            return res.data;
+            // return res.data;
         } catch (error) {
-            // console.log(error.message);
             const text = error.response.data.message;
-            // return error.response.data.message;
-
             handleVisibleAlert(text, 'failed');
-            // return error.response.data.message;
         }
     };
 
@@ -100,8 +98,18 @@ export default function ResepPassword() {
             if (res.status === 'Success') {
                 router.push('/login');
             }
-        } catch (error) {}
+        } catch (error) {
+            const text = error.response.data.message;
+            // handleVisibleAlert(text, 'failed');
+        }
     };
+
+    /*=== effects ===*/
+    useEffect(() => {
+        if (tokenParams) {
+            setToken(tokenParams);
+        }
+    }, [tokenParams]);
 
     return (
         <>
@@ -112,7 +120,7 @@ export default function ResepPassword() {
                     <div className='col-span-6 '>
                         <div className='relative h-full'>
                             <Image
-                                src={`/images/Ulang_Sandi.jpg`}
+                                src={`/new_images/left_login.svg`}
                                 alt=''
                                 fill
                                 style={{ objectFit: 'cover' }}

@@ -2,7 +2,6 @@
 
 //Core
 import Image from 'next/image';
-import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -68,7 +67,7 @@ import { fixedHour } from '@/utils/fixedHour';
 import BottomNavbar from '@/components/BottomNavbar';
 
 export default function SearchFlight() {
-    /*=== router ===*/
+    /*=== core ===*/
     const router = useRouter();
 
     /*=== next auth ===*/
@@ -118,7 +117,6 @@ export default function SearchFlight() {
     const [selectDate, setSelectDate] = useState(new Date(searchPage.search_date) || '');
 
     /*=== function ===*/
-
     const handleChooseFilter = (query, type) => {
         console.log('====================================');
         console.log('QUERY', query);
@@ -157,21 +155,9 @@ export default function SearchFlight() {
         dispatch(setFetchFlightAgain());
     };
 
-    /*=== DEBUG STATE ===*/
-    console.log('====================================');
-    console.log('DATA HOME', homeSearch);
-    console.log('DATA SEARCH', searchPage);
-    console.log('IS TWO WAY', isTwoWay);
-    console.log('FLIGHT ID', flightIDs);
-
-    // console.log('INIIII', flightData);
-    // console.log('dayofWeek', values);
-    console.log('====================================');
-
     /*=== effects ===*/
     useEffect(() => {
         const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime, searchPage.search_date_return);
-        // const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime);
 
         setDateOfWeek(date);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,8 +205,7 @@ export default function SearchFlight() {
     useEffect(() => {
         if (searchAgain) {
             const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime, searchPage.search_date_return);
-            // const date = getDateInRange(searchPage.search_date || homeSearch.departure_dateTime);
-            setDateOfWeek(date); // ketika dia di masukin data ? kalo refresh knapa g ada data
+            setDateOfWeek(date);
             setSelectDate(new Date(searchPage.search_date || homeSearch.departure_dateTime));
         }
         dispatch(setSearchPageIsSearchAgain(false));
@@ -228,6 +213,15 @@ export default function SearchFlight() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchAgain, dispatch, setSearchPageIsSearchAgain, setFetchFlightAgain]);
+
+    /*=== DEBUG STATE ===*/
+    console.log('============== DEBUG MODE ===============');
+    console.log('DATA HOME', homeSearch);
+    console.log('DATA SEARCH', searchPage);
+    console.log('IS TWO WAY', isTwoWay);
+    console.log('FLIGHT ID', flightIDs);
+
+    console.log('============== DEBUG MODE ===============');
 
     switch (statusFetchFlight) {
         case 'failed':
@@ -244,7 +238,7 @@ export default function SearchFlight() {
                             </h1>
                             <div className='frid col-span-12 grid grid-cols-12 gap-4'>
                                 <div
-                                    className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 font-poppins text-title-2 font-medium text-white'
+                                    className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 font-poppins text-title-2 font-medium text-white'
                                     onClick={() => router.back()}>
                                     <FiArrowLeft className='ml-[21px] h-6 w-6 ' />
                                     <p>
@@ -253,7 +247,7 @@ export default function SearchFlight() {
                                     </p>
                                 </div>
                                 <div
-                                    className=' col-span-3 cursor-pointer rounded-rad-3 bg-alert-1 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
+                                    className=' col-span-3 cursor-pointer rounded-rad-3 bg-pur-2 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
                                     onClick={() => handleOpenHomeSearch()}>
                                     <p>Ubah Pencarian</p>
                                 </div>
@@ -271,7 +265,7 @@ export default function SearchFlight() {
                                             <div
                                                 className={`${
                                                     new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                                        ? 'bg-pur-2 text-white'
+                                                        ? 'bg-pur-3 text-white'
                                                         : 'text-[#151515]'
                                                 } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
                                                 <h3 className='text-[14px] font-bold'>
@@ -319,7 +313,7 @@ export default function SearchFlight() {
                                             {homeSearch.from && (
                                                 <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                                     <div className='flex items-center gap-4 '>
-                                                        <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                        <div className='rounded-rad-2 bg-pur-3 p-2'>
                                                             <TbCircleNumber1 className='h-[24px] w-[24px] text-white' />
                                                         </div>
                                                         <div>
@@ -362,7 +356,7 @@ export default function SearchFlight() {
                                                             </div>
                                                             <Button
                                                                 onClick={() => handleResetChooseFlight()}
-                                                                className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                                className='w-full bg-pur-4 py-2 text-body-6 text-white hover:bg-pur-3'>
                                                                 Change departure flight
                                                             </Button>
                                                         </div>
@@ -377,7 +371,7 @@ export default function SearchFlight() {
                                             {homeSearch.return_dateTime && (
                                                 <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                                     <div className='flex items-center gap-4'>
-                                                        <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                        <div className='rounded-rad-2 bg-pur-3 p-2'>
                                                             <TbCircleNumber2 className='h-[24px] w-[24px] text-white' />
                                                         </div>
                                                         <div>
@@ -420,7 +414,7 @@ export default function SearchFlight() {
                                                             </div>
                                                             <Button
                                                                 onClick={() => handleResetChooseFlight()}
-                                                                className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                                className='w-full bg-pur-4 py-2 text-body-6 text-white hover:bg-pur-3'>
                                                                 Change departure flight
                                                             </Button>
                                                         </div>
@@ -463,15 +457,15 @@ export default function SearchFlight() {
                     <div className='hidden lg:block'>
                         <Navbar className={'hidden lg:block'} />
 
-                        <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                        <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-4 lg:block'>
                             <div className='container mx-auto grid max-w-screen-lg grid-cols-12 '>
                                 {/* search flight menu start */}
                                 <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>
                                     Pilih Penerbangan
                                 </h1>
-                                <div className='frid col-span-12 grid grid-cols-12 gap-4'>
+                                <div className=' col-span-12 grid grid-cols-12 gap-4'>
                                     <div
-                                        className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 font-poppins text-title-2 font-medium text-white'
+                                        className='col-span-9 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 font-poppins text-title-2 font-medium text-white'
                                         onClick={() => {
                                             dispatch(setSearchPageIsSearchAgain(true));
                                             dispatch(setResetChoosedFlight());
@@ -485,7 +479,7 @@ export default function SearchFlight() {
                                         </p>
                                     </div>
                                     <div
-                                        className=' col-span-3 cursor-pointer rounded-rad-3 bg-alert-1 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
+                                        className=' col-span-3 cursor-pointer rounded-rad-3 bg-pur-2 py-[13px] text-center font-poppins text-title-2 font-bold text-white'
                                         onClick={() => handleOpenHomeSearch()}>
                                         <p>Ubah Pencarian</p>
                                     </div>
@@ -507,7 +501,7 @@ export default function SearchFlight() {
                                                     <div
                                                         className={`${
                                                             new Date(val.date).getDate() === new Date(selectDate).getDate()
-                                                                ? 'bg-pur-2 text-white'
+                                                                ? 'bg-pur-3 text-white'
                                                                 : 'text-[#151515]'
                                                         } flex flex-col items-center justify-center rounded-[8px] px-[22px] py-[4px] font-poppins`}>
                                                         <h3 className='text-[14px] font-bold'>
@@ -559,7 +553,7 @@ export default function SearchFlight() {
                                                 {homeSearch.from && (
                                                     <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                                         <div className='flex items-center gap-4 '>
-                                                            <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                            <div className='rounded-rad-2 bg-pur-3 p-2'>
                                                                 <TbCircleNumber1 className='h-[24px] w-[24px] text-white' />
                                                             </div>
                                                             <div>
@@ -604,7 +598,7 @@ export default function SearchFlight() {
                                                                 </div>
                                                                 <Button
                                                                     onClick={() => handleResetChooseFlight()}
-                                                                    className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                                    className='w-full bg-pur-4 py-2 text-body-6 text-white hover:bg-pur-3'>
                                                                     Change departure flight
                                                                 </Button>
                                                             </div>
@@ -619,7 +613,7 @@ export default function SearchFlight() {
                                                 {homeSearch.return_dateTime && (
                                                     <div className='flex flex-col gap-3 border border-net-3 p-2'>
                                                         <div className='flex items-center gap-4'>
-                                                            <div className='rounded-rad-2 bg-pur-4 p-2'>
+                                                            <div className='rounded-rad-2 bg-pur-3 p-2'>
                                                                 <TbCircleNumber2 className='h-[24px] w-[24px] text-white' />
                                                             </div>
                                                             <div>
@@ -664,7 +658,7 @@ export default function SearchFlight() {
                                                                 </div>
                                                                 <Button
                                                                     onClick={() => handleResetChooseFlight()}
-                                                                    className='w-full bg-pur-3 py-2 text-body-6 text-white'>
+                                                                    className='w-full bg-pur-4 py-2 text-body-6 text-white hover:bg-pur-3'>
                                                                     Change departure flight
                                                                 </Button>
                                                             </div>
@@ -692,7 +686,7 @@ export default function SearchFlight() {
                                                 return (
                                                     <div
                                                         key={index}
-                                                        className='col-span-12 flex cursor-pointer flex-col gap-2 rounded-rad-3 border border-transparent p-4 shadow-low hover:border hover:border-pur-1'>
+                                                        className='col-span-12 flex cursor-pointer flex-col gap-2 rounded-rad-3 border border-transparent p-4 shadow-low hover:border hover:border-pur-2'>
                                                         {/* list top start */}
                                                         <div className='flex items-center justify-between'>
                                                             <div className='flex items-center gap-2'>
@@ -753,7 +747,7 @@ export default function SearchFlight() {
                                                                 <p className='font-bold text-pur-4'>{formatRupiah(data.price)}</p>
                                                                 <Button
                                                                     onClick={() => handleChoosedFlight(data)}
-                                                                    className='rounded-rad-3 bg-pur-3 py-1 font-medium text-white'>
+                                                                    className='rounded-rad-3 bg-pur-4 py-1 font-medium text-white hover:bg-pur-3'>
                                                                     Pilih
                                                                 </Button>
                                                             </div>
@@ -779,7 +773,7 @@ export default function SearchFlight() {
                                                                         </p>
                                                                     </div>
                                                                     <div>
-                                                                        <h3 className='font-bold text-pur-3'>Keberangkaran</h3>
+                                                                        <h3 className='font-bold text-pur-4'>Keberangkaran</h3>
                                                                     </div>
                                                                 </div>
 
@@ -826,7 +820,7 @@ export default function SearchFlight() {
                                                                         </p>
                                                                     </div>
                                                                     <div>
-                                                                        <h3 className='font-bold text-pur-3'>Kedatangan</h3>
+                                                                        <h3 className='font-bold text-pur-4'>Kedatangan</h3>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -894,7 +888,7 @@ export default function SearchFlight() {
                     {/* filtet flight start */}
                     <div>
                         {openChooseFilterFlight && (
-                            <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
+                            <div className='fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-60'>
                                 <ChooseFilterTicketModal
                                     open={openChooseFilterFlight}
                                     handleOpen={handleOpenChooseFilterFlight}
@@ -905,9 +899,10 @@ export default function SearchFlight() {
                     </div>
                     {/* filtet flight end */}
 
+                    {/* sidebar */}
                     <div>
                         {isReadyToOrder && (
-                            <div className='fixed inset-0 z-10 flex items-center justify-end bg-black bg-opacity-60 font-poppins'>
+                            <div className='fixed inset-0 z-20 flex items-center justify-end bg-black bg-opacity-60 font-poppins'>
                                 <div className='relative h-screen w-4/5 bg-white font-poppins lg:w-1/2'>
                                     <div className='mx-[16px] flex flex-col gap-3'>
                                         <div className='flex items-center '>
@@ -1030,7 +1025,7 @@ export default function SearchFlight() {
                                                         dispatch(setFetchDetailFlight());
                                                         dispatch(setIsReadyToOrder(false));
                                                     }}
-                                                    className='h-max w-max rounded-rad-3 bg-pur-3 px-2 py-1 text-body-3 text-white lg:px-5 lg:py-3 lg:text-title-2'>
+                                                    className='h-max w-max rounded-rad-3 bg-pur-4 px-2 py-1 text-body-3 text-white hover:bg-pur-3 lg:px-5 lg:py-3 lg:text-title-2'>
                                                     Book Now
                                                 </Button>
                                             </div>
@@ -1122,6 +1117,7 @@ export default function SearchFlight() {
                             </div>
                         )}
                     </div>
+                    {/* sidebar */}
                     {/* ======= Modal and Pop  end ====== */}
                     {/* DEKSTOP MODE */}
 

@@ -1,36 +1,36 @@
 'use client';
 
-//Core
+//core
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-//Third Parties
+//third parties
 import axios from 'axios';
 import { useSession, signOut } from 'next-auth/react';
 import { FiArrowLeft, FiFilter } from 'react-icons/fi';
 import { IoSearchSharp } from 'react-icons/io5';
 
-//Redux
+//redux
 import { useDispatch } from 'react-redux';
 import { flightSlice } from '@/store/flight';
 //----
 
-//Components
+//components
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
+import BottomNavbar from '@/components/BottomNavbar';
+import AlertTop from '@/components/AlertTop';
 import Label from '@/components/Label';
 import Input from '@/components/Input';
-import RiwayatPesananKanan from '@/components/RiwayatPesananKanan';
-import BottomNavbar from '@/components/BottomNavbar';
+// import RiwayatPesananKanan from '@/components/RiwayatPesananKanan';
 import AlertBottom from '@/components/AlertBottom';
-import AlertTop from '@/components/AlertTop';
 
-//Utils
+//utils
 import { reformatDate, reformatDateWithHour } from '@/utils/reformatDate';
 
 export default function Notifikasi() {
-    /*=== router ===*/
+    /*=== core ===*/
     const router = useRouter();
 
     /*=== next auth ===*/
@@ -62,10 +62,6 @@ export default function Notifikasi() {
         setAlertType(alertType);
         setVisibleAlert(!visibleAlert);
     };
-
-    console.log('====================================');
-    console.log(notifications);
-    console.log('====================================');
 
     const handleReadNotif = async () => {
         try {
@@ -144,18 +140,22 @@ export default function Notifikasi() {
         }
     }, [fetchNotif, token]);
 
+    console.log('====================================');
+    console.log(notifications);
+    console.log('====================================');
+
     if (isLoading) {
         return (
             <div className='overflow-x-hidden'>
                 <Navbar className={'hidden lg:block'} />
                 {/* DESKTOP MODE */}
 
-                <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+                <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-4 lg:block'>
                     <div className='container relative mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                         <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Notifikasi</h1>
                         <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                             <div
-                                className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                                className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 py-[13px] font-poppins text-title-2 font-medium text-white'
                                 onClick={() => router.push('/')}>
                                 <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                                 <p>Beranda</p>
@@ -183,12 +183,12 @@ export default function Notifikasi() {
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='hidden w-screen border border-b-net-2 pb-4 lg:block'>
+            <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-4 lg:block'>
                 <div className='container mx-auto hidden max-w-screen-lg grid-cols-12 gap-3 font-poppins lg:grid'>
                     <h1 className='col-span-12 mb-[24px] mt-[47px] font-poppins text-head-1 font-bold'>Notifikasi</h1>
                     <div className='col-span-12 grid grid-cols-12 gap-[18px]'>
                         <div
-                            className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-3 py-[13px] font-poppins text-title-2 font-medium text-white'
+                            className='col-span-10 flex cursor-pointer items-center gap-4 rounded-rad-3 bg-pur-4 py-[13px] font-poppins text-title-2 font-medium text-white'
                             onClick={() => router.push('/')}>
                             <FiArrowLeft className='ml-[21px]  h-6 w-6 ' />
                             <p>Beranda</p>
@@ -196,7 +196,7 @@ export default function Notifikasi() {
                         <div className='col-span-2 flex items-center gap-4'>
                             <Button
                                 onClick={() => handleReadNotif()}
-                                className='rounded-rad-3 border border-pur-5 bg-white px-5 py-3 text-body-6 text-pur-5 hover:border-white hover:bg-pur-1 hover:text-black'>
+                                className='rounded-rad-3 border border-pur-5 bg-white px-5 py-3 text-body-6 text-pur-5 hover:border-white hover:bg-pur-3 hover:text-white'>
                                 Sudah Dibaca
                             </Button>
                         </div>

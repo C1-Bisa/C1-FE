@@ -7,9 +7,9 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 
 // Third Parties
+import axios from 'axios';
 import { FiChevronUp, FiChevronDown, FiArrowLeft } from 'react-icons/fi';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
-import axios from 'axios';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -48,14 +48,14 @@ import { extractWord } from '@/utils/extractWord';
 import { reformatDate } from '@/utils/reformatDate';
 
 export default function Order() {
-    //router
+    /*=== core ===*/
     const router = useRouter();
 
-    //next auth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     const token = session?.user?.token; //loading
 
-    //redux
+    /*=== redux ===*/
     const dispatch = useDispatch();
     const { setFetchDetailFlight, setPassengerForm } = flightSlice.actions;
     const statusDetaiFlight = useSelector(getFlightDetailDataStatus); // Status for fething detail
@@ -67,7 +67,7 @@ export default function Order() {
     const passengerForm = useSelector(getPassengerForm); // generated form based passenger type total
     const isTwoWay = useSelector(getIsTwoWay);
 
-    //state
+    /*=== state ===*/
     const [isSuccessForm, setIsSuccessForm] = useState(false);
     const [isDekstop, setIsDesktop] = useState(true);
     const [formData, setFormData] = useState(null);
@@ -102,7 +102,7 @@ export default function Order() {
         email: '',
     });
 
-    /*=== function === */
+    /*=== function ===*/
     const handleFormStatus = () => {
         if (seatDepart.length !== elements.length && isTwoWay) {
             handleVisibleAlert('Mohon untuk memilih kursi sesuai jumlah penumpang', 'failed');
@@ -192,10 +192,6 @@ export default function Order() {
         handleVisibleAlert('Data Anda berhasil tersimpan!', 'success');
         setFormData(templateObj);
     };
-
-    console.log('====================================');
-    console.log('FORM DATA', formData);
-    console.log('====================================');
 
     const handleMobileFormStatus = () => {
         if (seatDepart.length !== elements.length && isTwoWay) {
@@ -382,7 +378,14 @@ export default function Order() {
         }
     };
 
-    /*Effect */
+    /*=== effects ===*/
+    useEffect(() => {
+        //extract generated form from redux to locale state
+        setElements(JSON.parse(JSON.stringify(passengerForm)));
+
+        /* eslint-disable react-hooks/exhaustive-deps */
+    }, []);
+
     useEffect(() => {
         if (token || status === 'unauthenticated') {
             if (fetchDataUser) {
@@ -452,16 +455,11 @@ export default function Order() {
         /* eslint-disable react-hooks/exhaustive-deps */
     }, [statusDetaiFlight, dispatch, fetchDetailFlight]);
 
-    useEffect(() => {
-        //extract generated form from redux to locale state
-        setElements(JSON.parse(JSON.stringify(passengerForm)));
-
-        /* eslint-disable react-hooks/exhaustive-deps */
-    }, []);
-    //fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'
-
     console.log('====================================');
     console.log('DETAIL FLIGHT', detailFlight);
+    console.log('====================================');
+    console.log('====================================');
+    console.log('FORM DATA', formData);
     console.log('====================================');
 
     return (
@@ -469,7 +467,7 @@ export default function Order() {
             <Navbar className={'hidden lg:block'} />
 
             {/* DEKSTOP MODE */}
-            <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+            <div className='mt-[108px] hidden w-screen border-b border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     {/* header order */}
                     <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
@@ -538,7 +536,7 @@ export default function Order() {
                                         <div key={index}>
                                             <div className='flex items-center justify-between rounded-t-rad-2 bg-net-4 px-4 py-2 text-white'>
                                                 <h2 className='text-title-2'>
-                                                    Data Diri Penumpang {index + 1} {' - '}
+                                                    P{index + 1} {' - '} Data Diri Penumpang {index + 1} {' - '}
                                                     {form.type}
                                                 </h2>
                                                 {formStatus && (
@@ -615,7 +613,7 @@ export default function Order() {
                                                                         }
                                                                         className={`${
                                                                             formInputError ? 'border-red-500' : 'border'
-                                                                        } w-full cursor-pointer appearance-none px-4 py-2 font-poppins outline-none`}
+                                                                        } w-full cursor-pointer appearance-none border px-4 py-2 font-poppins outline-none`}
                                                                         aria-label='Default select example'>
                                                                         {formElement.field_options.length > 0 &&
                                                                             formElement.field_options.map((option, i) => (
@@ -665,7 +663,7 @@ export default function Order() {
                         <Button
                             onClick={() => handleFormStatus()}
                             className={` ${
-                                formData ? 'bg-pur-2' : 'bg-pur-5'
+                                formData ? 'bg-pur-3' : 'bg-pur-5'
                             } mb-[50px]  w-full rounded-rad-3  py-4 text-head-1 text-white`}>
                             Simpan
                         </Button>
@@ -870,7 +868,7 @@ export default function Order() {
             {/* POP UP */}
             <div>
                 {openCalendar && (
-                    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60'>
+                    <div className='fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-60'>
                         <CalendarPicker
                             isDesktop={isDekstop}
                             initialDate={pickedDate}

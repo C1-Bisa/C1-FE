@@ -26,7 +26,7 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import AlertTop from '@/components/AlertTop';
 
-// Utils
+// utils
 import { fixedHour } from '@/utils/fixedHour';
 import { convertToDate, convertToTime } from '@/utils/converDateTime';
 import { reformatDate, reformatDateWithHour } from '@/utils/reformatDate';
@@ -34,21 +34,20 @@ import { extractWord } from '@/utils/extractWord';
 import { formatRupiah } from '@/utils/formatRupiah';
 import { IoLocationSharp } from 'react-icons/io5';
 import { reformatDuration } from '@/utils/reformatDuration';
-// import { reformatDate } from '@/utils/reformatDate';
 
 export default function OrderPaymentId() {
-    //core
+    /*=== core ===*/
     const { id } = useParams();
     const router = useRouter();
 
-    //next auth
+    /*=== next auth ===*/
     const { data: session, status } = useSession();
     const token = session?.user?.token;
 
-    // redux
+    /*=== redux ===*/
     const passengerType = useSelector(getPassengerTypeTotal); // Get passenger type total
 
-    //state
+    /*=== state ===*/
     const [isLoading, setIsLoading] = useState(true);
     const [fetchDataUser, setFetchDataUser] = useState(true);
     const [transactionHistory, setTransactionHistory] = useState(null);
@@ -88,6 +87,7 @@ export default function OrderPaymentId() {
         },
     ];
 
+    /*=== function ===*/
     const handleChangeCreditCard = (event) => {
         setCreditCardInput({ ...creditCardInput, [event.target.name]: event.target.value });
         if (
@@ -404,7 +404,6 @@ export default function OrderPaymentId() {
         }
     };
 
-    //function
     const handleVisibleAlert = (text, alertType) => {
         setAlertText(text);
         setAlertType(alertType);
@@ -444,7 +443,7 @@ export default function OrderPaymentId() {
         }
     };
 
-    /*Effect */
+    /*=== effects ===*/
     useEffect(() => {
         if (token) {
             if (fetchDataUser) {
@@ -526,7 +525,7 @@ export default function OrderPaymentId() {
             <div className='overflow-x-hidden'>
                 <Navbar className={'hidden lg:block'} />
                 {/* header */}
-                <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+                <div className='mt-[80px] hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                     <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                         <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
                             <h1 className='cursor-pointer text-black'>Isi Data Diri</h1>
@@ -573,7 +572,7 @@ export default function OrderPaymentId() {
                                             : 'Sudah Di Bayar'
                                     } `}
                                     className={`${
-                                        formCreditCardStatus ? 'bg-pur-3' : 'bg-pur-3 opacity-60'
+                                        formCreditCardStatus ? 'bg-pur-4' : 'bg-pur-4 opacity-60'
                                     } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
                                 />
                             </div>
@@ -623,7 +622,7 @@ export default function OrderPaymentId() {
     return (
         <div className='overflow-x-hidden'>
             <Navbar className={'hidden lg:block'} />
-            <div className='hidden w-screen border border-b-net-2 pb-[74px] pt-[47px] lg:block'>
+            <div className='mt-[108px] hidden w-screen border-b border-b-net-2 pb-[74px] pt-[47px] lg:block'>
                 <div className='mx-auto hidden max-w-screen-lg grid-cols-12 font-poppins lg:grid'>
                     <div className='col-span-12 flex gap-3 text-head-1 font-bold'>
                         <h1 className='cursor-pointer text-black'>Isi Data Diri</h1>
@@ -667,8 +666,8 @@ export default function OrderPaymentId() {
                                 } `}
                                 className={`${
                                     !formCreditCardStatus || transactionHistory?.transaction?.transaction_status === 'Issued'
-                                        ? 'bg-pur-3 opacity-60'
-                                        : 'bg-pur-3 '
+                                        ? 'bg-pur-4 opacity-60'
+                                        : 'bg-pur-4 '
                                 } rounded-rad-3   py-[16px] text-head-1 font-medium text-white `}
                             />
                         </div>

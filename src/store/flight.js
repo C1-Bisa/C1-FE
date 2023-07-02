@@ -361,7 +361,7 @@ export const flightSlice = createSlice({
                 state.searchPage.to = state.homeSearch.to;
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
-                // state.flight_title = 'Keberangkatan';
+                state.flight_title = 'Keberangkatan';
                 // state.searchPage.isSearchAgain = true;
                 // state.fetchFlightStatusTwo = 'idle';
                 state.isTwoWay = action.payload;
@@ -406,7 +406,7 @@ export const flightSlice = createSlice({
                 state.searchPage.to = state.homeSearch.to;
                 state.homeSearch.return_dateTime = '';
                 state.homeSearch.flight_type = 'One Trip';
-                // state.flight_title = 'Keberangkatan';
+                state.flight_title = 'Keberangkatan';
                 // state.searchPage.isSearchAgain = true;
                 // state.fetchFlightStatusTwo = 'idle';
                 state.isTwoWay = action.payload;
@@ -1025,6 +1025,12 @@ export const flightSlice = createSlice({
                 !state.choosedFlight.flight_1.is_choose
             ) {
                 state.homeSearch.departure_dateTime = action.payload;
+                state.searchPage.search_date = action.payload;
+                return;
+            }
+
+            if (action.payload !== state.homeSearch.return_dateTime && state.isTwoWay && state.choosedFlight.flight_1.is_choose) {
+                state.homeSearch.return_dateTime = action.payload;
                 state.searchPage.search_date = action.payload;
                 return;
             }
